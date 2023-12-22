@@ -5,10 +5,13 @@ from get_moves import get_moves
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--problem_id", type=int, required=True)
-parser.add_argument("--sol", type=str, required=True)
+parser.add_argument("--sol", type=str)
 args = parser.parse_args()
 
 puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.problem_id]
+
+if (args.sol is None):
+    args.sol = f"data/solutions/{args.problem_id}.txt"
 
 with open(args.sol, "r") as fp:
     current_solution = fp.read().split(".")

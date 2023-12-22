@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from typing import Dict, Tuple, List
 import pandas as pd
 import numpy as np
