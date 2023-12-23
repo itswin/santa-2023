@@ -21,6 +21,9 @@ def validate_one(problem_id, sol_file_name, verbose=False):
         print(f"Number of moves: {len(moves)}")
 
     state = puzzle["initial_state"].split(";")
+    if verbose:
+        print(f"Initial state: {state}")
+        print(f"Solution state: {puzzle['solution_state']}")
     for move_name in solution:
         state = [state[i] for i in moves[move_name]]
     if (puzzle["solution_state"].split(";") != state):

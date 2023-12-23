@@ -66,12 +66,13 @@ def main() -> None:
     K = 2
     while True:
         try:
-            shortest_path = get_shortest_path(moves, K, None if K == 2 else 1000000)
+            shortest_path = get_shortest_path(moves, K, None if K == 2 else 100000)
         except ExceedMaxSizeError:
             break
         K += 1
     print(f"K: {K}")
     print(f"Number of shortest_path: {len(shortest_path)}")
+    print(shortest_path)
 
     current_state = puzzle["initial_state"].split(";")
     current_solution = list(sample_moves)
