@@ -4,8 +4,8 @@ import pandas as pd
 from get_moves import get_moves
 import os
 
-def validate_one(problem_id, sol_file_name, verbose=False):
-    puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[problem_id]
+def validate_one(id, sol_file_name, verbose=False):
+    puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[id]
 
     with open(sol_file_name, 'r') as sol_file:
         solution_state = sol_file.read()
@@ -27,7 +27,7 @@ def validate_one(problem_id, sol_file_name, verbose=False):
     for move_name in solution:
         state = [state[i] for i in moves[move_name]]
     if (puzzle["solution_state"].split(";") != state):
-        print(f"Solution is incorrect for problem {problem_id}")
+        print(f"Solution is incorrect for problem {id}")
         print(f"Expected: {puzzle['solution_state']}")
         print(f"Got: {';'.join(state)}")
         assert False
@@ -36,23 +36,29 @@ def validate_one(problem_id, sol_file_name, verbose=False):
         print("Solution is correct")
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--lo", type=int)
+parser.add_argument("--hi", type=int)
 parser.add_argument("--all", action="store_true")
 parser.add_argument("--sol_dir", type=str, default="data/solutions")
-parser.add_argument("--problem_id", type=int)
+parser.add_argument("--id", type=int)
 parser.add_argument("--sol", type=str)
 parser.add_argument("--verbose", action="store_true", default=True)
 args = parser.parse_args()
 
 if args.all:
-    for problem_id in range(1, 397):
-        sol_file_name = f"{args.sol_dir}/{problem_id}.txt"
+    args.lo = 0
+    args.hi = 397
+
+if args.lo is not None and args.hi is not None:
+    for id in range(args.lo, args.hi + 1):
+        sol_file_name = f"{args.sol_dir}/{id}.txt"
         if os.path.exists(sol_file_name):
             if args.verbose:
-                print(f"Validating problem {problem_id}")
-            validate_one(problem_id, sol_file_name)
+                print(f"Validating problem {id}")
+            validate_one(id, sol_file_name)
 else:
-    assert args.problem_id is not None
+    assert args.id is not None
 
     if args.sol is None:
-        args.sol = f"{args.sol_dir}/{args.problem_id}.txt"
-    validate_one(args.problem_id, args.sol, args.verbose)
+        args.sol = f"{args.sol_dir}/{args.id}.txt"
+    validate_one(args.id, args.sol, args.verbose)

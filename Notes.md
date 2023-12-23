@@ -9,3 +9,5 @@
 - All 2x2s: 0-24
 - Standard 3x3s: 30-129
 - Wreaths 6x6-12x12: 284,328
+- Standard 5x5s: 210-234
+

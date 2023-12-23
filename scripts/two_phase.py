@@ -6,7 +6,7 @@ import twophase.solver as sv
 import itertools
 import numpy as np
 
-# seq 30 129 | xargs -P 4 -I {} python3 scripts/two_phase.py --problem_id {}
+# seq 30 129 | xargs -P 4 -I {} python3 scripts/two_phase.py --id {}
 
 def state_to_faces(state_string):
     return {
@@ -26,10 +26,10 @@ def extend_move_seq(seq, moves):
         yield seq + [move]
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--problem_id", type=int, required=True)
+parser.add_argument("--id", type=int, required=True)
 args = parser.parse_args()
 
-puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.problem_id]
+puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
 
 print(puzzle)
 moves = get_moves(puzzle["puzzle_type"])
@@ -113,5 +113,5 @@ print(sol)
 print("Done")
 
 # Write the solution to a file
-with open(f"data/solutions/{args.problem_id}.txt", "w") as fp:
+with open(f"data/solutions/{args.id}.txt", "w") as fp:
     fp.write(sol)

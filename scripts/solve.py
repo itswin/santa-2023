@@ -75,12 +75,12 @@ def a_star(initial_state, goal_state, allowed_moves, num_wildcards, max_depth=30
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--problem_id", type=int, required=True)
+    parser.add_argument("--id", type=int, required=True)
     parser.add_argument("--max_depth", type=int, default=30)
     parser.add_argument("--timeout", type=int, default=60 * 60)
     args = parser.parse_args()
 
-    puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.problem_id]
+    puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
     moves = get_moves(puzzle['puzzle_type'])
 
     print(puzzle)
@@ -98,7 +98,7 @@ def main() -> None:
 
     current_solution = []
 
-    with open(f"data/solutions/{args.problem_id}.txt", "r") as fp:
+    with open(f"data/solutions/{args.id}.txt", "r") as fp:
         current_solution = fp.read().split(".")
 
     solution = a_star(initial_state, solution_state, moves, puzzle["num_wildcards"], args.max_depth, args.timeout)
@@ -109,7 +109,7 @@ def main() -> None:
         print("Solution length:", len(solution))
         print("Current solution length:", len(current_solution))
         if len(solution) < len(current_solution):
-            with open(f"data/solutions/{args.problem_id}.txt", "w") as fp:
+            with open(f"data/solutions/{args.id}.txt", "w") as fp:
                 fp.write(".".join(solution))
                 print("Solution updated")
         else:

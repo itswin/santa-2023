@@ -28,11 +28,11 @@ def make_cubestring(faces):
     return "".join(faces["U"] + faces["R"] + faces["F"] + faces["D"] + faces["L"] + faces["B"])
 
 parser = argparse.ArgumentParser()
-parser.add_argument("problem_id", type=int)
+parser.add_argument("id", type=int)
 
 args = parser.parse_args()
 
-puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.problem_id]
+puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
 print(puzzle)
 
 puzzle_type = puzzle["puzzle_type"]
@@ -102,7 +102,7 @@ print("INITIAL", state_string)
 
 for face in faces:
     print(face)
-    for row in chunks(faces[face], 4):
+    for row in chunks(faces[face], n):
         print("\t", " ".join(row))
 
 cubestring = make_cubestring(faces)
@@ -145,5 +145,5 @@ mapped_sol = ".".join(mapped_sol)
 print(mapped_sol)
 
 # Write it to the solution file
-with open(f"data/solutions/{args.problem_id}.txt", "w") as f:
+with open(f"data/solutions/{args.id}.txt", "w") as f:
     f.write(mapped_sol)

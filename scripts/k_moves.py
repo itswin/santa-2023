@@ -50,12 +50,12 @@ def get_moves(puzzle_type: str) -> dict[str, tuple[int, ...]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--problem_id", type=int, required=True)
+    parser.add_argument("--id", type=int, required=True)
     parser.add_argument("--time_limit", type=float, default=2 * 60 * 60)  # 2h
     args = parser.parse_args()
 
-    puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.problem_id]
-    sample_submission = pd.read_csv("data/sample_submission.csv").set_index("id").loc[args.problem_id]
+    puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
+    sample_submission = pd.read_csv("data/sample_submission.csv").set_index("id").loc[args.id]
     sample_moves = sample_submission["moves"].split(".")
     print(puzzle)
     print(f"Sample score: {len(sample_moves)}")
@@ -121,7 +121,7 @@ def main() -> None:
         state = [state[i] for i in moves[move_name]]
     assert puzzle["solution_state"].split(";") == state
 
-    with open(f"data/solutions/{args.problem_id}.txt", "w") as fp:
+    with open(f"data/solutions/{args.id}.txt", "w") as fp:
         fp.write(".".join(current_solution))
 
 
