@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 import os
+import argparse
 
-solution_dir = 'data/solutions'
+parser = argparse.ArgumentParser()
+parser.add_argument("--sol_dir", type=str, default='data/solutions')
+args = parser.parse_args()
+
+solution_dir = args.sol_dir
 
 score = 0
 
