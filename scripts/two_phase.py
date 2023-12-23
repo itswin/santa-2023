@@ -6,6 +6,8 @@ import twophase.solver as sv
 import itertools
 import numpy as np
 
+# seq 30 129 | xargs -P 4 -I {} python3 scripts/two_phase.py --problem_id {}
+
 def state_to_faces(state_string):
     return {
         "U": state_string[0:9],
@@ -113,22 +115,3 @@ print("Done")
 # Write the solution to a file
 with open(f"data/solutions/{args.problem_id}.txt", "w") as fp:
     fp.write(sol)
-
-# for perm in list(itertools.permutations(LIST)):
-#     # STICKER_MAP = {}
-#     # for S in "ABCDEF":
-#     #     STICKER_MAP[S] = perm[ord(S) - ord('A')]
-
-#     cubestring = "".join([STICKER_MAP[c] for c in state])
-
-
-    # if "Error" in solve:
-    #     break
-    # print(STICKER_MAP)
-    # print(perm)
-    # print(cubestring, len(cubestring))
-
-    # print(solve)
-    # sol = ".".join([MOVE_MAP[m] for m in solve.split(" ")])
-    # print(sol)
-    # print("Done")
