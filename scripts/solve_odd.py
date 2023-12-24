@@ -51,6 +51,8 @@ def extend_move_seq(seq, moves):
 
 def orient_centers(state, moves, n):
     center_slice_moves = get_center_slice_moves(moves, n)
+    print("Orienting centers")
+    print(center_slice_moves)
 
     # Try longer sequences of moves if the centers are not aligned
     seqs = [[]]
@@ -100,8 +102,15 @@ def get_move_map(n):
                 move_map[f"{move}w"] = f"{base_moves[move]}0.{base_moves[move]}1"
                 move_map[f"{move}w'"] = f"-{base_moves[move]}0.-{base_moves[move]}1"
                 move_map[f"{move}w2"] = f"{base_moves[move]}0.{base_moves[move]}0.{base_moves[move]}1.{base_moves[move]}1"
+
+                # For some reason it also has these
+                move_map[f"2{move}w"] = f"{base_moves[move]}0.{base_moves[move]}1"
+                move_map[f"2{move}w'"] = f"-{base_moves[move]}0.-{base_moves[move]}1"
+                move_map[f"2{move}w2"] = f"{base_moves[move]}0.{base_moves[move]}0.{base_moves[move]}1.{base_moves[move]}1"
             else:
-                raise ValueError(f"Invalid number of layers: {i}")
+                move_map[f"{i}{move}w"] = ".".join([f"{base_moves[move]}{j}" for j in range(i)])
+                move_map[f"{i}{move}w'"] = ".".join([f"-{base_moves[move]}{j}" for j in range(i)])
+                move_map[f"{i}{move}w2"] = ".".join([f"{base_moves[move]}{j}" for j in range(i)] + [f"{base_moves[move]}{j}" for j in range(i)])
     for move in "BUL":
         # Number of layers
         for i in range(1, n // 2 + 1):
@@ -113,8 +122,15 @@ def get_move_map(n):
                 move_map[f"{move}w"] = f"-{base_moves[move]}{n - 1}.-{base_moves[move]}{n - 2}"
                 move_map[f"{move}w'"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}"
                 move_map[f"{move}w2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 2}"
+
+                # For some reason it also has these
+                move_map[f"2{move}w"] = f"-{base_moves[move]}{n - 1}.-{base_moves[move]}{n - 2}"
+                move_map[f"2{move}w'"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}"
+                move_map[f"2{move}w2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 2}"
             else:
-                raise ValueError(f"Invalid number of layers: {i}")
+                move_map[f"{i}{move}w"] = ".".join([f"-{base_moves[move]}{n - 1 - j}" for j in range(i)])
+                move_map[f"{i}{move}w'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(i)])
+                move_map[f"{i}{move}w2"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(i)] + [f"{base_moves[move]}{n - 1 - j}" for j in range(i)])
     return move_map
 
 parser = argparse.ArgumentParser()
@@ -126,7 +142,7 @@ puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
 print(puzzle)
 
 puzzle_type = puzzle["puzzle_type"]
-n = int(puzzle_type[-1])
+n = int(puzzle_type.split("/")[-1])
 moves = get_moves(puzzle["puzzle_type"])
 print(f"Number of moves: {len(moves)}")
 

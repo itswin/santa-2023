@@ -10,4 +10,7 @@
 - Standard 3x3s: 30-129
 - Wreaths 6x6-12x12: 284,328
 - Standard 5x5s: 210-234
-
+- ALl 7x7s: 257-261
+- All 9x9s: 267-271
+- All 19x19s: 277-281
+- Standard 33x33: 281
