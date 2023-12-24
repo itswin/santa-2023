@@ -48,43 +48,19 @@ STICKER_MAP = {
     'F': 'D',
 }
 
-edge_map_3x3 = {
-    "BC": "AB",
-    "BD": "AC",
-    "BE": "AD",
-    "BF": "AE",
-    "CD": "BC",
-    "DE": "CD",
-    "EF": "DE",
-    "FC": "EB",
-    "AC": "FB",
-    "AD": "FC",
-    "AE": "FD",
-    "AF": "FE",
-}
-
-edge_indexes = [
-    (7, 10),  # UF
-    (5, 19),  # UR
-    (1, 28),  # UB
-    (3, 37),  # UL
-    (14, 21), # FR
-    (23, 30), # RB
-    (32, 39), # BL
-    (41, 12), # LF
-    (46, 16), # DF
-    (50, 25), # DR
-    (52, 34), # DB
-    (48, 43), # DL
-]
-
-# Insert the reverse of each edge
-for edge in list(edge_map_3x3.keys()):
-    edge_map_3x3[edge[::-1]] = edge_map_3x3[edge][::-1]
-
 state = np.array(initial_state)
 solution_state = np.array(solution_state)
 print(state)
+print(solution_state)
+
+if solution_state[0] == "N0":
+    m = {}
+    faces = "ABCDEF"
+    for j in range(6):
+        for i in range(n ** 2):
+            m["N" + str(j * n ** 2 + i)] = faces[j]
+
+    state = np.array([m[s] for s in state])
 
 print("INITIAL", state)
 
@@ -131,9 +107,9 @@ faces = state_to_faces(state, n)
 print("INITIAL FACES")
 print_faces(faces, n)
 
-state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
-print("RESKINNED", state)
-print(type(state))
+# state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
+# print("RESKINNED", state)
+# print(type(state))
 
 state = "".join(STICKER_MAP[c] for c in state)
 faces = state_to_faces(state, n)

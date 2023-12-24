@@ -25,15 +25,17 @@ def get_center_slice_moves(moves, n):
             center_slice_moves[move] = moves[move]
     return center_slice_moves
 
-def centers_aligned(state, n):
+def centers_aligned(state, n, solution=None):
     n2 = n ** 2
+    if solution is None:
+        solution = "A" * n2 + "B" * n2 + "C" * n2 + "D" * n2 + "E" * n2 + "F" * n2
     return \
-        state[n2 // 2] == "A" and \
-        state[n2 + n2 // 2] == "B" and \
-        state[2 * n2  + n2 // 2] == "C" and \
-        state[3 * n2 + n2 // 2] == "D" and \
-        state[4 * n2 + n2 // 2] == "E" and \
-        state[5 * n2 + n2 // 2] == "F"
+        state[n2 // 2] == solution[n2 // 2] and \
+        state[n2 + n2 // 2] == solution[n2 + n2 // 2] and \
+        state[2 * n2 + n2 // 2] == solution[2 * n2 + n2 // 2] and \
+        state[3 * n2 + n2 // 2] == solution[3 * n2 + n2 // 2] and \
+        state[4 * n2 + n2 // 2] == solution[4 * n2 + n2 // 2] and \
+        state[5 * n2 + n2 // 2] == solution[5 * n2 + n2 // 2]
 
 def extend_move_seq(seq, moves):
     for move in moves:
@@ -55,7 +57,7 @@ def orient_centers(state, moves, n):
                 for move in new_seq:
                     new_state = new_state[center_slice_moves[move]]
                 if centers_aligned(new_state, n):
-                    print("Found solution", new_seq)
+                    print("Foun", new_seq)
                     state = new_state
                     break
                 else:
@@ -129,7 +131,7 @@ def print_faces(faces, n):
         for row in chunks(faces[face], n):
             print("\t", " ".join(row))
 
-def get_edges(n):
+def get_edges(n, skip=2):
     edges = []
 
     n2 = n ** 2
@@ -143,62 +145,62 @@ def get_edges(n):
     # UF edge:
     #   U: [(n-1) * n + 1, n2 - 2]
     #   F: [n2 + 1, n2 + n - 2]
-    edges.extend(list(zip(range((n-1) * n + 1, n2 - 1), range(n2 + 1, n2 + n - 1)))[::2])
+    edges.extend(list(zip(range((n-1) * n + 1, n2 - 1), range(n2 + 1, n2 + n - 1)))[::skip])
 
     # UR edge:
     #  U: [(n-1) + n * i for i in range(1, n - 1)] (Reversed)
     #  R: [2 * n2 + 1, 2 * n2 + n - 2]
-    edges.extend(list(zip([(n-1) + n * i for i in range(1, n - 1)][::-1], range(2 * n2 + 1, 2 * n2 + n - 1)))[::2])
+    edges.extend(list(zip([(n-1) + n * i for i in range(1, n - 1)][::-1], range(2 * n2 + 1, 2 * n2 + n - 1)))[::skip])
 
     # UB edge:
     #  U: [1, n - 2] (Reversed)
     #  B: [3 * n2 + 1, 3 * n2 + n - 2]
-    edges.extend(list(zip(range(1, n - 1)[::-1], range(3 * n2 + 1, 3 * n2 + n - 1)))[::2])
+    edges.extend(list(zip(range(1, n - 1)[::-1], range(3 * n2 + 1, 3 * n2 + n - 1)))[::skip])
 
     # UL edge:
     #  U: [n * i for i in range(1, n - 1)]
     #  L: [4 * n2 + 1, 4 * n2 + n - 2]
-    edges.extend(list(zip([n * i for i in range(1, n - 1)], range(4 * n2 + 1, 4 * n2 + n - 1)))[::2])
+    edges.extend(list(zip([n * i for i in range(1, n - 1)], range(4 * n2 + 1, 4 * n2 + n - 1)))[::skip])
 
     # FR edge:
     #  F: [n2 + (n-1) + n * i for i in range(1, n - 1)]
     #  R: [2 * n2 + n * i for i in range(1, n - 1)]
-    edges.extend(list(zip([n2 + (n-1) + n * i for i in range(1, n - 1)], [2 * n2 + n * i for i in range(1, n - 1)]))[::2])
+    edges.extend(list(zip([n2 + (n-1) + n * i for i in range(1, n - 1)], [2 * n2 + n * i for i in range(1, n - 1)]))[::skip])
 
     # RB edge:
     #  R: [2 * n2 + (n-1) + n * i for i in range(1, n - 1)]
     #  B: [3 * n2 + n * i for i in range(1, n - 1)]
-    edges.extend(list(zip([2 * n2 + (n-1) + n * i for i in range(1, n - 1)], [3 * n2 + n * i for i in range(1, n - 1)]))[::2])
+    edges.extend(list(zip([2 * n2 + (n-1) + n * i for i in range(1, n - 1)], [3 * n2 + n * i for i in range(1, n - 1)]))[::skip])
 
     # BL edge:
     #  B: [3 * n2 + (n-1) + n * i for i in range(1, n - 1)]
     #  L: [4 * n2 + n * i for i in range(1, n - 1)]
-    edges.extend(list(zip([3 * n2 + (n-1) + n * i for i in range(1, n - 1)], [4 * n2 + n * i for i in range(1, n - 1)]))[::2])
+    edges.extend(list(zip([3 * n2 + (n-1) + n * i for i in range(1, n - 1)], [4 * n2 + n * i for i in range(1, n - 1)]))[::skip])
 
     # LF edge:
     #  L: [4 * n2 + (n-1) + n * i for i in range(1, n - 1)]
     #  F: [n2 + n * i for i in range(1, n - 1)]
-    edges.extend(list(zip([4 * n2 + (n-1) + n * i for i in range(1, n - 1)], [n2 + n * i for i in range(1, n - 1)]))[::2])
+    edges.extend(list(zip([4 * n2 + (n-1) + n * i for i in range(1, n - 1)], [n2 + n * i for i in range(1, n - 1)]))[::skip])
 
     # DF edge:
     #  D: [5 * n2 + 1, 5 * n2 + n - 2]
     #  F: [n2 + (n-1) * n + 1, n2 + n2 - 2]
-    edges.extend(list(zip(range(5 * n2 + 1, 5 * n2 + n - 1), range(n2 + (n-1) * n + 1, n2 + n2 - 1)))[::2])
+    edges.extend(list(zip(range(5 * n2 + 1, 5 * n2 + n - 1), range(n2 + (n-1) * n + 1, n2 + n2 - 1)))[::skip])
 
     # DR edge:
     #  D: [5 * n2 + (n-1) + n * i for i in range(1, n - 1)]
     #  R: [2 * n2 + (n-1) * n + 1, 2 * n2 + n2 - 2]
-    edges.extend(list(zip([5 * n2 + (n-1) + n * i for i in range(1, n - 1)], range(2 * n2 + (n-1) * n + 1, 2 * n2 + n2 - 1)))[::2])
+    edges.extend(list(zip([5 * n2 + (n-1) + n * i for i in range(1, n - 1)], range(2 * n2 + (n-1) * n + 1, 2 * n2 + n2 - 1)))[::skip])
 
     # DB edge:
     #   D: [5 * n2 + (n-1) * n + 1, 5 * n2 + n2 - 2] (Reversed)
     #   B: [3 * n2 + (n-1) * n + 1, 3 * n2 + n2 - 2]
-    edges.extend(list(zip(range(5 * n2 + (n-1) * n + 1, 5 * n2 + n2 - 1)[::-1], range(3 * n2 + (n-1) * n + 1, 3 * n2 + n2 - 1)))[::2])
+    edges.extend(list(zip(range(5 * n2 + (n-1) * n + 1, 5 * n2 + n2 - 1)[::-1], range(3 * n2 + (n-1) * n + 1, 3 * n2 + n2 - 1)))[::skip])
 
     # DL edge:
     #   D: [5 * n2 + n * i for i in range(1, n - 1)] (Reversed)
     #   L: [4 * n2 + (n-1) * n + 1, 4 * n2 + n2 - 2]
-    edges.extend(list(zip([5 * n2 + n * i for i in range(1, n - 1)][::-1], range(4 * n2 + (n-1) * n + 1, 4 * n2 + n2 - 1)))[::2])
+    edges.extend(list(zip([5 * n2 + n * i for i in range(1, n - 1)][::-1], range(4 * n2 + (n-1) * n + 1, 4 * n2 + n2 - 1)))[::skip])
 
     return edges
 
@@ -240,16 +242,15 @@ def make_edge_reskin_map(edges, reskin_solution, normal_solution):
         print(edge)
         reskin = reskin_solution[edge[0]] + reskin_solution[edge[1]]
         normal = normal_solution[edge[0]] + normal_solution[edge[1]]
+        reskin_ = reskin_solution[edge[1]] + reskin_solution[edge[0]]
+        normal_ = normal_solution[edge[1]] + normal_solution[edge[0]]
 
         if reskin in edge_map and edge_map[reskin] != normal:
             print("WARNING: Duplicate edge", reskin, normal)
 
         edge_map[reskin] = normal
+        edge_map[reskin_] = normal_
         print(reskin, normal)
-
-    # Insert the reverse of each edge
-    for edge in list(edge_map.keys()):
-        edge_map[edge[::-1]] = edge_map[edge][::-1]
 
     return edge_map
 
