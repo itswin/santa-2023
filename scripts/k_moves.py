@@ -55,7 +55,7 @@ def main() -> None:
     args = parser.parse_args()
 
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
-    sample_submission = pd.read_csv("data/sample_submission.csv").set_index("id").loc[args.id]
+    sample_submission = pd.read_csv("data/submission.csv").set_index("id").loc[args.id]
     sample_moves = sample_submission["moves"].split(".")
     print(puzzle)
     print(f"Sample score: {len(sample_moves)}")
@@ -66,13 +66,13 @@ def main() -> None:
     K = 2
     while True:
         try:
-            shortest_path = get_shortest_path(moves, K, None if K == 2 else 100000)
+            shortest_path = get_shortest_path(moves, K, None if K == 2 else 1000000)
         except ExceedMaxSizeError:
             break
         K += 1
     print(f"K: {K}")
     print(f"Number of shortest_path: {len(shortest_path)}")
-    print(shortest_path)
+    # print(shortest_path)
 
     current_state = puzzle["initial_state"].split(";")
     current_solution = list(sample_moves)
