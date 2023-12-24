@@ -1,5 +1,4 @@
 # TODO
-- Nonstandard 3x3s: 130-139
 - Picture 3x3s?: 140-149
 - Nonstandard 4x4s: 200-204
 - Picture 4x4s?: 205-209
@@ -18,3 +17,5 @@
 - All 19x19s: 277-281
 - Standard 33x33: 281
 - Reskinned 3x3s (A:B..): 130-139
+- Reskinned odds: 235-239, 282
+
