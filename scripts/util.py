@@ -128,3 +128,133 @@ def print_faces(faces, n):
         print(face)
         for row in chunks(faces[face], n):
             print("\t", " ".join(row))
+
+def get_edges(n):
+    edges = []
+
+    n2 = n ** 2
+    # U face: [0, n2)
+    # F face: [n2, 2 * n2)
+    # R face: [2 * n2, 3 * n2)
+    # B face: [3 * n2, 4 * n2)
+    # L face: [4 * n2, 5 * n2)
+    # D face: [5 * n2, 6 * n2)
+
+    # UF edge:
+    #   U: [(n-1) * n + 1, n2 - 2]
+    #   F: [n2 + 1, n2 + n - 2]
+    edges.extend(list(zip(range((n-1) * n + 1, n2 - 1), range(n2 + 1, n2 + n - 1)))[::2])
+
+    # UR edge:
+    #  U: [(n-1) + n * i for i in range(1, n - 1)] (Reversed)
+    #  R: [2 * n2 + 1, 2 * n2 + n - 2]
+    edges.extend(list(zip([(n-1) + n * i for i in range(1, n - 1)][::-1], range(2 * n2 + 1, 2 * n2 + n - 1)))[::2])
+
+    # UB edge:
+    #  U: [1, n - 2] (Reversed)
+    #  B: [3 * n2 + 1, 3 * n2 + n - 2]
+    edges.extend(list(zip(range(1, n - 1)[::-1], range(3 * n2 + 1, 3 * n2 + n - 1)))[::2])
+
+    # UL edge:
+    #  U: [n * i for i in range(1, n - 1)]
+    #  L: [4 * n2 + 1, 4 * n2 + n - 2]
+    edges.extend(list(zip([n * i for i in range(1, n - 1)], range(4 * n2 + 1, 4 * n2 + n - 1)))[::2])
+
+    # FR edge:
+    #  F: [n2 + (n-1) + n * i for i in range(1, n - 1)]
+    #  R: [2 * n2 + n * i for i in range(1, n - 1)]
+    edges.extend(list(zip([n2 + (n-1) + n * i for i in range(1, n - 1)], [2 * n2 + n * i for i in range(1, n - 1)]))[::2])
+
+    # RB edge:
+    #  R: [2 * n2 + (n-1) + n * i for i in range(1, n - 1)]
+    #  B: [3 * n2 + n * i for i in range(1, n - 1)]
+    edges.extend(list(zip([2 * n2 + (n-1) + n * i for i in range(1, n - 1)], [3 * n2 + n * i for i in range(1, n - 1)]))[::2])
+
+    # BL edge:
+    #  B: [3 * n2 + (n-1) + n * i for i in range(1, n - 1)]
+    #  L: [4 * n2 + n * i for i in range(1, n - 1)]
+    edges.extend(list(zip([3 * n2 + (n-1) + n * i for i in range(1, n - 1)], [4 * n2 + n * i for i in range(1, n - 1)]))[::2])
+
+    # LF edge:
+    #  L: [4 * n2 + (n-1) + n * i for i in range(1, n - 1)]
+    #  F: [n2 + n * i for i in range(1, n - 1)]
+    edges.extend(list(zip([4 * n2 + (n-1) + n * i for i in range(1, n - 1)], [n2 + n * i for i in range(1, n - 1)]))[::2])
+
+    # DF edge:
+    #  D: [5 * n2 + 1, 5 * n2 + n - 2]
+    #  F: [n2 + (n-1) * n + 1, n2 + n2 - 2]
+    edges.extend(list(zip(range(5 * n2 + 1, 5 * n2 + n - 1), range(n2 + (n-1) * n + 1, n2 + n2 - 1)))[::2])
+
+    # DR edge:
+    #  D: [5 * n2 + (n-1) + n * i for i in range(1, n - 1)]
+    #  R: [2 * n2 + (n-1) * n + 1, 2 * n2 + n2 - 2]
+    edges.extend(list(zip([5 * n2 + (n-1) + n * i for i in range(1, n - 1)], range(2 * n2 + (n-1) * n + 1, 2 * n2 + n2 - 1)))[::2])
+
+    # DB edge:
+    #   D: [5 * n2 + (n-1) * n + 1, 5 * n2 + n2 - 2] (Reversed)
+    #   B: [3 * n2 + (n-1) * n + 1, 3 * n2 + n2 - 2]
+    edges.extend(list(zip(range(5 * n2 + (n-1) * n + 1, 5 * n2 + n2 - 1)[::-1], range(3 * n2 + (n-1) * n + 1, 3 * n2 + n2 - 1)))[::2])
+
+    # DL edge:
+    #   D: [5 * n2 + n * i for i in range(1, n - 1)] (Reversed)
+    #   L: [4 * n2 + (n-1) * n + 1, 4 * n2 + n2 - 2]
+    edges.extend(list(zip([5 * n2 + n * i for i in range(1, n - 1)][::-1], range(4 * n2 + (n-1) * n + 1, 4 * n2 + n2 - 1)))[::2])
+
+    return edges
+
+# Reskinned cube solution faces look like
+#         A B A B A
+#         B A B A B
+#         A B A B A
+#         B A B A B
+#         A B A B A
+# We want to return the indexes of the Xs on each face.
+#         A B A B A
+#         B A X A B
+#         A X A X A
+#         B A X A B
+#         A B A B A
+def get_diff_odd_centers(n):
+    n2 = n ** 2
+    odd_centers = []
+
+    # Iterate through lines 2 to n-1 on each face
+    # Even lines should take the odd "centers"
+    # Odd lines should take the even "centers"
+    for face_start in range(0, 6 * n2, n2):
+        for row in range(1, n - 1):
+            # Iterate over each row from 2 to n-1
+            # Even lines should take the odd columns
+            # Odd lines should take the even columns
+            for col in range(1, n - 1):
+                if row % 2 == 0 and col % 2 == 1:
+                    odd_centers.append(face_start + row * n + col)
+                elif row % 2 == 1 and col % 2 == 0:
+                    odd_centers.append(face_start + row * n + col)
+
+    return odd_centers
+
+def make_edge_reskin_map(edges, reskin_solution, normal_solution):
+    edge_map = {}
+    for edge in edges:
+        print(edge)
+        reskin = reskin_solution[edge[0]] + reskin_solution[edge[1]]
+        normal = normal_solution[edge[0]] + normal_solution[edge[1]]
+
+        if reskin in edge_map and edge_map[reskin] != normal:
+            print("WARNING: Duplicate edge", reskin, normal)
+
+        edge_map[reskin] = normal
+        print(reskin, normal)
+
+    # Insert the reverse of each edge
+    for edge in list(edge_map.keys()):
+        edge_map[edge[::-1]] = edge_map[edge][::-1]
+
+    return edge_map
+
+def make_odd_center_reskin_map(odd_centers, reskin_solution, normal_solution):
+    odd_center_map = {}
+    for center in odd_centers:
+        odd_center_map[reskin_solution[center]] = normal_solution[center]
+    return odd_center_map

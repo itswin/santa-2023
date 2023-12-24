@@ -9,11 +9,18 @@ from util import *
 
 # seq 210 234 | xargs -P 4 -I {} python3 scripts/solve_reskin.py {}
 
-def reskin(state, edge_indexes, edge_map):
+def reskin(state, edges, edge_map, odd_centers, odd_center_reskin_map):
     new_state = state.copy()
-    for edge in edge_indexes:
+
+    for edge in edges:
+        print(edge, state[edge[0]] + state[edge[1]])
         new_state[edge[0]] = edge_map[state[edge[0]] + state[edge[1]]][0]
         new_state[edge[1]] = edge_map[state[edge[0]] + state[edge[1]]][1]
+        print(new_state[edge[0]] + new_state[edge[1]])
+    
+    for odd_center in odd_centers:
+        new_state[odd_center] = odd_center_reskin_map[state[odd_center]]
+
     return new_state
 
 parser = argparse.ArgumentParser()
@@ -41,7 +48,7 @@ STICKER_MAP = {
     'F': 'D',
 }
 
-edge_map = {
+edge_map_3x3 = {
     "BC": "AB",
     "BD": "AC",
     "BE": "AD",
@@ -72,8 +79,8 @@ edge_indexes = [
 ]
 
 # Insert the reverse of each edge
-for edge in list(edge_map.keys()):
-    edge_map[edge[::-1]] = edge_map[edge][::-1]
+for edge in list(edge_map_3x3.keys()):
+    edge_map_3x3[edge[::-1]] = edge_map_3x3[edge][::-1]
 
 state = np.array(initial_state)
 solution_state = np.array(solution_state)
@@ -89,20 +96,11 @@ else:
 print("ORIENTED", state)
 print("ORIENT_CENTERS", center_orienting_seq)
 
-# state = reskin(state, edge_indexes, edge_map)
-# print("RESKINNED", state)
-# print(type(state))
-
 n2 = n ** 2
 NORMAL_SOLUTION = "A" * n2 + "B" * n2 + "C" * n2 + "D" * n2 + "E" * n2 + "F" * n2
 
-state = "".join(STICKER_MAP[c] for c in state)
-faces = state_to_faces(state, n)
 solution_faces = state_to_faces(solution_state, n)
 normal_solution_faces = state_to_faces(NORMAL_SOLUTION, n)
-
-print("INITIAL FACES")
-print_faces(faces, n)
 
 print("SOLUTION FACES")
 print_faces(solution_faces, n)
@@ -110,14 +108,42 @@ print_faces(solution_faces, n)
 print("NORMAL SOLUTION FACES")
 print_faces(normal_solution_faces, n)
 
-print(faces)
-cubestring = make_cubestring(faces)
-print(cubestring)
-
 move_map = get_move_map(n)
 print(move_map)
 
-exit()
+edges = get_edges(n)
+odd_centers = get_diff_odd_centers(n)
+
+print(f"Edges {len(edges)}", edges)
+print(odd_centers)
+
+edge_map = make_edge_reskin_map(edges, solution_state, NORMAL_SOLUTION)
+print(edge_map)
+
+odd_center_map = make_odd_center_reskin_map(odd_centers, solution_state, NORMAL_SOLUTION)
+print(odd_center_map)
+
+# Make sure no edge indexes are in the odd_centers
+assert len(set(odd_centers) & set(itertools.chain(*edges))) == 0
+
+print(state)
+faces = state_to_faces(state, n)
+print("INITIAL FACES")
+print_faces(faces, n)
+
+state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
+print("RESKINNED", state)
+print(type(state))
+
+state = "".join(STICKER_MAP[c] for c in state)
+faces = state_to_faces(state, n)
+
+print("INITIAL FACES")
+print_faces(faces, n)
+
+print(faces)
+cubestring = make_cubestring(faces)
+print(cubestring)
 
 SOLVER_PATH = "/Users/Win33/Documents/Programming/rubiks-cube-NxNxN-solver/rubiks-cube-solver.py"
 cmd = [SOLVER_PATH, "--state", cubestring]
