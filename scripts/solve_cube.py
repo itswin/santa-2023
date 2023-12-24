@@ -163,7 +163,10 @@ print(state)
 
 print("INITIAL", state)
 
-state, center_orienting_seq = orient_centers(state, moves, n)
+if n % 2 == 0:
+    center_orienting_seq = []
+else:
+    state, center_orienting_seq = orient_centers(state, moves, n)
 
 print("ORIENTED", state)
 print("ORIENT_CENTERS", center_orienting_seq)
