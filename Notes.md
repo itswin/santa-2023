@@ -17,3 +17,4 @@
 - All 10x10s: 272-276
 - All 19x19s: 277-281
 - Standard 33x33: 281
+- Reskinned 3x3s (A:B..): 130-139
