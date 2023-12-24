@@ -3,6 +3,7 @@ import argparse
 import pandas as pd
 from get_moves import get_moves
 import os
+import numpy as np
 
 def validate_one(id, sol_file_name, verbose=False):
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[id]
@@ -20,14 +21,19 @@ def validate_one(id, sol_file_name, verbose=False):
     if verbose:
         print(f"Number of moves: {len(moves)}")
 
-    state = puzzle["initial_state"].split(";")
+    num_wildcards = puzzle["num_wildcards"]
+
+    state = np.array(puzzle["initial_state"].split(";"))
     if verbose:
         print(f"Initial state: {state}")
         print(f"Solution state: {puzzle['solution_state']}")
+
     for move_name in solution:
-        state = [state[i] for i in moves[move_name]]
-    if (puzzle["solution_state"].split(";") != state):
+        state = state[moves[move_name]]
+
+    if (sum(puzzle["solution_state"].split(";") != state) > num_wildcards):
         print(f"Solution is incorrect for problem {id}")
+        print(f"Number of wildcards: {num_wildcards}")
         print(f"Expected: {puzzle['solution_state']}")
         print(f"Got: {';'.join(state)}")
         assert False
