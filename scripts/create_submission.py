@@ -3,9 +3,9 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser(
-    prog='Merge',
+    prog='Create submission',
     description='Merge individual solutions into a single submission file')
-parser.add_argument('output_file', type=str, help='Path to output file', default='submission.csv')
+parser.add_argument('--output_file', type=str, help='Path to output file', default='data/submission.csv')
 args = parser.parse_args()
 
 solution_dir = 'data/solutions'
