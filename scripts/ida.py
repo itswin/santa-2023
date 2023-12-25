@@ -36,12 +36,11 @@ class Node:
         return f"Node({self.state}, {self.priority}, {self.path})"
 
 
-def idastar(move_dict, initial_state, final_state, params):
+def idastar(move_dict, initial_state, final_state, params, current_path=[]):
     # Priority queue to store nodes with their f-values (g + h)
     puzzle_start_time = time.time()
     iteration_counter = 0
     current_starting_state = initial_state
-    current_path = []
     closed_set = set()
 
     best_path = None
@@ -54,8 +53,10 @@ def idastar(move_dict, initial_state, final_state, params):
             new_state, new_path, node_counter, new_best_path, new_best_difference = depth_limited_search(move_dict, current_starting_state, final_state, closed_set, params)
 
             if new_best_path is not None and new_best_difference < best_difference:
-                best_path = new_best_path
+                best_path = current_path + new_best_path
                 best_difference = new_best_difference
+                print(f"New best path found: {best_path}")
+                print(f"Difference {best_difference}")
 
             if new_state is not None:
                 current_path += new_path
@@ -133,6 +134,9 @@ def main():
     parser.add_argument("--id", type=int, required=True)
     parser.add_argument("--timeout", type=int, default=60 * 60 * 2)
     parser.add_argument("--iterations", type=int, default=50)
+    parser.add_argument("--from_progress", action="store_true", default=False)
+    parser.add_argument("--max_iter_time", type=int, default=30)
+    parser.add_argument("--max_iter_nodes", type=int, default=500000)
     args = parser.parse_args()
 
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
@@ -153,28 +157,38 @@ def main():
 
     params = {
         'wildcards': wildcards,
-        'max_iteration_time': 30,
-        'max_iteration_nodes': 500000,
+        'max_iteration_time': args.max_iter_time,
+        'max_iteration_nodes': args.max_iter_nodes,
         'max_overall_time': args.timeout,
         'max_overall_iterations': args.iterations,
         'max_moves': len(current_solution),
         'set_downsampling': 0.8
     }
 
+    progress = []
+    if args.from_progress:
+        print("Picking up from progress")
+        with open(f"data/ida_progress/{args.id}.txt", "r") as fp:
+            progress = fp.read().split(".")
+        for move in progress:
+            initial_state = initial_state[moves[move]]
+        print(f"Progress length: {len(progress)}. Diff: {evaluate_difference(initial_state, solution_state)}")
+
     print(f"Starting testing with parameters: {params}")
-    solution_path, iteration_counter, valid = idastar(moves, initial_state, solution_state, params)
+    solution_path, iteration_counter, valid = idastar(moves, initial_state, solution_state, params, progress)
     if valid:
         print(f"Solution found in {iteration_counter} iterations.")
         print(f"Solution path: {solution_path}")
         print(f"Solution length: {len(solution_path)}")
 
         print(f"Validating")
-        state = initial_state
+        state = np.array(puzzle["initial_state"].split(";"))
         for move_name in solution_path:
             state = state[moves[move_name]]
 
-        if (state == solution_state).all():
-            print("Solution is valid")
+        differences = evaluate_difference(state, solution_state)
+        if differences <= wildcards:
+            print(f"Solution is valid. Diff to WC: {differences} <= {wildcards}")
         else:
             print("Solution is invalid")
             print(f"Expected: {solution_state}")

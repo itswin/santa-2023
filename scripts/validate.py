@@ -36,6 +36,7 @@ def validate_one(id, sol_file_name, verbose=False):
         print(f"Number of wildcards: {num_wildcards}")
         print(f"Expected: {puzzle['solution_state']}")
         print(f"Got: {';'.join(state)}")
+        print(f"Num different: {np.count_nonzero(puzzle['solution_state'].split(';') != state)}")
         assert False
 
     if verbose:

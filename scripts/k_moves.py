@@ -121,7 +121,10 @@ def main() -> None:
     state = puzzle["initial_state"].split(";")
     for move_name in current_solution:
         state = [state[i] for i in moves[move_name]]
-    assert puzzle["solution_state"].split(";") == state
+
+    wildcards = puzzle["num_wildcards"]
+    sol_state = puzzle["solution_state"].split(";")
+    assert sum(state[i] != sol_state[i] for i in range(len(state))) <= wildcards
 
     with open(f"data/solutions/{args.id}.txt", "w") as fp:
         fp.write(".".join(current_solution))
