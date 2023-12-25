@@ -36,13 +36,14 @@ class Node:
         return f"Node({self.state}, {self.priority}, {self.path})"
 
 
-def idastar(move_dict, initial_state, final_state, params, current_path=[]):
+def idastar(move_dict, initial_state, final_state, params, current_path=[], clear_when_new_best=False):
     # Priority queue to store nodes with their f-values (g + h)
     puzzle_start_time = time.time()
     iteration_counter = 0
     current_starting_state = initial_state
     closed_set = set()
 
+    best_state = None
     best_path = None
     best_difference = len(initial_state)
 
@@ -50,13 +51,20 @@ def idastar(move_dict, initial_state, final_state, params, current_path=[]):
         while time.time() - puzzle_start_time < params['max_overall_time'] and iteration_counter < params['max_overall_iterations']:
             iteration_counter += 1
 
-            new_state, new_path, node_counter, new_best_path, new_best_difference = depth_limited_search(move_dict, current_starting_state, final_state, closed_set, params)
+            new_state, new_path, node_counter, new_best_path, new_best_difference, new_best_state = depth_limited_search(move_dict, current_starting_state, final_state, closed_set, params)
 
             if new_best_path is not None and new_best_difference < best_difference:
+                best_state = new_best_state
                 best_path = current_path + new_best_path
                 best_difference = new_best_difference
+                current_path = best_path
                 print(f"New best path found: {best_path}")
                 print(f"Difference {best_difference}")
+                if clear_when_new_best:
+                    print(f"Iteration #{iteration_counter} completed. Nodes: {node_counter}. Clearing closed set.")
+                    closed_set = set()
+                    current_starting_state = best_state
+                    continue
 
             if new_state is not None:
                 current_path += new_path
@@ -90,6 +98,7 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
 
     heapq.heappush(open_set, Node(0, initial_state, []))  # (priority, state, path)
     # Set to keep track of visited nodes
+    best_state = None
     best_path = None
     best_difference = len(initial_state)
 
@@ -100,21 +109,22 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
         # Check for timeout
         if time.time() - start_time > params['max_iteration_time']:
 #             print("Iteration Timed Out.")
-            return node.state, node.path, node_counter, best_path, best_difference
+            return node.state, node.path, node_counter, best_path, best_difference, best_state
 
         if node_counter > params['max_iteration_nodes']:
 #             print("Iteration Node Limit Reached.")
-            return node.state, node.path, node_counter, best_path, best_difference
+            return node.state, node.path, node_counter, best_path, best_difference, best_state
 
         difference = evaluate_difference(node.state, final_state)
     
         if difference < best_difference:
+            best_state = node.state
             best_path = node.path
             best_difference = difference
 
         if difference <= params['wildcards']:
             # We've achieved our goal. Return the move path.
-            return node.state, node.path, node_counter, best_path, best_difference
+            return node.state, node.path, node_counter, best_path, best_difference, best_state
 
         closed_set.add(tuple(node.state))
 
@@ -137,6 +147,7 @@ def main():
     parser.add_argument("--from_progress", action="store_true", default=False)
     parser.add_argument("--max_iter_time", type=int, default=30)
     parser.add_argument("--max_iter_nodes", type=int, default=500000)
+    parser.add_argument("--clear_when_new_best", action="store_true", default=False)
     args = parser.parse_args()
 
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
@@ -175,7 +186,7 @@ def main():
         print(f"Progress length: {len(progress)}. Diff: {evaluate_difference(initial_state, solution_state)}")
 
     print(f"Starting testing with parameters: {params}")
-    solution_path, iteration_counter, valid = idastar(moves, initial_state, solution_state, params, progress)
+    solution_path, iteration_counter, valid = idastar(moves, initial_state, solution_state, params, progress, args.clear_when_new_best)
     if valid:
         print(f"Solution found in {iteration_counter} iterations.")
         print(f"Solution path: {solution_path}")

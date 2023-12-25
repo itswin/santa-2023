@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+# seq 210 234 | xargs -P 4 -I {} python3 scripts/k_moves.py --id {}
 
 class ExceedMaxSizeError(RuntimeError):
     pass
