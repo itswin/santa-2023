@@ -69,7 +69,7 @@ def main() -> None:
     K = 2
     while True:
         try:
-            shortest_path = get_shortest_path(moves, K, None if K == 2 else 1000000)
+            shortest_path = get_shortest_path(moves, K, None if K == 2 else 10000000)
         except ExceedMaxSizeError:
             break
         K += 1

@@ -55,15 +55,15 @@ def idastar(move_dict, initial_state, final_state, params, current_path=[], clea
 
             if new_best_path is not None and new_best_difference < best_difference:
                 best_state = new_best_state
-                best_path = current_path + new_best_path
+                best_path = current_path.copy() + new_best_path
                 best_difference = new_best_difference
-                current_path = best_path
                 print(f"New best path found: {best_path}")
-                print(f"Difference {best_difference}")
+                print(f"Difference {best_difference}. Length: {len(best_path)}")
                 if clear_when_new_best:
                     print(f"Iteration #{iteration_counter} completed. Nodes: {node_counter}. Clearing closed set.")
                     closed_set = set()
                     current_starting_state = best_state
+                    current_path = best_path.copy()
                     continue
 
             if new_state is not None:
@@ -77,6 +77,9 @@ def idastar(move_dict, initial_state, final_state, params, current_path=[], clea
                 if current_difference <= params['wildcards']:
                     # We've achieved our goal. Return the move path.
                     return current_path, iteration_counter, True
+                if len(current_path) >= params['max_moves']:
+                    print(f"Max moves reached. Returning best path.")
+                    return best_path, iteration_counter, False
             else:
                 print("Depth limited search failed. Downsampling and increasing nodes trying again.")
                 # params['max_iteration_nodes'] = int(params['max_iteration_nodes'] * 2)
@@ -98,9 +101,9 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
 
     heapq.heappush(open_set, Node(0, initial_state, []))  # (priority, state, path)
     # Set to keep track of visited nodes
-    best_state = None
-    best_path = None
-    best_difference = len(initial_state)
+    tmp_best_state = None
+    tmp_best_path = None
+    tmp_best_difference = len(initial_state)
 
     while open_set:
         # Get the node with the lowest f-value
@@ -109,26 +112,33 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
         # Check for timeout
         if time.time() - start_time > params['max_iteration_time']:
 #             print("Iteration Timed Out.")
-            return node.state, node.path, node_counter, best_path, best_difference, best_state
+            return node.state, node.path, node_counter, tmp_best_path, tmp_best_difference, tmp_best_state
 
         if node_counter > params['max_iteration_nodes']:
 #             print("Iteration Node Limit Reached.")
-            return node.state, node.path, node_counter, best_path, best_difference, best_state
+            return node.state, node.path, node_counter, tmp_best_path, tmp_best_difference, tmp_best_state
 
         difference = evaluate_difference(node.state, final_state)
     
-        if difference < best_difference:
-            best_state = node.state
-            best_path = node.path
-            best_difference = difference
+        if difference < tmp_best_difference:
+            tmp_best_state = node.state
+            tmp_best_path = node.path
+            tmp_best_difference = difference
 
         if difference <= params['wildcards']:
             # We've achieved our goal. Return the move path.
-            return node.state, node.path, node_counter, best_path, best_difference, best_state
+            return node.state, node.path, node_counter, tmp_best_path, tmp_best_difference, tmp_best_state
 
         closed_set.add(tuple(node.state))
 
         for move_str, move in move_dict.items():
+            # Skip this move if it's the inverse of the last one we did
+            last_move = node.path[-1] if len(node.path) > 0 else None
+            if last_move is not None and \
+                    ((move_str[0] == "-" and move_str[1:] == last_move) or \
+                     (move_str[0] != "-" and "-" + move_str == last_move)):
+                continue
+
             new_state = node.state[move]
             if tuple(new_state) not in closed_set:
                 heapq.heappush(open_set, Node(len(node.path) + 1 + evaluate_score(new_state, final_state), new_state, node.path + [move_str]))
@@ -136,7 +146,7 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
 
     # If no solutions are found:
     print("Open set completed. No solutions.")
-    return None, None, node_counter, best_path, best_difference
+    return None, None, node_counter, tmp_best_path, tmp_best_difference
 
 
 def main():
@@ -148,6 +158,10 @@ def main():
     parser.add_argument("--max_iter_time", type=int, default=30)
     parser.add_argument("--max_iter_nodes", type=int, default=500000)
     parser.add_argument("--clear_when_new_best", action="store_true", default=False)
+    parser.add_argument("--downsampling", type=float, default=0.8)
+    parser.add_argument("--sol_dir", type=str, default="data/solutions")
+    parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
+    parser.add_argument("--always_write", action="store_true", default=False)
     args = parser.parse_args()
 
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
@@ -163,7 +177,7 @@ def main():
     wildcards = puzzle['num_wildcards']
     current_solution = []
 
-    with open(f"data/solutions/{args.id}.txt", "r") as fp:
+    with open(f"{args.sol_dir}/{args.id}.txt", "r") as fp:
         current_solution = fp.read().split(".")
 
     params = {
@@ -173,7 +187,7 @@ def main():
         'max_overall_time': args.timeout,
         'max_overall_iterations': args.iterations,
         'max_moves': len(current_solution),
-        'set_downsampling': 0.8
+        'set_downsampling': args.downsampling
     }
 
     progress = []
@@ -208,14 +222,25 @@ def main():
 
         if len(solution_path) < len(current_solution):
             print(f"New solution is shorter than current solution. Writing to file.")
-            with open(f"data/solutions/{args.id}.txt", "w") as fp:
+            with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
+                fp.write(".".join(solution_path))
+        elif args.always_write:
+            print(f"New solution is longer than current solution. Writing to file.")
+            with open(f"{args.out_sol_dir}/{args.id}_other.txt", "w") as fp:
                 fp.write(".".join(solution_path))
     else:
         print(f"No solution found in {iteration_counter} iterations.")
         print("Writing to tmp file.")
 
+        state = np.array(puzzle["initial_state"].split(";"))
+        for move_name in solution_path:
+            state = state[moves[move_name]]
+
+        differences = evaluate_difference(state, solution_state)
+
         print(f"Length of best path: {len(solution_path)}")
         print(f"Best path: {solution_path}")
+        print(f"Best difference: {differences}")
 
         with open(f"data/ida_progress/{args.id}.txt", "w") as fp:
             fp.write(".".join(solution_path))
