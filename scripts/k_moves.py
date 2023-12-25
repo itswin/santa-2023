@@ -55,8 +55,10 @@ def main() -> None:
     args = parser.parse_args()
 
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
-    sample_submission = pd.read_csv("data/submission.csv").set_index("id").loc[args.id]
-    sample_moves = sample_submission["moves"].split(".")
+    solution_file_name = f"data/solutions/{args.id}.txt"
+    with open(solution_file_name, "r") as fp:
+        sample_moves = fp.read().split(".")
+
     print(puzzle)
     print(f"Sample score: {len(sample_moves)}")
 
