@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 import pandas as pd
-from get_moves import get_moves
 import itertools
 import numpy as np
 import subprocess

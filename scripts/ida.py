@@ -7,8 +7,8 @@ import heapq
 import time
 from typing import Dict, Tuple, List
 import sys
-from get_moves import get_moves
 import random
+from util import *
 
 def evaluate_difference(current_state, final_state):
     return np.count_nonzero(current_state != final_state)
@@ -18,7 +18,55 @@ def evaluate_score(current_state, final_state):
     # This has to be fast since it's called so often
     return np.count_nonzero(current_state != final_state) + \
         np.count_nonzero(current_state[1:] != current_state[:-1]) + \
-        0.5 * np.count_nonzero(current_state[2:] != current_state[:-2])
+        np.count_nonzero(current_state[2:] != current_state[:-2]) + \
+        np.count_nonzero(current_state[3:] != current_state[:-3]) + \
+        np.count_nonzero(current_state[4:] != current_state[:-4])
+
+def build_globe_lookup_table():
+    # Goals
+    # A -> 0, C -> 2, E -> 4, G -> 6, I -> 8, K -> 10, M -> 12, O -> 14
+    # B -> 16, D -> 18, F -> 20, H -> 22, J -> 24, L -> 26, N -> 28, P -> 30
+    # Piece -> Index -> # Numbers to solve
+    piece_to_goal_index = {
+        "A": 0,
+        "B": 16,
+        "C": 2,
+        "D": 18,
+        "E": 4,
+        "F": 20,
+        "G": 6,
+        "H": 22,
+        "I": 8,
+        "J": 24,
+        "K": 10,
+        "L": 26,
+        "M": 12,
+        "N": 28,
+        "O": 14,
+        "P": 30
+    }
+
+    heuristic_map = {}
+    for piece in "ABCDEFGHIJKLMNOP":
+        index_to_sol = {}
+        for index in range(32):
+            goal = piece_to_goal_index[piece]
+            dist = abs(index - goal)
+            if dist > 16:
+                index_to_sol[index] = 33 - dist
+            else:
+                index_to_sol[index] = dist
+        heuristic_map[piece] = index_to_sol
+    return heuristic_map
+
+lookup_table = build_globe_lookup_table()
+
+# def evaluate_score(current_state, final_state):
+#     score = np.count_nonzero(current_state != final_state)
+#     for piece in "ABCDEFGHIJKLMNOP":
+#         index = np.where(current_state == piece)[0][0]
+#         score += lookup_table[piece][index]
+#     return score
 
 class Node:
     def __init__(self, priority, state, path):
@@ -43,9 +91,9 @@ def idastar(move_dict, initial_state, final_state, params, current_path=[], clea
     current_starting_state = initial_state
     closed_set = set()
 
-    best_state = None
-    best_path = None
-    best_difference = len(initial_state)
+    best_state = initial_state
+    best_path = current_path
+    best_difference = evaluate_difference(initial_state, final_state)
 
     try:
         while time.time() - puzzle_start_time < params['max_overall_time'] and iteration_counter < params['max_overall_iterations']:
@@ -146,7 +194,7 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
 
     # If no solutions are found:
     print("Open set completed. No solutions.")
-    return None, None, node_counter, tmp_best_path, tmp_best_difference
+    return None, None, node_counter, tmp_best_path, tmp_best_difference, tmp_best_state
 
 
 def main():

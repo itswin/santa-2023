@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import argparse
 import pandas as pd
-from get_moves import get_moves
 import os
 import numpy as np
+from util import *
 
 def validate_one(id, sol_file_name, verbose=False):
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[id]
@@ -14,8 +14,6 @@ def validate_one(id, sol_file_name, verbose=False):
         if verbose:
             print(f"Solution score: {len(solution)}")
             print(f"Solution: {solution}")
-            spaced_sol = " ".join(solution[:min(50, len(solution))])
-            print(spaced_sol)
 
     moves = get_moves(puzzle["puzzle_type"])
     if verbose:

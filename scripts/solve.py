@@ -7,7 +7,7 @@ import heapq
 import time
 from typing import Dict, Tuple, List
 import sys
-from get_moves import get_moves
+from util import *
 
 def heuristic(state, goal_state):
     return np.count_nonzero(state != goal_state)

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import argparse
 import pandas as pd
-from get_moves import get_moves
 import twophase.solver as sv
 import itertools
 import numpy as np
+from util import *
 
 # seq 30 129 | xargs -P 4 -I {} python3 scripts/two_phase.py --id {}
 

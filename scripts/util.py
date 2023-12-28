@@ -1,3 +1,15 @@
+from typing import Dict, Tuple, List
+import pandas as pd
+import numpy as np
+
+def get_moves(puzzle_type: str) -> Dict[str, List[int]]:
+    moves = eval(pd.read_csv("data/puzzle_info.csv").set_index("puzzle_type").loc[puzzle_type, "allowed_moves"])
+    np_moves = {}
+    for key in moves.keys():
+        np_moves[key] = np.array(moves[key])
+        np_moves["-" + key] = np.argsort(moves[key])
+    return np_moves
+
 def state_to_faces(state_string, n):
     n2 = n ** 2
     return {
@@ -259,3 +271,50 @@ def make_odd_center_reskin_map(odd_centers, reskin_solution, normal_solution):
     for center in odd_centers:
         odd_center_map[reskin_solution[center]] = normal_solution[center]
     return odd_center_map
+
+def invert(move):
+    if move.startswith("-"):
+        return move[1:]
+    else:
+        return "-" + move
+
+def write_tws_file(puzzle):
+    full_moves = get_moves(puzzle["puzzle_type"])
+
+    sol_state = puzzle["solution_state"].split(";")
+    num_pieces = len(sol_state)
+    out = f"""
+    Name {puzzle["puzzle_type"]}
+
+    Set PIECE {num_pieces} 1
+
+    Solved
+    PIECE
+    {" ".join(map(str, range(1,num_pieces + 1)))}
+    End
+
+    """
+
+    format = """
+    Move {}
+    PIECE
+    {}
+    End
+    """
+
+    for move, perm in full_moves.items():
+        if move[0] == "-":
+            continue
+        l = list(perm)
+        out += format.format(move, " ".join(map(lambda x: str(x+1), l)))
+
+
+
+    twsearch_puzzles = "/Users/Win33/Documents/Programming/twsearch/samples/main/"
+
+    name = twsearch_puzzles + puzzle["puzzle_type"].replace("/", "_") + ".tws"
+    with open(name, 'w+') as tws_file:
+        tws_file.write(out)
+
+    print("Wrote twsearch file to", name)
+    return name

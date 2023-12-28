@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 import pandas as pd
-from get_moves import get_moves
 import itertools
 import numpy as np
 import subprocess
@@ -11,6 +10,8 @@ from util import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
+parser.add_argument("--sol_dir", type=str, default="data/solutions")
+parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 
 args = parser.parse_args()
 
@@ -83,6 +84,15 @@ for move in sol.split(" "):
 mapped_sol = (".".join(center_orienting_seq) + "." if len(center_orienting_seq) > 0 else "") + ".".join(mapped_sol)
 print(mapped_sol)
 
-# Write it to the solution file
-with open(f"data/solutions/{args.id}.txt", "w") as f:
-    f.write(mapped_sol)
+current_solution = []
+with open(f"{args.sol_dir}/{args.id}.txt", "r") as fp:
+    current_solution = fp.read().split(".")
+
+if len(mapped_sol) < len(current_solution):
+    print(f"New solution is shorter than current solution. Writing to file.")
+    with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
+        fp.write(".".join(mapped_sol))
+else:
+    print(f"New solution is longer than current solution.")
+    print(f"Length of new solution: {len(mapped_sol)}")
+    print(f"Length of current solution: {len(current_solution)}")
