@@ -6,15 +6,20 @@ import numpy as np
 from subprocess import Popen, PIPE
 import subprocess
 from util import *
+import threading
 
-# seq 210 234 | xargs -P 4 -I {} python3 scripts/solve_twsearch.py {}
+# seq 210 234 | xargs -P 1 -I {} python3 scripts/twsearch_shorten.py {}
+
+def on_timeout(proc):
+    print("Timed out")
+    proc.kill()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
 parser.add_argument("--sol_dir", type=str, default="data/solutions")
 parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 parser.add_argument("--moves", action="store_true", default=False)
-parser.add_argument("--unique", action="store_true", default=False)
+parser.add_argument("--timeout", type=int, default=5 * 60)
 
 args = parser.parse_args()
 
@@ -29,7 +34,7 @@ print(f"Number of moves: {len(moves)}")
 initial_state = puzzle["initial_state"].split(";")
 solution_state = puzzle["solution_state"].split(";")
 
-tws_file = write_tws_file(puzzle, args.unique)
+tws_file = write_tws_file(puzzle, True)
 
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
@@ -41,37 +46,55 @@ for name, move in moves.items():
     m = move[move]
     is_move_cyclic[name] = (m == identity).all()
 
-def invert_if_not_cycle(move):
-    if move[0] == '-':
-        return move[1:]
-    elif is_move_cyclic[move]:
+def invert_if_cyclic_and_inverted(move):
+    if move[0] != '-':
         return move
+    elif is_move_cyclic[move[1:]]:
+        return move[1:]
     else:
-        return "-" + move
+        return move
 
-scramble = " ".join(reversed(list(map(invert_if_not_cycle, current_solution))))
+scramble = " ".join(list(map(invert_if_cyclic_and_inverted, current_solution))) + "\n"
 print(scramble)
 
 if args.moves:
     with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
         fp.write(scramble)
 
-SOLVER_PATH = f"/Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -q -s -M 32768 {tws_file}".split()
-p = Popen(SOLVER_PATH, stdout=PIPE, stdin=PIPE, stderr=PIPE)
-out = p.communicate(input=scramble.encode())[0]
+SOLVER_PATH = f"/Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -q --microthreads 16 --shortenseqs -M 32768 {tws_file}".split()
+p = Popen(SOLVER_PATH, stdout=PIPE, stdin=PIPE)
+p.stdin.write(scramble.encode("utf-8"))
+p.stdin.flush()
 
-p.wait()
+print("Starting timer")
+timer = threading.Timer(args.timeout, on_timeout, (p, ))
+timer.start()
 
-out = out.decode("utf-8").strip()
-out = out.split("\n")
-
+sol = None
 # Search for the solution line
-for line in out:
-    if line.startswith("FOUND SOLUTION: "):
-        sol = line.split(":")[1].strip()
-        break
+try:
+    while True:
+        line = p.stdout.readline().decode("utf-8").strip()
+        # print(line)
+        if not line:
+            break
+        if line.startswith("FOUND SOLUTION: "):
+            sol = line.split(":")[1].strip().split(".")
+            print(f"\nNew Solution of length {len(sol)}", sol)
+        if "Working with depth 13" in line:
+            print("Hit max manual depth")
+            p.kill()
+            break
+except KeyboardInterrupt:
+    print("Interrupted")
+    p.kill()
 
-sol = sol.split(".")
+print("Last line: ", line)
+timer.cancel()
+
+if sol is None:
+    print("No solution found")
+    exit(1)
 
 if len(sol) < len(current_solution):
     print(f"New solution is shorter than current solution. Writing to file.")

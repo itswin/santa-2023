@@ -278,29 +278,42 @@ def invert(move):
     else:
         return "-" + move
 
-def write_tws_file(puzzle):
+def write_tws_file(puzzle, unique=False):
     full_moves = get_moves(puzzle["puzzle_type"])
 
     sol_state = puzzle["solution_state"].split(";")
     num_pieces = len(sol_state)
+
+    if unique:
+        mapped_sol_state = list(range(1, num_pieces + 1))
+    else:
+        piece_to_index = {}
+        last_index = 1
+        mapped_sol_state = []
+        for piece in sol_state:
+            if piece not in piece_to_index:
+                piece_to_index[piece] = last_index
+                last_index += 1
+            mapped_sol_state.append(piece_to_index[piece])
+
     out = f"""
-    Name {puzzle["puzzle_type"]}
+Name {puzzle["puzzle_type"]}
 
-    Set PIECE {num_pieces} 1
+Set PIECE {num_pieces} 1
 
-    Solved
-    PIECE
-    {" ".join(map(str, range(1,num_pieces + 1)))}
-    End
+Solved
+PIECE
+{" ".join(map(str, mapped_sol_state))}
+End
 
-    """
+"""
 
     format = """
-    Move {}
-    PIECE
-    {}
-    End
-    """
+Move {}
+PIECE
+{}
+End
+"""
 
     for move, perm in full_moves.items():
         if move[0] == "-":
@@ -308,11 +321,9 @@ def write_tws_file(puzzle):
         l = list(perm)
         out += format.format(move, " ".join(map(lambda x: str(x+1), l)))
 
-
-
     twsearch_puzzles = "/Users/Win33/Documents/Programming/twsearch/samples/main/"
 
-    name = twsearch_puzzles + puzzle["puzzle_type"].replace("/", "_") + ".tws"
+    name = twsearch_puzzles + puzzle["puzzle_type"].replace("/", "_") + f"{"unique" if unique else ""}.tws"
     with open(name, 'w+') as tws_file:
         tws_file.write(out)
 
