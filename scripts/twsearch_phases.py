@@ -33,14 +33,19 @@ print(f"Number of moves: {len(moves)}")
 initial_state = puzzle["initial_state"].split(";")
 solution_state = puzzle["solution_state"].split(";")
 
-if solution_state[0].startswith("N"):
+unique = solution_state[0].startswith("N")
+if unique:
     puzzle_type += "_unique"
 
-twsearch_puzzles = "/Users/Win33/Documents/Programming/twsearch/samples/main/"
+puzzle_type = puzzle_type.replace("/", "_")
+
+twsearch_puzzles = f"/Users/Win33/Documents/Programming/santa-2023/data/tws_phases/{puzzle_type}/"
 puzzles_to_phases = {
-    "globe_3/4": ["globe_3_4_phase1.tws", "globe_3_4_phase2.tws", "globe_3_4_phase3.tws"],
-    "globe_3/4_unique": ["globe_3_4_unique_phase1.tws", "globe_3_4_unique_phase2.tws", "globe_3_4_unique_phase3.tws", "globe_3_4_unique_phase4.tws"]
+    "globe_3_4": ["globe_3_4_phase1.tws", "globe_3_4_phase2.tws", "globe_3_4_phase3.tws"],
+    "globe_3_4_unique": ["globe_3_4_unique_phase1.tws", "globe_3_4_unique_phase2.tws", "globe_3_4_unique_phase3.tws", "globe_3_4_unique_phase4.tws"]
 }
+
+write_tws_file(puzzle, unique)
 
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:

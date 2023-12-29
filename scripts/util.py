@@ -365,9 +365,10 @@ End
             l = list(perm)
             out += format.format(move, " ".join(map(lambda x: str(x+1), l)))
 
-    twsearch_puzzles = "/Users/Win33/Documents/Programming/twsearch/samples/main/"
+    puzzle_name = puzzle["puzzle_type"].replace("/", "_")
+    twsearch_puzzles = f"/Users/Win33/Documents/Programming/santa-2023/data/tws_phases/{puzzle_name}/"
 
-    name = twsearch_puzzles + puzzle["puzzle_type"].replace("/", "_") + \
+    name = twsearch_puzzles + puzzle_name + \
         f"{"_unique" if unique else ""}" + \
         f"{"_commutators" if commutators else ""}" + \
         ".tws"
