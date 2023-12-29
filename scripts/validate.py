@@ -32,8 +32,8 @@ def validate_one(id, sol_file_name, verbose=False):
     if (sum(puzzle["solution_state"].split(";") != state) > num_wildcards):
         print(f"Solution is incorrect for problem {id}")
         print(f"Number of wildcards: {num_wildcards}")
-        print(f"Expected: {puzzle['solution_state']}")
-        print(f"Got: {';'.join(state)}")
+        print(f"Expected: \t{puzzle['solution_state']}")
+        print(f"Got: \t\t{';'.join(state)}")
         print(f"Num different: {np.count_nonzero(puzzle['solution_state'].split(';') != state)}")
         assert False
 

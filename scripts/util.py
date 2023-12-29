@@ -1,6 +1,7 @@
 from typing import Dict, Tuple, List
 import pandas as pd
 import numpy as np
+import re
 
 def get_moves(puzzle_type: str) -> Dict[str, List[int]]:
     moves = eval(pd.read_csv("data/puzzle_info.csv").set_index("puzzle_type").loc[puzzle_type, "allowed_moves"])
@@ -278,7 +279,45 @@ def invert(move):
     else:
         return "-" + move
 
-def write_tws_file(puzzle, unique=False):
+def commutator_name_to_moves(commutator_name):
+    commutator_re = re.compile("\[(.*),(.*)\]")
+    comm = commutator_re.match(commutator_name)
+    X = comm.group(1).split("|")
+    Y = comm.group(2).split("|")
+
+    l = []
+    for x in X:
+        l.append(x)
+    for y in Y:
+        l.append(y)
+    for x in reversed(X):
+        l.append(invert(x))
+    for y in reversed(Y):
+        l.append(invert(y))
+    return l
+
+def create_commutators(commutator_file, moves):
+    commutator_re = re.compile(".*(\[.*\])")
+    commutators = {}
+    with open(commutator_file, "r") as fp:
+        lines = fp.readlines()
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            comm = commutator_re.match(line)
+            commutator_name = comm.group(1).replace(" ", "|")
+            commutator_moves = commutator_name_to_moves(commutator_name)
+
+            commutator = moves[commutator_moves[0]]
+            for i in range(1, len(commutator_moves)):
+                commutator = commutator[moves[commutator_moves[i]]]
+
+            commutators[commutator_name] = commutator
+
+    return commutators
+
+def write_tws_file(puzzle, unique=False, commutators=None):
     full_moves = get_moves(puzzle["puzzle_type"])
 
     sol_state = puzzle["solution_state"].split(";")
@@ -321,9 +360,17 @@ End
         l = list(perm)
         out += format.format(move, " ".join(map(lambda x: str(x+1), l)))
 
+    if commutators:
+        for move, perm in commutators.items():
+            l = list(perm)
+            out += format.format(move, " ".join(map(lambda x: str(x+1), l)))
+
     twsearch_puzzles = "/Users/Win33/Documents/Programming/twsearch/samples/main/"
 
-    name = twsearch_puzzles + puzzle["puzzle_type"].replace("/", "_") + f"{"unique" if unique else ""}.tws"
+    name = twsearch_puzzles + puzzle["puzzle_type"].replace("/", "_") + \
+        f"{"_unique" if unique else ""}" + \
+        f"{"_commutators" if commutators else ""}" + \
+        ".tws"
     with open(name, 'w+') as tws_file:
         tws_file.write(out)
 

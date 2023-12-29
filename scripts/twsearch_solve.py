@@ -15,6 +15,7 @@ parser.add_argument("--sol_dir", type=str, default="data/solutions")
 parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 parser.add_argument("--moves", action="store_true", default=False)
 parser.add_argument("--unique", action="store_true", default=False)
+parser.add_argument("--commutator_file", type=str, default=None)
 
 args = parser.parse_args()
 
@@ -29,7 +30,11 @@ print(f"Number of moves: {len(moves)}")
 initial_state = puzzle["initial_state"].split(";")
 solution_state = puzzle["solution_state"].split(";")
 
-tws_file = write_tws_file(puzzle, args.unique)
+commutators = None
+if args.commutator_file:
+    commutators = create_commutators(args.commutator_file, moves)
+
+tws_file = write_tws_file(puzzle, args.unique, commutators)
 
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
@@ -55,6 +60,7 @@ print(scramble)
 if args.moves:
     with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
         fp.write(scramble)
+    exit()
 
 SOLVER_PATH = f"/Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -q -s -M 32768 {tws_file}".split()
 p = Popen(SOLVER_PATH, stdout=PIPE, stdin=PIPE, stderr=PIPE)
