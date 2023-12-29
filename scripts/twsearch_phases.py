@@ -42,7 +42,8 @@ puzzle_type = puzzle_type.replace("/", "_")
 twsearch_puzzles = f"/Users/Win33/Documents/Programming/santa-2023/data/tws_phases/{puzzle_type}/"
 puzzles_to_phases = {
     "globe_3_4": ["globe_3_4_phase1.tws", "globe_3_4_phase2.tws", "globe_3_4_phase3.tws"],
-    "globe_3_4_unique": ["globe_3_4_unique_phase1.tws", "globe_3_4_unique_phase2.tws", "globe_3_4_unique_phase3.tws", "globe_3_4_unique_phase4.tws"]
+    "globe_3_4_unique": ["globe_3_4_unique_phase1.tws", "globe_3_4_unique_phase2.tws", "globe_3_4_unique_phase3.tws", "globe_3_4_unique_phase4.tws"],
+    "globe_6_4": ["globe_6_4_phase1.tws", "globe_6_4_phase2.tws", "globe_6_4_phase3.tws", "globe_6_4_phase4.tws", "globe_6_4_phase5.tws", "globe_6_4_phase6.tws"],
 }
 
 write_tws_file(puzzle, unique)
@@ -71,9 +72,15 @@ print(scramble)
 if args.moves:
     with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
         fp.write(scramble)
+    with open("/Users/Win33/Documents/Programming/santa-2023/moves.txt", "w") as fp:
+        fp.write(scramble)
     exit()
 
 solution_so_far = []
+
+if puzzle_type not in puzzles_to_phases:
+    print("No phases found. Exiting")
+    exit()
 
 for tws_file in puzzles_to_phases[puzzle_type]:
     print(f"Running {tws_file}")
@@ -90,11 +97,12 @@ for tws_file in puzzles_to_phases[puzzle_type]:
     for line in out:
         if line.startswith("FOUND SOLUTION: "):
             sol = line.split(":")[1].strip()
-            print(f"Partial Solution: {sol}")
+            print(f"\tPartial Solution: {sol}")
             break
 
     partial_sol = sol.split(".")
     solution_so_far += partial_sol
+    print("\tSolution so far: ", ".".join(solution_so_far))
     scramble += " " + " ".join(partial_sol)
 
 print(f"Validating")
