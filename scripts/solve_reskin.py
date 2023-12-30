@@ -135,11 +135,12 @@ for line in out:
         sol = line.split(":")[1].strip()
         break
 
+# sol = "D' B  L' U' D2 F' L  U  L  U2 F' L' D2 L  F2 R' L' D2 F2"
 print(sol)
 
 # Map it back to our move set
 mapped_sol = []
-for move in sol.split(" "):
+for move in sol.split():
     mapped_sol.append(move_map[move])
 
 mapped_sol = (".".join(center_orienting_seq) + "." if len(center_orienting_seq) > 0 else "") + ".".join(mapped_sol)

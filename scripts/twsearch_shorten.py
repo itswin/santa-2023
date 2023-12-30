@@ -81,7 +81,7 @@ try:
         if line.startswith("FOUND SOLUTION: "):
             sol = line.split(":")[1].strip().split(".")
             print(f"\nNew Solution of length {len(sol)}", sol)
-        if "Working with depth 13" in line:
+        if "Working with depth 20" in line:
             print("Hit max manual depth")
             p.kill()
             break

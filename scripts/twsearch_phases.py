@@ -6,11 +6,17 @@ import numpy as np
 from subprocess import Popen, PIPE
 import subprocess
 from util import *
+from os import listdir
+from os.path import isfile, join
 
-# seq 210 234 | xargs -P 4 -I {} python3 scripts/twsearch_phases.py {}
+# seq 210 234 | xargs -P 1 -I {} python3 scripts/twsearch_phases.py {}
+# cat moves.txt | time /Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -q -s --microthreads 16 -M 32768 ./data/tws_phases/globe_6_4/globe_6_4_phase6.tws
 
 def evaluate_difference(current_state, final_state):
     return np.count_nonzero(current_state != final_state)
+
+def get_phase_list(base_string, num_phases):
+    return [base_string + str(i) + ".tws" for i in range(1, num_phases + 1)]
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
@@ -19,6 +25,8 @@ parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 parser.add_argument("--moves", action="store_true", default=False)
 parser.add_argument("--unique", action="store_true", default=False)
 parser.add_argument("--commutator_file", type=str, default=None)
+parser.add_argument("--pbp", type=int, default=None)
+parser.add_argument("--subdir", type=str, default=None)
 
 args = parser.parse_args()
 
@@ -37,16 +45,26 @@ unique = solution_state[0].startswith("N")
 if unique:
     puzzle_type += "_unique"
 
-puzzle_type = puzzle_type.replace("/", "_")
-
-twsearch_puzzles = f"/Users/Win33/Documents/Programming/santa-2023/data/tws_phases/{puzzle_type}/"
 puzzles_to_phases = {
-    "globe_3_4": ["globe_3_4_phase1.tws", "globe_3_4_phase2.tws", "globe_3_4_phase3.tws"],
-    "globe_3_4_unique": ["globe_3_4_unique_phase1.tws", "globe_3_4_unique_phase2.tws", "globe_3_4_unique_phase3.tws", "globe_3_4_unique_phase4.tws"],
-    "globe_6_4": ["globe_6_4_phase1.tws", "globe_6_4_phase2.tws", "globe_6_4_phase3.tws", "globe_6_4_phase4.tws", "globe_6_4_phase5.tws", "globe_6_4_phase6.tws"],
+    "globe_3_4": get_phase_list("globe_3_4_phase", 3),
+    "globe_3_4_unique": get_phase_list("globe_3_4_unique_phase", 4),
+    "globe_6_4": get_phase_list("globe_6_4_phase", 6),
+    "globe_1_8": get_phase_list("globe_1_8_new_phase", 7),
 }
 
-write_tws_file(puzzle, unique)
+puzzle_type = puzzle_type.replace("/", "_")
+
+if args.pbp:
+    write_piece_phases(puzzle, args.pbp)
+    puzzle_type += "_pbp"
+else:
+    write_tws_file(puzzle, unique)
+
+twsearch_puzzles = f"/Users/Win33/Documents/Programming/santa-2023/data/tws_phases/{puzzle_type}/"
+
+if args.pbp:
+    puzzle_type += str(args.pbp)
+    puzzles_to_phases[puzzle_type] = get_phase_list(puzzle_type + "_", len(initial_state) - 1)
 
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
@@ -82,9 +100,17 @@ if puzzle_type not in puzzles_to_phases:
     print("No phases found. Exiting")
     exit()
 
-for tws_file in puzzles_to_phases[puzzle_type]:
+if args.subdir:
+    twsearch_puzzles += args.subdir + "/"
+    print(f"Using subdir: {twsearch_puzzles}")
+    phases = sorted([f for f in listdir(twsearch_puzzles) if isfile(join(twsearch_puzzles, f))])
+    print(phases)
+else:
+    phases = puzzles_to_phases[puzzle_type]
+
+for tws_file in phases:
     print(f"Running {tws_file}")
-    SOLVER_PATH = f"/Users/Win33/Documents/Programming/twsearch/build/bin/twsearch --microthreads 16 -q -s -M 32768 {twsearch_puzzles}{tws_file}".split()
+    SOLVER_PATH = f"/Users/Win33/Documents/Programming/twsearch/build/bin/twsearch --writeprunetables always --microthreads 16 -q -s -M 32768 {twsearch_puzzles}{tws_file}".split()
     p = Popen(SOLVER_PATH, stdout=PIPE, stdin=PIPE, stderr=PIPE)
     out = p.communicate(input=scramble.encode())[0]
 
@@ -94,11 +120,21 @@ for tws_file in puzzles_to_phases[puzzle_type]:
     out = out.split("\n")
 
     # Search for the solution line
+    sol = None
     for line in out:
-        if line.startswith("FOUND SOLUTION: "):
+        if "FOUND SOLUTION: " in line:
             sol = line.split(":")[1].strip()
+            if sol is None:
+                print("No solution needed. Skipping phase")
+                sol = ""
             print(f"\tPartial Solution: {sol}")
             break
+
+    if sol == "":
+        continue
+    elif sol is None:
+        print("No solution found. Exiting")
+        exit()
 
     partial_sol = sol.split(".")
     solution_so_far += partial_sol

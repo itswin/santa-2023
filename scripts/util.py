@@ -54,7 +54,7 @@ def extend_move_seq(seq, moves):
     for move in moves:
         yield seq + [move]
 
-def orient_centers(state, moves, n):
+def orient_centers(state, moves, n, solution=None):
     center_slice_moves = get_center_slice_moves(moves, n)
     print("Orienting centers")
     print(center_slice_moves)
@@ -62,20 +62,20 @@ def orient_centers(state, moves, n):
     # Try longer sequences of moves if the centers are not aligned
     seqs = [[]]
     new_seq = []
-    while not centers_aligned(state, n):
+    while not centers_aligned(state, n, solution):
         new_seqs = []
         for seq in seqs:
             for new_seq in extend_move_seq(seq, center_slice_moves.keys()):
                 new_state = state.copy()
                 for move in new_seq:
                     new_state = new_state[center_slice_moves[move]]
-                if centers_aligned(new_state, n):
-                    print("Foun", new_seq)
+                if centers_aligned(new_state, n, solution):
+                    print("Found", new_seq)
                     state = new_state
                     break
                 else:
                     new_seqs.append(new_seq)
-            if centers_aligned(state, n):
+            if centers_aligned(state, n, solution):
                 break
         seqs = new_seqs
     return state, new_seq
@@ -376,4 +376,54 @@ End
         tws_file.write(out)
 
     print("Wrote twsearch file to", name)
+    return name
+
+def write_piece_phases(puzzle, at_once=1):
+    full_moves = get_moves(puzzle["puzzle_type"])
+
+    sol_state = puzzle["solution_state"].split(";")
+    num_pieces = len(sol_state)
+    assert num_pieces % at_once == 0
+
+    preamble = f"""
+Name {puzzle["puzzle_type"]}
+
+Set PIECE {num_pieces} 1
+
+Solved
+PIECE
+{{solution_perm}}
+End
+
+"""
+
+    ending = ""
+
+    format = """
+Move {}
+PIECE
+{}
+End
+"""
+
+    for move, perm in full_moves.items():
+        if move[0] == "-":
+            continue
+        l = list(perm)
+        ending += format.format(move, " ".join(map(lambda x: str(x+1), l)))
+
+    puzzle_name = puzzle["puzzle_type"].replace("/", "_")
+    twsearch_puzzles = f"/Users/Win33/Documents/Programming/santa-2023/data/tws_phases/{puzzle_name}_pbp/"
+
+    for i in range(1, num_pieces // at_once):
+        start = []
+        for _ in range(at_once):
+            start.extend(list(range(2, 2 + i)))
+        start.sort()
+        solution_state = " ".join(map(str, start)) + " " + ("1 " * (num_pieces - at_once * i)).strip()
+        out = preamble.format(solution_perm=solution_state) + ending
+        name = twsearch_puzzles + puzzle_name + f"_pbp{at_once}_{i}.tws"
+        with open(name, 'w+') as tws_file:
+            tws_file.write(out)
+
     return name
