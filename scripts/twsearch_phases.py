@@ -9,7 +9,7 @@ from util import *
 from os import listdir
 from os.path import isfile, join
 
-# seq 210 234 | xargs -I {} python3 scripts/twsearch_phases.py {}
+# seq 210 234 | xargs python3 scripts/twsearch_phases.py {}
 # cat moves.txt | time /Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -q -s --microthreads 16 -M 32768 ./data/tws_phases/globe_6_4/globe_6_4_phase6.tws
 
 def evaluate_difference(current_state, final_state):
@@ -190,11 +190,11 @@ else:
     print(f"Got: {state}")
     assert False
 
+print(f"Length of new solution: {len(solution_so_far)}")
+print(f"Length of current solution: {len(current_solution)}")
 if len(solution_so_far) < len(current_solution):
     print(f"New solution is shorter than current solution. Writing to file.")
     with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
         fp.write(".".join(solution_so_far))
 else:
     print(f"New solution is longer than current solution.")
-    print(f"Length of new solution: {len(solution_so_far)}")
-    print(f"Length of current solution: {len(current_solution)}")
