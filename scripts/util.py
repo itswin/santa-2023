@@ -432,3 +432,6 @@ def get_phase_list(file_name):
     with open(file_name, "r") as fp:
         lines = fp.readlines()
         return [line.strip() for line in lines]
+
+def clear_line():
+    print("*" * 80, end="\x1b[1K\r")

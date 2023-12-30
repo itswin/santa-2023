@@ -9,7 +9,7 @@ from util import *
 from os import listdir
 from os.path import isfile, join
 
-# seq 210 234 | xargs -P 1 -I {} python3 scripts/twsearch_phases.py {}
+# seq 210 234 | xargs -I {} python3 scripts/twsearch_phases.py {}
 # cat moves.txt | time /Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -q -s --microthreads 16 -M 32768 ./data/tws_phases/globe_6_4/globe_6_4_phase6.tws
 
 def evaluate_difference(current_state, final_state):
@@ -65,19 +65,6 @@ if args.pbp:
 else:
     write_tws_file(puzzle, unique)
 
-twsearch_puzzles = f"./data/tws_phases/{puzzle_type}/"
-
-phases = None
-if args.pbp:
-    puzzle_type += str(args.pbp)
-    phases = get_enumerated_phase_list(puzzle_type + "_", len(initial_state) - 1)
-else:
-    try:
-        phases = get_phase_list(twsearch_puzzles + args.phases_file)
-    except:
-        print(f"Couldn't find phase list file: {twsearch_puzzles + args.phases_file}")
-        exit()
-
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")
@@ -106,34 +93,81 @@ if args.moves:
         fp.write(scramble)
     exit()
 
+twsearch_puzzles = f"./data/tws_phases/{puzzle_type}/"
+
+phases = None
+if args.pbp:
+    puzzle_type += str(args.pbp)
+    phases = get_enumerated_phase_list(puzzle_type + "_", len(initial_state) - 1)
+else:
+    try:
+        phases = get_phase_list(twsearch_puzzles + args.phases_file)
+    except:
+        print(f"Couldn't find phase list file: {twsearch_puzzles + args.phases_file}. Please supple --phases_file argument.")
+        exit()
+
 solution_so_far = []
 
 for tws_file in phases:
     print(f"Running {tws_file}")
     SOLVER_PATH = f"{SOLVER_CMD} {twsearch_puzzles}{tws_file}".split()
     p = Popen(SOLVER_PATH, stdout=PIPE, stdin=PIPE, stderr=PIPE)
-    out = p.communicate(input=scramble.encode())[0]
-
-    p.wait()
-
-    out = out.decode("utf-8").strip()
-    out = out.split("\n")
+    p.stdin.write(scramble.encode("utf-8"))
+    p.stdin.write(b"\n")
+    p.stdin.flush()
 
     # Search for the solution line
     sol = None
-    for line in out:
-        if "FOUND SOLUTION: " in line:
-            sol = line.split(":")[1].strip()
-            if sol is None:
-                print("No solution needed. Skipping phase")
-                sol = ""
-            print(f"\tPartial Solution: {sol}")
-            break
+    last_depth = None
+    writing = False
+    while True:
+        try:
+            if p.poll() is not None:
+                break
+            line = p.stdout.readline().decode("utf-8").strip()
+            if "FOUND SOLUTION: " in line:
+                sol = line.split(":")[1].strip()
+                if sol is None:
+                    print("No solution needed. Skipping phase")
+                    sol = ""
+                print(f"\tPartial Solution: {sol}")
+                break
+            if line.startswith("Depth"):
+                last_depth = line.split()[1].strip()
+                clear_line()
+                print(f"\tLast depth: {last_depth}", end='\r')
+            elif "Writing" in line:
+                if "written" in line:
+                    clear_line()
+                    print(f"\tLast depth: {last_depth}. Write complete1.", end='\r')
+                else:
+                    clear_line()
+                    print(f"\tLast depth: {last_depth}. WRITING. DO NOT INTERRUPT", end='\r')
+                    writing = True
+            elif "Written in" in line:
+                clear_line()
+                print(f"\tLast depth: {last_depth}. Write complete2.", end='\r')
+                writing = False
+        except:
+            if writing:
+                print("Writing. Do not interrupt")
+            else:
+                print("Interrupted")
+                p.kill()
+                break
 
     if sol == "":
         continue
     elif sol is None:
         print("No solution found. Exiting")
+        print("Last log line: ", line)
+        print("Error: ")
+        while True:
+            err_line = p.stderr.readline().decode("utf-8").strip()
+            if err_line == "":
+                break
+            print(err_line)
+
         exit()
 
     partial_sol = sol.split(".")
