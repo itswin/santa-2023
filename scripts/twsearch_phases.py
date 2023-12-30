@@ -134,19 +134,15 @@ for tws_file in phases:
                 break
             if line.startswith("Depth"):
                 last_depth = line.split()[1].strip()
-                clear_line()
-                print(f"\tLast depth: {last_depth}", end='\r')
+                print(f"\tLast depth: {last_depth}")
             elif "Writing" in line:
                 if "written" in line:
-                    clear_line()
-                    print(f"\tLast depth: {last_depth}. Write complete1.", end='\r')
+                    print(f"\tLast depth: {last_depth}. Write complete1.")
                 else:
-                    clear_line()
-                    print(f"\tLast depth: {last_depth}. WRITING. DO NOT INTERRUPT", end='\r')
+                    print(f"\tLast depth: {last_depth}. WRITING. DO NOT INTERRUPT")
                     writing = True
             elif "Written in" in line:
-                clear_line()
-                print(f"\tLast depth: {last_depth}. Write complete2.", end='\r')
+                print(f"\tLast depth: {last_depth}. Write complete2.")
                 writing = False
         except:
             if writing:
