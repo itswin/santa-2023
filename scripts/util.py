@@ -2,6 +2,7 @@ from typing import Dict, Tuple, List
 import pandas as pd
 import numpy as np
 import re
+from pathlib import Path
 
 def get_moves(puzzle_type: str) -> Dict[str, List[int]]:
     moves = eval(pd.read_csv("data/puzzle_info.csv").set_index("puzzle_type").loc[puzzle_type, "allowed_moves"])
@@ -367,6 +368,8 @@ End
 
     puzzle_name = puzzle["puzzle_type"].replace("/", "_")
     twsearch_puzzles = f"./data/tws_phases/{puzzle_name}/"
+
+    Path(twsearch_puzzles).mkdir(parents=True, exist_ok=True)
 
     name = twsearch_puzzles + puzzle_name + \
         f"{'_unique' if unique else ''}" + \

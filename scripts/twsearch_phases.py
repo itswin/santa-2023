@@ -31,6 +31,7 @@ parser.add_argument("--twsearch_path", type=str, default="../twsearch/build/bin/
 parser.add_argument("--twsearch_mem", type=int, default=24576)
 parser.add_argument("--kaggle", action="store_true", default=False)
 parser.add_argument("--phases_file", type=str, default="default.txt")
+parser.add_argument("--write_tws", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -54,16 +55,15 @@ initial_state = puzzle["initial_state"].split(";")
 solution_state = puzzle["solution_state"].split(";")
 
 unique = solution_state[0].startswith("N")
-if unique:
-    puzzle_type += "_unique"
 
 puzzle_type = puzzle_type.replace("/", "_")
 
-if args.pbp:
-    write_piece_phases(puzzle, args.pbp)
-    puzzle_type += "_pbp"
-else:
-    write_tws_file(puzzle, unique)
+if args.write_tws:
+    if args.pbp:
+        write_piece_phases(puzzle, args.pbp)
+        puzzle_type += "_pbp"
+    else:
+        write_tws_file(puzzle, unique)
 
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
