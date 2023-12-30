@@ -366,11 +366,11 @@ End
             out += format.format(move, " ".join(map(lambda x: str(x+1), l)))
 
     puzzle_name = puzzle["puzzle_type"].replace("/", "_")
-    twsearch_puzzles = f"/Users/Win33/Documents/Programming/santa-2023/data/tws_phases/{puzzle_name}/"
+    twsearch_puzzles = f"./data/tws_phases/{puzzle_name}/"
 
     name = twsearch_puzzles + puzzle_name + \
-        f"{"_unique" if unique else ""}" + \
-        f"{"_commutators" if commutators else ""}" + \
+        f"{'_unique' if unique else ''}" + \
+        f"{'_commutators' if commutators else ''}" + \
         ".tws"
     with open(name, 'w+') as tws_file:
         tws_file.write(out)
@@ -427,3 +427,8 @@ End
             tws_file.write(out)
 
     return name
+
+def get_phase_list(file_name):
+    with open(file_name, "r") as fp:
+        lines = fp.readlines()
+        return [line.strip() for line in lines]

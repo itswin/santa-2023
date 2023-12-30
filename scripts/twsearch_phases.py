@@ -15,7 +15,7 @@ from os.path import isfile, join
 def evaluate_difference(current_state, final_state):
     return np.count_nonzero(current_state != final_state)
 
-def get_phase_list(base_string, num_phases):
+def get_enumerated_phase_list(base_string, num_phases):
     return [base_string + str(i) + ".tws" for i in range(1, num_phases + 1)]
 
 parser = argparse.ArgumentParser()
@@ -27,8 +27,20 @@ parser.add_argument("--unique", action="store_true", default=False)
 parser.add_argument("--commutator_file", type=str, default=None)
 parser.add_argument("--pbp", type=int, default=None)
 parser.add_argument("--subdir", type=str, default=None)
+parser.add_argument("--twsearch_path", type=str, default="../twsearch/build/bin/twsearch")
+parser.add_argument("--twsearch_mem", type=int, default=24576)
+parser.add_argument("--kaggle", action="store_true", default=False)
+parser.add_argument("--phases_file", type=str, default="default.txt")
 
 args = parser.parse_args()
+
+if args.kaggle:
+    args.twsearch_path = "/kaggle/twsearch/build/bin/twsearch"
+    args.out_sol_dir = "/kaggle/working/solutions"
+    cache_dir = "/kaggle/working/twsearch_cache"
+    SOLVER_CMD = f"{args.twsearch_path} --writeprunetables always --microthreads 16 -q -s -M {args.twsearch_mem} --cachedir {cache_dir}"
+else:
+    SOLVER_CMD = f"{args.twsearch_path} --writeprunetables always --microthreads 16 -q -s -M {args.twsearch_mem}"
 
 puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
 print(puzzle)
@@ -45,13 +57,6 @@ unique = solution_state[0].startswith("N")
 if unique:
     puzzle_type += "_unique"
 
-puzzles_to_phases = {
-    "globe_3_4": get_phase_list("globe_3_4_phase", 3),
-    "globe_3_4_unique": get_phase_list("globe_3_4_unique_phase", 4),
-    "globe_6_4": get_phase_list("globe_6_4_phase", 6),
-    "globe_1_8": get_phase_list("globe_1_8_new_phase", 7),
-}
-
 puzzle_type = puzzle_type.replace("/", "_")
 
 if args.pbp:
@@ -60,11 +65,18 @@ if args.pbp:
 else:
     write_tws_file(puzzle, unique)
 
-twsearch_puzzles = f"/Users/Win33/Documents/Programming/santa-2023/data/tws_phases/{puzzle_type}/"
+twsearch_puzzles = f"./data/tws_phases/{puzzle_type}/"
 
+phases = None
 if args.pbp:
     puzzle_type += str(args.pbp)
-    puzzles_to_phases[puzzle_type] = get_phase_list(puzzle_type + "_", len(initial_state) - 1)
+    phases = get_enumerated_phase_list(puzzle_type + "_", len(initial_state) - 1)
+else:
+    try:
+        phases = get_phase_list(twsearch_puzzles + args.phases_file)
+    except:
+        print(f"Couldn't find phase list file: {twsearch_puzzles + args.phases_file}")
+        exit()
 
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
@@ -88,29 +100,17 @@ scramble = " ".join(reversed(list(map(invert_if_not_cycle, current_solution))))
 print(scramble)
 
 if args.moves:
-    with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
-        fp.write(scramble)
-    with open("/Users/Win33/Documents/Programming/santa-2023/moves.txt", "w") as fp:
+    # with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
+    #     fp.write(scramble)
+    with open("./moves.txt", "w") as fp:
         fp.write(scramble)
     exit()
 
 solution_so_far = []
 
-if puzzle_type not in puzzles_to_phases:
-    print("No phases found. Exiting")
-    exit()
-
-if args.subdir:
-    twsearch_puzzles += args.subdir + "/"
-    print(f"Using subdir: {twsearch_puzzles}")
-    phases = sorted([f for f in listdir(twsearch_puzzles) if isfile(join(twsearch_puzzles, f))])
-    print(phases)
-else:
-    phases = puzzles_to_phases[puzzle_type]
-
 for tws_file in phases:
     print(f"Running {tws_file}")
-    SOLVER_PATH = f"/Users/Win33/Documents/Programming/twsearch/build/bin/twsearch --writeprunetables always --microthreads 16 -q -s -M 32768 {twsearch_puzzles}{tws_file}".split()
+    SOLVER_PATH = f"{SOLVER_CMD} {twsearch_puzzles}{tws_file}".split()
     p = Popen(SOLVER_PATH, stdout=PIPE, stdin=PIPE, stderr=PIPE)
     out = p.communicate(input=scramble.encode())[0]
 

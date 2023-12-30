@@ -1,0 +1,7 @@
+globe_1_8_split.tws
+globe_1_8_phase2.tws
+globe_1_8_phase3.tws
+globe_1_8_phase4.tws
+globe_1_8_phase5.tws
+globe_1_8_phase6.tws
+globe_1_8_solved.tws
