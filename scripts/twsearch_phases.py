@@ -36,7 +36,7 @@ args = parser.parse_args()
 
 if args.kaggle:
     args.twsearch_path = "/kaggle/twsearch/build/bin/twsearch"
-    args.out_sol_dir = "/kaggle/working/solutions"
+    args.out_sol_dir = "/kaggle/working"
     cache_dir = "/kaggle/working/twsearch_cache"
     SOLVER_CMD = f"{args.twsearch_path} --writeprunetables always --microthreads 16 -q -s -M {args.twsearch_mem} --cachedir {cache_dir}"
 else:
