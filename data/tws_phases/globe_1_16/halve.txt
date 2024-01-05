@@ -1,0 +1,8 @@
+globe_1_16_1quarter.tws
+globe_1_16_half.tws
+globe_1_16_2quarter.tws
+globe_1_16_4quarter.tws
+globe_1_16_2eighth.tws
+globe_1_16_4eighth.tws
+globe_1_16_2sixteenth.tws
+globe_1_16.tws

@@ -1,0 +1,5 @@
+globe_1_8_split.tws
+globe_1_8_split2.tws
+globe_1_8_split_eight.tws
+globe_1_8_split_eight_half.tws
+globe_1_8_solved.tws

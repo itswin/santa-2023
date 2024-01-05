@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import re
 from pathlib import Path
+import itertools
 
 def get_moves(puzzle_type: str) -> Dict[str, List[int]]:
     moves = eval(pd.read_csv("data/puzzle_info.csv").set_index("puzzle_type").loc[puzzle_type, "allowed_moves"])
@@ -97,17 +98,26 @@ def get_move_map(n):
     # "Fw": "f0.f1",
     # "Fw'": "-f0.-f1",
     # "Fw2": "f0.f0.f1.f1",
+    # "2F": "f1",
+    # "3F": "f2",
     for move in "DFR":
         # Number of layers
         for i in range(1, n // 2 + 1):
             if i == 1:
                 move_map[f"{move}"] = f"{base_moves[move]}0"
                 move_map[f"{move}'"] = f"-{base_moves[move]}0"
+                move_map[f"-{move}"] = f"-{base_moves[move]}0"
+                move_map[f"-{move}2"] = f"-{base_moves[move]}0.-{base_moves[move]}0"
                 move_map[f"{move}2"] = f"{base_moves[move]}0.{base_moves[move]}0"
             elif i == 2:
                 move_map[f"{move}w"] = f"{base_moves[move]}0.{base_moves[move]}1"
                 move_map[f"{move}w'"] = f"-{base_moves[move]}0.-{base_moves[move]}1"
                 move_map[f"{move}w2"] = f"{base_moves[move]}0.{base_moves[move]}0.{base_moves[move]}1.{base_moves[move]}1"
+
+                move_map[f"2{move}"] = f"{base_moves[move]}1"
+                move_map[f"2{move}2"] = f"{base_moves[move]}1.{base_moves[move]}1"
+                move_map[f"-2{move}"] = f"-{base_moves[move]}1"
+                move_map[f"-2{move}2"] = f"-{base_moves[move]}1.-{base_moves[move]}1"
 
                 # For some reason it also has these
                 move_map[f"2{move}w"] = f"{base_moves[move]}0.{base_moves[move]}1"
@@ -117,17 +127,29 @@ def get_move_map(n):
                 move_map[f"{i}{move}w"] = ".".join([f"{base_moves[move]}{j}" for j in range(i)])
                 move_map[f"{i}{move}w'"] = ".".join([f"-{base_moves[move]}{j}" for j in range(i)])
                 move_map[f"{i}{move}w2"] = ".".join([f"{base_moves[move]}{j}" for j in range(i)] + [f"{base_moves[move]}{j}" for j in range(i)])
+
+                move_map[f"{i}{move}"] = f"{base_moves[move]}{i - 1}"
+                move_map[f"{i}{move}2"] = f"{base_moves[move]}{i - 1}.{base_moves[move]}{i - 1}"
+                move_map[f"-{i}{move}"] = f"-{base_moves[move]}{i - 1}"
+                move_map[f"-{i}{move}2"] = f"-{base_moves[move]}{i - 1}.-{base_moves[move]}{i - 1}"
     for move in "BUL":
         # Number of layers
         for i in range(1, n // 2 + 1):
             if i == 1:
                 move_map[f"{move}"] = f"-{base_moves[move]}{n - 1}"
                 move_map[f"{move}'"] = f"{base_moves[move]}{n - 1}"
+                move_map[f"-{move}"] = f"{base_moves[move]}{n - 1}"
+                move_map[f"-{move}2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 1}"
                 move_map[f"{move}2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 1}"
             elif i == 2:
                 move_map[f"{move}w"] = f"-{base_moves[move]}{n - 1}.-{base_moves[move]}{n - 2}"
                 move_map[f"{move}w'"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}"
                 move_map[f"{move}w2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 2}"
+
+                move_map[f"2{move}"] = f"-{base_moves[move]}{n - 2}"
+                move_map[f"2{move}2"] = f"-{base_moves[move]}{n - 2}.-{base_moves[move]}{n - 2}"
+                move_map[f"-2{move}"] = f"{base_moves[move]}{n - 2}"
+                move_map[f"-2{move}2"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 2}"
 
                 # For some reason it also has these
                 move_map[f"2{move}w"] = f"-{base_moves[move]}{n - 1}.-{base_moves[move]}{n - 2}"
@@ -137,6 +159,11 @@ def get_move_map(n):
                 move_map[f"{i}{move}w"] = ".".join([f"-{base_moves[move]}{n - 1 - j}" for j in range(i)])
                 move_map[f"{i}{move}w'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(i)])
                 move_map[f"{i}{move}w2"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(i)] + [f"{base_moves[move]}{n - 1 - j}" for j in range(i)])
+
+                move_map[f"{i}{move}"] = f"{base_moves[move]}{n - i}"
+                move_map[f"{i}{move}2"] = f"{base_moves[move]}{n - i}.{base_moves[move]}{n - i}"
+                move_map[f"-{i}{move}"] = f"-{base_moves[move]}{n - i}"
+                move_map[f"-{i}{move}2"] = f"-{base_moves[move]}{n - i}.-{base_moves[move]}{n - i}"
     return move_map
 
 def print_faces(faces, n):
@@ -280,26 +307,56 @@ def invert(move):
     else:
         return "-" + move
 
-def commutator_name_to_moves(commutator_name):
-    commutator_re = re.compile("\[(.*),(.*)\]")
-    comm = commutator_re.match(commutator_name)
-    X = comm.group(1).split("|")
-    Y = comm.group(2).split("|")
+class Commutator:
+    def __init__(self, name, puzzle_moves, move_map=None):
+        commutator_re = re.compile("\\[(.*),(.*)\\]")
+        comm = commutator_re.match(name)
+        X = comm.group(1).split(" ")
+        Y = comm.group(2).split(" ")
+        X_inv = list(map(invert, reversed(X)))
+        Y_inv = list(map(invert, reversed(Y)))
 
-    l = []
-    for x in X:
-        l.append(x)
-    for y in Y:
-        l.append(y)
-    for x in reversed(X):
-        l.append(invert(x))
-    for y in reversed(Y):
-        l.append(invert(y))
-    return l
+        if move_map:
+            X = list(map(lambda x: move_map[x], X))
+            Y = list(map(lambda y: move_map[y], Y))
+            X_inv = list(map(lambda x: move_map[x], X_inv))
+            Y_inv = list(map(lambda y: move_map[y], Y_inv))
+            name = f"[{'|'.join(X)},{'|'.join(Y)}]"
 
-def create_commutators(commutator_file, moves):
-    commutator_re = re.compile(".*(\[.*\])")
-    commutators = {}
+        self.name = name
+
+        self.moves = []
+        for x in X:
+            self.moves.extend(x.split("."))
+        for y in Y:
+            self.moves.extend(y.split("."))
+        for x in X_inv:
+            self.moves.extend(x.split("."))
+        for y in Y_inv:
+            self.moves.extend(y.split("."))
+
+        self.move = puzzle_moves[self.moves[0]]
+        for i in range(1, len(self.moves)):
+            self.move = self.move[puzzle_moves[self.moves[i]]]
+
+        self.moves_named = ".".join(self.moves)
+        self.length = len(self.moves)
+    
+    def count_pre_cancels(self, move_list):
+        # Count the number of moves that cancel between the 
+        # beginning of this commutator and the end of the other commutator
+
+        for i in range(0, min(self.length, len(move_list))):
+            if self.moves[i] != invert(move_list[-i - 1]):
+                return i
+   
+        return min(self.length, min(self.length, len(move_list)))
+
+
+def create_commutators(commutator_file, moves, move_map=None):
+    commutator_re = re.compile(".*(\\[.*\\])")
+    commutators = []
+    print(move_map)
     with open(commutator_file, "r") as fp:
         lines = fp.readlines()
         for line in lines:
@@ -307,14 +364,10 @@ def create_commutators(commutator_file, moves):
             if not line:
                 continue
             comm = commutator_re.match(line)
-            commutator_name = comm.group(1).replace(" ", "|")
-            commutator_moves = commutator_name_to_moves(commutator_name)
-
-            commutator = moves[commutator_moves[0]]
-            for i in range(1, len(commutator_moves)):
-                commutator = commutator[moves[commutator_moves[i]]]
-
-            commutators[commutator_name] = commutator
+            if comm is None:
+                continue
+            commutator_name = comm.group(1)
+            commutators.append(Commutator(commutator_name, moves, move_map))
 
     return commutators
 
@@ -438,3 +491,6 @@ def get_phase_list(file_name):
 
 def clear_line():
     print("*" * 80, end="\x1b[1K\r")
+
+def evaluate_difference(current_state, final_state):
+    return np.count_nonzero(current_state != final_state)

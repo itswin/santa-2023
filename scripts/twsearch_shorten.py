@@ -8,7 +8,7 @@ import subprocess
 from util import *
 import threading
 
-# seq 210 234 | xargs -P 1 -I {} python3 scripts/twsearch_shorten.py {}
+# seq 210 234 | xargs -I {} python3 scripts/twsearch_shorten.py {}
 
 def on_timeout(proc):
     print("Timed out")

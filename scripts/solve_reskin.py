@@ -143,9 +143,29 @@ mapped_sol = []
 for move in sol.split():
     mapped_sol.append(move_map[move])
 
+solution = center_orienting_seq + ".".join(mapped_sol).split(".")
+
 mapped_sol = (".".join(center_orienting_seq) + "." if len(center_orienting_seq) > 0 else "") + ".".join(mapped_sol)
 print(mapped_sol)
 
-# Write it to the solution file
-with open(f"data/solutions/{args.id}.txt", "w") as f:
-    f.write(mapped_sol)
+print(f"Validating")
+state = np.array(puzzle["initial_state"].split(";"))
+for move_name in solution:
+    state = state[moves[move_name]]
+
+num_difference = evaluate_difference(state, solution_state)
+wildcards = puzzle['num_wildcards']
+
+if num_difference <= wildcards:
+    print(f"Solution is valid. Diff to WC: {num_difference} <= {wildcards}")
+    # Write it to the solution file
+    with open(f"data/solutions/{args.id}.txt", "w") as f:
+        f.write(mapped_sol)
+else:
+    print(f"Solution is invalid. Diff to WC: {num_difference} > {wildcards}")
+    print(f"Expected: {solution_state}")
+    print(f"Got: {state}")
+    print(f"Writing to partial solution file")
+
+    with open(f"data/partial_sol.txt", "w") as f:
+        f.write(mapped_sol)

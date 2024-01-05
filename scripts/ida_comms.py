@@ -14,56 +14,7 @@ def evaluate_score(current_state, final_state):
     # Reward having the final position match, and also reward having 2 of the same state adjacent to each other
     # This has to be fast since it's called so often
     return np.count_nonzero(current_state != final_state) + \
-        np.count_nonzero(current_state[1:] != current_state[:-1]) + \
-        np.count_nonzero(current_state[2:] != current_state[:-2]) + \
-        np.count_nonzero(current_state[3:] != current_state[:-3]) + \
-        np.count_nonzero(current_state[4:] != current_state[:-4])
-
-def build_globe_lookup_table():
-    # Goals
-    # A -> 0, C -> 2, E -> 4, G -> 6, I -> 8, K -> 10, M -> 12, O -> 14
-    # B -> 16, D -> 18, F -> 20, H -> 22, J -> 24, L -> 26, N -> 28, P -> 30
-    # Piece -> Index -> # Numbers to solve
-    piece_to_goal_index = {
-        "A": 0,
-        "B": 16,
-        "C": 2,
-        "D": 18,
-        "E": 4,
-        "F": 20,
-        "G": 6,
-        "H": 22,
-        "I": 8,
-        "J": 24,
-        "K": 10,
-        "L": 26,
-        "M": 12,
-        "N": 28,
-        "O": 14,
-        "P": 30
-    }
-
-    heuristic_map = {}
-    for piece in "ABCDEFGHIJKLMNOP":
-        index_to_sol = {}
-        for index in range(32):
-            goal = piece_to_goal_index[piece]
-            dist = abs(index - goal)
-            if dist > 16:
-                index_to_sol[index] = 33 - dist
-            else:
-                index_to_sol[index] = dist
-        heuristic_map[piece] = index_to_sol
-    return heuristic_map
-
-lookup_table = build_globe_lookup_table()
-
-# def evaluate_score(current_state, final_state):
-#     score = np.count_nonzero(current_state != final_state)
-#     for piece in "ABCDEFGHIJKLMNOP":
-#         index = np.where(current_state == piece)[0][0]
-#         score += lookup_table[piece][index]
-#     return score
+        0.5 * np.count_nonzero(current_state[1:] != current_state[:-1])
 
 class Node:
     def __init__(self, priority, state, path):
@@ -73,7 +24,7 @@ class Node:
 
     def __lt__(self, other):
         return self.priority < other.priority
-    
+
     def __gt__(self, other):
         return self.priority > other.priority
 
@@ -81,7 +32,7 @@ class Node:
         return f"Node({self.state}, {self.priority}, {self.path})"
 
 
-def idastar(move_dict, initial_state, final_state, params, current_path=[], clear_when_new_best=False):
+def idastar(commutators, initial_state, final_state, params, current_path, clear_when_new_best):
     # Priority queue to store nodes with their f-values (g + h)
     puzzle_start_time = time.time()
     iteration_counter = 0
@@ -91,12 +42,17 @@ def idastar(move_dict, initial_state, final_state, params, current_path=[], clea
     best_state = initial_state
     best_path = current_path
     best_difference = evaluate_difference(initial_state, final_state)
+    greedy = True
 
     try:
         while time.time() - puzzle_start_time < params['max_overall_time'] and iteration_counter < params['max_overall_iterations']:
             iteration_counter += 1
 
-            new_state, new_path, node_counter, new_best_path, new_best_difference, new_best_state = depth_limited_search(move_dict, current_starting_state, final_state, closed_set, params)
+            new_state, new_path, node_counter, new_best_path, new_best_difference, new_best_state = \
+                depth_limited_search(
+                    commutators, current_starting_state, final_state, closed_set, params, greedy
+                )
+            greedy = True
 
             if new_best_path is not None and new_best_difference < best_difference:
                 best_state = new_best_state
@@ -126,7 +82,8 @@ def idastar(move_dict, initial_state, final_state, params, current_path=[], clea
                     print(f"Max moves reached. Returning best path.")
                     return best_path, iteration_counter, False
             else:
-                print("Depth limited search failed. Downsampling and increasing nodes trying again.")
+                print("Depth limited search failed. Downsampling and increasing nodes trying again. Turning off greedy for one iter")
+                greedy = False
                 # params['max_iteration_nodes'] = int(params['max_iteration_nodes'] * 2)
 
             # Downsample the closed set
@@ -138,7 +95,7 @@ def idastar(move_dict, initial_state, final_state, params, current_path=[], clea
     return best_path, iteration_counter, False
 
 
-def depth_limited_search(move_dict, initial_state, final_state, closed_set, params):
+def depth_limited_search(commutators, initial_state, final_state, closed_set, params, greedy):
     # Priority queue to store nodes with their f-values (g + h)
     start_time = time.time()
     open_set = []
@@ -164,8 +121,12 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
             return node.state, node.path, node_counter, tmp_best_path, tmp_best_difference, tmp_best_state
 
         difference = evaluate_difference(node.state, final_state)
-    
+
         if difference < tmp_best_difference:
+            tmp_best_state = node.state
+            tmp_best_path = node.path
+            tmp_best_difference = difference
+        elif difference == tmp_best_difference and len(node.path) < len(tmp_best_path):
             tmp_best_state = node.state
             tmp_best_path = node.path
             tmp_best_difference = difference
@@ -176,17 +137,28 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
 
         closed_set.add(tuple(node.state))
 
-        for move_str, move in move_dict.items():
+        for commutator in commutators:
             # Skip this move if it's the inverse of the last one we did
-            last_move = node.path[-1] if len(node.path) > 0 else None
-            if last_move is not None and \
-                    ((move_str[0] == "-" and move_str[1:] == last_move) or \
-                     (move_str[0] != "-" and "-" + move_str == last_move)):
+            # last_move = node.path[-1] if len(node.path) > 0 else None
+            # if last_move is not None and \
+            #         ((move_str[0] == "-" and move_str[1:] == last_move) or \
+            #          (move_str[0] != "-" and "-" + move_str == last_move)):
+            #     continue
+
+            cancels = commutator.count_pre_cancels(node.path)
+            new_state = node.state[commutator.move]
+            new_difference = evaluate_difference(new_state, final_state)
+
+            if new_difference >= difference and greedy:
                 continue
 
-            new_state = node.state[move]
+            if cancels:
+                new_path = node.path[:-cancels] + commutator.moves[cancels:]
+            else:
+                new_path = node.path + commutator.moves
+
             if tuple(new_state) not in closed_set:
-                heapq.heappush(open_set, Node(len(node.path) + 1 + evaluate_score(new_state, final_state), new_state, node.path + [move_str]))
+                heapq.heappush(open_set, Node(node.priority + commutator.length - cancels + new_difference, new_state, new_path))
                 node_counter += 1
 
     # If no solutions are found:
@@ -196,7 +168,8 @@ def depth_limited_search(move_dict, initial_state, final_state, closed_set, para
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--id", type=int, required=True)
+    parser.add_argument("id", type=int)
+    parser.add_argument("commutator_file", type=str)
     parser.add_argument("--timeout", type=int, default=60 * 60 * 2)
     parser.add_argument("--iterations", type=int, default=50)
     parser.add_argument("--from_progress", action="store_true", default=False)
@@ -207,17 +180,25 @@ def main():
     parser.add_argument("--sol_dir", type=str, default="data/solutions")
     parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
     parser.add_argument("--always_write", action="store_true", default=False)
+    parser.add_argument("--partial_sol", type=str, default=None)
     args = parser.parse_args()
 
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
-    moves = get_moves(puzzle['puzzle_type'])
+    puzzle_type = puzzle["puzzle_type"]
+    moves = get_moves(puzzle_type)
 
     print(puzzle)
 
     initial_state = np.array(puzzle["initial_state"].split(";"))
     solution_state = np.array(puzzle["solution_state"].split(";"))
 
-    moves = get_moves(puzzle['puzzle_type'])
+    n = int(puzzle_type.split("/")[-1])
+    move_map = get_move_map(n)
+
+    commutators = create_commutators(args.commutator_file, moves, move_map)
+    avg_commutator_length = np.mean([c.length for c in commutators])
+    print(f"Number of commutators: {len(commutators)}")
+    print(f"Average commutator length: {avg_commutator_length}")
 
     wildcards = puzzle['num_wildcards']
     current_solution = []
@@ -236,7 +217,14 @@ def main():
     }
 
     progress = []
-    if args.from_progress:
+    if args.partial_sol:
+        print("Starting with partial solution")
+        with open(args.partial_sol, "r") as fp:
+            progress = fp.read().split(".")
+        for move in progress:
+            initial_state = initial_state[moves[move]]
+        print(f"Partial sol length: {len(progress)}. Diff: {evaluate_difference(initial_state, solution_state)}")
+    elif args.from_progress:
         print("Picking up from progress")
         with open(f"data/ida_progress/{args.id}.txt", "r") as fp:
             progress = fp.read().split(".")
@@ -245,7 +233,7 @@ def main():
         print(f"Progress length: {len(progress)}. Diff: {evaluate_difference(initial_state, solution_state)}")
 
     print(f"Starting testing with parameters: {params}")
-    solution_path, iteration_counter, valid = idastar(moves, initial_state, solution_state, params, progress, args.clear_when_new_best)
+    solution_path, iteration_counter, valid = idastar(commutators, initial_state, solution_state, params, progress, args.clear_when_new_best)
     if valid:
         print(f"Solution found in {iteration_counter} iterations.")
         print(f"Solution path: {solution_path}")
