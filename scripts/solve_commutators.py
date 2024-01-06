@@ -8,6 +8,7 @@ import subprocess
 from util import *
 from typing import List
 import random
+import os
 
 # seq 209 209 | xargs -I {} sh -c "python3 scripts/solve_reskin.py {} && ./scripts/ida_comms.py {} ./data/tws_phases/cube_4_4_4/4x4x4_center_comms.txt --partial_sol data/partial_sol.txt --clear_when_new_best"
 
@@ -16,7 +17,7 @@ def find_best_commutator(initial_state, solution_state, commutators: List[Move],
 
     # Go through each commutator and apply it to the initial state
     # Find the one that results in the lowest number of wrong stickers
-    
+
     random.shuffle(commutators)
 
     best_pieces_solved_per_move = -1
@@ -30,9 +31,10 @@ def find_best_commutator(initial_state, solution_state, commutators: List[Move],
 
         new_state = initial_state[commutator.move]
         new_num_wrong = evaluate_difference(new_state, solution_state)
-        new_solved_per_move = (num_wrong - new_num_wrong) / commutator.length
         if new_num_wrong > num_wrong:
             continue
+
+        new_solved_per_move = (num_wrong - new_num_wrong) / commutator.length
         if new_solved_per_move > best_pieces_solved_per_move:
             best_pieces_solved_per_move = new_solved_per_move
             best_commutator = commutator
@@ -46,11 +48,12 @@ def find_best_commutator(initial_state, solution_state, commutators: List[Move],
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
-parser.add_argument("commutator_file", type=str)
-parser.add_argument("--sol_dir", type=str, default="data/solutions")
+
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument("-commutator_file", type=str)
+group.add_argument("-conjugate_file", type=str)
+
 parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
-parser.add_argument("--moves", action="store_true", default=False)
-parser.add_argument("--unique", action="store_true", default=False)
 parser.add_argument("--partial_sol", type=str, default=None)
 parser.add_argument("--create_conjugates", action="store_true", default=False)
 
@@ -83,29 +86,37 @@ else:
 num_wrong = evaluate_difference(initial_state, solution_state)
 print(f"Number of wrong stickers: {num_wrong}")
 
-commutators = create_commutators(args.commutator_file, moves, move_map, 5)
-print(f"Number of commutators: {len(commutators)}")
+if args.commutator_file:
+    commutators = create_commutators(args.commutator_file, moves, move_map, 5)
+    print(f"Number of commutators: {len(commutators)}")
 
-if args.create_conjugates:
-    conjugates = create_conjugates(commutators, moves, max_setup_moves=3)
-    print(f"Number of conjugates: {len(conjugates)}")
+    if args.create_conjugates:
+        conjugates = create_conjugates(commutators, moves, max_setup_moves=3)
+        print(f"Number of conjugates: {len(conjugates)}")
 
-    commutators = commutators + conjugates
-    print(f"Number of commutating moves: {len(commutators)}")
+        commutators = commutators + conjugates
+        print(f"Number of commutating moves: {len(commutators)}")
 
-    # Write the commutators to a file
-    # with open("data/tws_phases/cube_4_4_4/expanded_comms_conjugates.txt", "w") as fp:
-    #     for comm in commutators:
-    #         fp.write(comm.name + "\n")
+        # Write the commutators to a file in the same folder as the commutator file
+        commutator_folder = os.path.dirname(args.commutator_file)  
+        conjugate_file = os.path.join(commutator_folder, "expanded_comms_conjugates.txt")
+        with open(conjugate_file, "w") as fp:
+            for comm in commutators:
+                fp.write(comm.name + "\n")
+
+elif args.conjugate_file:
+    commutators = read_conjugates(args.conjugate_file, moves)
+    print(f"Number of conjugates: {len(commutators)}")
 
 # commutators = expand_moves(commutators)
 # print(f"Number of commutating moves after expansion: {len(commutators)}")
 
+wildcards = puzzle['num_wildcards']
 
 in_a_row = 1
 last_num_wrong = num_wrong
 iters_since_improvement = 0
-while num_wrong > 0:
+while num_wrong > 8:
     best_comm = find_best_commutator(initial_state, solution_state, commutators, in_a_row)
 
     if best_comm is None:
@@ -133,7 +144,7 @@ while num_wrong > 0:
 
     if num_wrong == last_num_wrong:
         iters_since_improvement += 1
-        if iters_since_improvement > 20:
+        if iters_since_improvement > 5:
             print("No improvement in 5 iterations. Giving up")
             break
     else:
@@ -174,5 +185,37 @@ while num_wrong > 0:
 # for index, count in sorted(index_affected_count.items()):
 #     print(f"{index}: {count}")
 
-print(f"Solution length: {len(solution.split('.'))}")
+solution_moves = solution.split(".")
+print(f"Solution length: {len(solution_moves)}")
 print("Solution:", solution)
+
+with open(f"data/solutions/{args.id}.txt", "r") as fp:
+    current_solution = fp.read().split(".")
+
+print(f"Validating")
+state = np.array(puzzle["initial_state"].split(";"))
+for move_name in solution_moves:
+    state = state[moves[move_name]]
+
+num_difference = evaluate_difference(state, solution_state)
+
+if num_difference <= wildcards:
+    print(f"Solution is valid. Diff to WC: {num_difference} <= {wildcards}")
+    # Write it to the solution file
+
+    print(f"Length of new solution: {len(solution_moves)}")
+    print(f"Length of current solution: {len(current_solution)}")
+    if len(solution_moves) < len(current_solution):
+        print(f"New solution is shorter than current solution. Writing to file.")
+        with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
+            fp.write(solution)
+    else:
+        print(f"New solution is longer than current solution.")
+else:
+    print(f"Solution is invalid. Diff to WC: {num_difference} > {wildcards}")
+    print(f"Expected: {solution_state}")
+    print(f"Got: {state}")
+    print(f"Writing to partial solution file")
+
+    with open(f"data/comms_partial_sol.txt", "w") as f:
+        f.write(solution)

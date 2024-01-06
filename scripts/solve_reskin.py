@@ -167,5 +167,5 @@ else:
     print(f"Got: {state}")
     print(f"Writing to partial solution file")
 
-    with open(f"data/partial_sol.txt", "w") as f:
+    with open(f"data/reskin_partial_sol.txt", "w") as f:
         f.write(mapped_sol)

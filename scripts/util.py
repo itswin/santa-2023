@@ -302,6 +302,9 @@ def make_odd_center_reskin_map(odd_centers, reskin_solution, normal_solution):
     return odd_center_map
 
 def invert(move):
+    if "." in move:
+        return ".".join(map(invert, move.split(".")))
+
     if move.startswith("-"):
         return move[1:]
     else:
@@ -338,8 +341,9 @@ class Commutator(Move):
     def __init__(self, name, puzzle_moves, move_map=None):
         commutator_re = re.compile("\\[(.*),(.*)\\]")
         comm = commutator_re.match(name)
-        X = comm.group(1).split(" ")
-        Y = comm.group(2).split(" ")
+        delimiter = '|' if '|' in comm.group(1) else ' '
+        X = comm.group(1).split(delimiter)
+        Y = comm.group(2).split(delimiter)
         X_inv = list(map(invert, reversed(X)))
         Y_inv = list(map(invert, reversed(Y)))
 
@@ -370,19 +374,66 @@ class Commutator(Move):
         self.length = len(self.moves)
         self.num_wrong = count_wrong(self.move)
 
+# Formatted in (SETUP,COMMUTATOR)
+# Performs moves SETUP COMMUTATOR SETUP'
 class Conjugate(Move):
-    def __init__(self, name, move, moves):
+    def __init__(self, name, puzzle_moves, move_map=None):
+        conjugate_re = re.compile("\\((.*),\\[(.*)\\]\\)")
+        comm = conjugate_re.match(name)
+        setup = comm.group(1).split('|')
+        commutator = Commutator(f"[{comm.group(2)}]", puzzle_moves, move_map)
+
         self.name = name
-        self.move = move
-        self.moves = moves
+        self.moves = setup + commutator.moves + list(map(invert, reversed(setup)))
+        self.move = puzzle_moves[setup[0]]
+        for i in range(1, len(self.moves)):
+            self.move = self.move[puzzle_moves[self.moves[i]]]
+
         self.moves_named = ".".join(self.moves)
-        self.length = len(moves)
-        self.num_wrong = count_wrong(move)
+        self.length = len(self.moves)
+        self.num_wrong = count_wrong(self.move)
+
+
+def read_conjugates(moves_file, moves, move_map=None, max_wrong=5):
+    conjugates = []
+    all_move_set = set()
+    identity = np.arange(len(moves[list(moves.keys())[0]]))
+
+    with open(moves_file, "r") as fp:
+        lines = fp.readlines()
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            if line[0] == "(":
+                move = Conjugate(line, moves, move_map)
+            elif line[0] == "[":
+                move = Commutator(line, moves, move_map)
+            else:
+                print(f"Skipping {line} because it is not a commutator or conjugate")
+                continue
+
+            # Skip commutators which are the identity
+            if (move.move == identity).all():
+                continue
+
+            # Skip commutators which are the same as any existing move
+            if tuple(move.move) in all_move_set:
+                continue
+
+            if move.num_wrong > max_wrong:
+                print(f"Skipping {move.name} because it commutes too many pieces. Commutes {move.num_wrong} > {max_wrong}.")
+                continue
+
+            conjugates.append(move)
+            all_move_set.add(tuple(move.move))
+
+    return conjugates
 
 def create_commutators(commutator_file, moves, move_map=None, max_wrong=5):
     commutator_re = re.compile(".*(\\[.*\\])")
     commutators = []
-    print(move_map)
     identity = np.arange(len(moves[list(moves.keys())[0]]))
 
     all_move_set = set()
@@ -391,8 +442,6 @@ def create_commutators(commutator_file, moves, move_map=None, max_wrong=5):
         for line in lines:
             line = line.strip()
             if not line:
-                continue
-            if not line.startswith("CENTER"):
                 continue
             comm = commutator_re.match(line)
             if comm is None:
