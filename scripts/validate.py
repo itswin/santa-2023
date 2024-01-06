@@ -29,12 +29,17 @@ def validate_one(id, sol_file_name, verbose=False):
     for move_name in solution:
         state = state[moves[move_name]]
 
-    if (sum(puzzle["solution_state"].split(";") != state) > num_wildcards):
+    solution_state = puzzle["solution_state"].split(";")
+    if (sum(solution_state != state) > num_wildcards):
         print(f"Solution is incorrect for problem {id}")
         print(f"Number of wildcards: {num_wildcards}")
         print(f"Expected: \t{puzzle['solution_state']}")
         print(f"Got: \t\t{';'.join(state)}")
         print(f"Num different: {np.count_nonzero(puzzle['solution_state'].split(';') != state)}")
+
+        for i in range(len(solution_state)):
+            if solution_state[i] != state[i]:
+                print(f"Sticker {i}: {solution_state[i]} -> {state[i]}")
         assert False
 
     if verbose:

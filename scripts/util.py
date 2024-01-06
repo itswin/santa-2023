@@ -307,7 +307,34 @@ def invert(move):
     else:
         return "-" + move
 
-class Commutator:
+
+def count_wrong(move):
+    identity = np.arange(len(move))
+    return np.count_nonzero(move != identity)
+
+class Move:
+    def __init__(self, name: str, move: List[int], moves: List[str]):
+        self.name = name
+        self.move = move
+        self.moves = moves
+        self.moves_named = ".".join(self.moves)
+        self.length = len(moves)
+        self.num_wrong = count_wrong(move)
+
+    def count_pre_cancels(self, moves):
+        # Count the number of moves that cancel between the 
+        # beginning of this commutator and the end of the other commutator
+
+        for i in range(0, min(self.length, len(moves))):
+            if self.moves[i] != invert(moves[-i - 1]):
+                return i
+
+        return min(self.length, min(self.length, len(moves)))
+
+    def compose(self, other):
+        return Move(self.name + "." + other.name, self.move[other.move], self.moves + other.moves)
+
+class Commutator(Move):
     def __init__(self, name, puzzle_moves, move_map=None):
         commutator_re = re.compile("\\[(.*),(.*)\\]")
         comm = commutator_re.match(name)
@@ -341,35 +368,153 @@ class Commutator:
 
         self.moves_named = ".".join(self.moves)
         self.length = len(self.moves)
-    
-    def count_pre_cancels(self, move_list):
-        # Count the number of moves that cancel between the 
-        # beginning of this commutator and the end of the other commutator
+        self.num_wrong = count_wrong(self.move)
 
-        for i in range(0, min(self.length, len(move_list))):
-            if self.moves[i] != invert(move_list[-i - 1]):
-                return i
-   
-        return min(self.length, min(self.length, len(move_list)))
+class Conjugate(Move):
+    def __init__(self, name, move, moves):
+        self.name = name
+        self.move = move
+        self.moves = moves
+        self.moves_named = ".".join(self.moves)
+        self.length = len(moves)
+        self.num_wrong = count_wrong(move)
 
-
-def create_commutators(commutator_file, moves, move_map=None):
+def create_commutators(commutator_file, moves, move_map=None, max_wrong=5):
     commutator_re = re.compile(".*(\\[.*\\])")
     commutators = []
     print(move_map)
+    identity = np.arange(len(moves[list(moves.keys())[0]]))
+
+    all_move_set = set()
     with open(commutator_file, "r") as fp:
         lines = fp.readlines()
         for line in lines:
             line = line.strip()
             if not line:
                 continue
+            if not line.startswith("CENTER"):
+                continue
             comm = commutator_re.match(line)
             if comm is None:
                 continue
             commutator_name = comm.group(1)
-            commutators.append(Commutator(commutator_name, moves, move_map))
+            commutator = Commutator(commutator_name, moves, move_map)
+
+            # Skip commutators which are the identity
+            if (commutator.move == identity).all():
+                continue
+
+            # Skip commutators which are the same as any existing commutator
+            if tuple(commutator.move) in all_move_set:
+                continue
+
+            if commutator.num_wrong > max_wrong:
+                print(f"Skipping {commutator.name} because it commutes too many pieces. Commutes {commutator.num_wrong} > {max_wrong}. {commutator_name}")
+                continue
+
+            commutators.append(commutator)
+            all_move_set.add(tuple(commutator.move))
+
+    # Create commutators back to back
+    # Cm Cn
+    # comms2 = []
+    # for commutator_list in itertools.product(commutators, repeat=2):
+    #     new_comm = commutator_list[0].compose(commutator_list[1])
+
+    #     # Skip comms which are the identity
+    #     if new_comm.num_wrong == 0 or new_comm.num_wrong > max_wrong:
+    #         continue
+
+    #     if tuple(new_comm.move) in all_move_set:
+    #         continue
+
+    #     comms2.append(new_comm)
+
+    # commutators.extend(comms2)
 
     return commutators
+
+def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_pieces_changed=2, max_wrong=5):
+    global identity
+    identity = np.arange(len(moves[list(moves.keys())[0]]))
+
+    all_move_set = set()
+    for commutator in commutators:
+        all_move_set.add(tuple(commutator.move))
+
+    conjugates = []
+    for commutator in commutators:
+        for num_setup_moves in range(1, max_setup_moves + 1):
+            for setup_moves in itertools.product(moves.keys(), repeat=num_setup_moves):
+                setup_moves = list(setup_moves)
+                # Skip setup moves which are the identity
+                setup_move = moves[setup_moves[0]]
+                for i in range(1, len(setup_moves)):
+                    setup_move = setup_move[moves[setup_moves[i]]]
+
+                if count_wrong(setup_move) == 0:
+                    continue
+
+                # Skip setup moves which cancel with the commutator
+                if commutator.count_pre_cancels(setup_moves) > 0:
+                    continue
+
+                setup_moves_inv = list(map(invert, reversed(setup_moves)))
+                setup_move_inv = moves[setup_moves_inv[0]]
+                for i in range(1, len(setup_moves_inv)):
+                    setup_move_inv = setup_move_inv[moves[setup_moves_inv[i]]]
+
+                conjugate_moves = setup_moves + commutator.moves + setup_moves_inv
+                conjugate_move = setup_move[commutator.move][setup_move_inv]
+
+                # Skip conjugates which are the identity
+                if count_wrong(conjugate_move) == 0:
+                    continue
+
+                # Skip conjugates which are the same as any existing commutator or conjugate
+                if tuple(conjugate_move) in all_move_set:
+                    continue
+
+                # Format conjugate names as (setup,commutator)
+                conjugate = Move(f"({'|'.join(setup_moves)},{commutator.name})", conjugate_move, conjugate_moves)
+                if conjugate.num_wrong > commutator.num_wrong + max_additional_pieces_changed:
+                    continue
+
+                if conjugate.num_wrong > max_wrong:
+                    continue
+
+                conjugates.append(conjugate)
+                all_move_set.add(tuple(conjugate_move))
+
+    return conjugates
+
+# Look at moves which overlap to some degree with each other to create new moves
+def expand_moves(moves):
+    all_move_set = set()
+    for move in moves:
+        all_move_set.add(tuple(move.move))
+
+    new_moves = []
+    for move in moves:
+        for move2 in moves:
+            new_move = move.compose(move2)
+            if tuple(new_move.move) in all_move_set:
+                continue
+
+            # Skip ones that commute too many pieces
+            if new_move.num_wrong >= move.num_wrong + move2.num_wrong:
+                # print(f"Skipping {new_move.name} because it commutes too many pieces. Commutes {new_move.num_wrong} >= {move.num_wrong} + {move2.num_wrong}")
+                continue
+
+            if new_move.num_wrong == 0:
+                # print(f"Skipping {new_move.name} because it is the identity")
+                continue
+
+            new_moves.append(new_move)
+            # print(f"Found new move. Commutes {new_move.num_wrong}", new_move.name)
+            all_move_set.add(tuple(new_move.move))
+
+    return new_moves
 
 def write_tws_file(puzzle, unique=False, commutators=None):
     full_moves = get_moves(puzzle["puzzle_type"])

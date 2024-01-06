@@ -52,9 +52,9 @@ def idastar(commutators, initial_state, final_state, params, current_path, clear
                 depth_limited_search(
                     commutators, current_starting_state, final_state, closed_set, params, greedy
                 )
-            greedy = True
 
             if new_best_path is not None and new_best_difference < best_difference:
+                greedy = True
                 best_state = new_best_state
                 best_path = current_path.copy() + new_best_path
                 best_difference = new_best_difference
@@ -82,7 +82,7 @@ def idastar(commutators, initial_state, final_state, params, current_path, clear
                     print(f"Max moves reached. Returning best path.")
                     return best_path, iteration_counter, False
             else:
-                print("Depth limited search failed. Downsampling and increasing nodes trying again. Turning off greedy for one iter")
+                print("Depth limited search failed. Downsampling and increasing nodes trying again. Turning off greedy for now.")
                 greedy = False
                 # params['max_iteration_nodes'] = int(params['max_iteration_nodes'] * 2)
 
@@ -145,6 +145,12 @@ def depth_limited_search(commutators, initial_state, final_state, closed_set, pa
             #          (move_str[0] != "-" and "-" + move_str == last_move)):
             #     continue
 
+            # Skip commutators which do not affect any of the wrong stickers
+            wrong_indices = np.where(final_state != node.state)[0]
+            num_affected = np.count_nonzero(commutator.move[wrong_indices] != wrong_indices)
+            if num_affected == 0:
+                continue
+
             cancels = commutator.count_pre_cancels(node.path)
             new_state = node.state[commutator.move]
             new_difference = evaluate_difference(new_state, final_state)
@@ -196,8 +202,13 @@ def main():
     move_map = get_move_map(n)
 
     commutators = create_commutators(args.commutator_file, moves, move_map)
-    avg_commutator_length = np.mean([c.length for c in commutators])
+    conjugates = create_conjugates(commutators, moves, max_setup_moves=1)
     print(f"Number of commutators: {len(commutators)}")
+    print(f"Number of conjugates: {len(conjugates)}")
+
+    commutators = commutators + conjugates
+    avg_commutator_length = np.mean([c.length for c in commutators])
+    print(f"Number of commutating moves: {len(commutators)}")
     print(f"Average commutator length: {avg_commutator_length}")
 
     wildcards = puzzle['num_wildcards']
@@ -205,6 +216,10 @@ def main():
 
     with open(f"{args.sol_dir}/{args.id}.txt", "r") as fp:
         current_solution = fp.read().split(".")
+
+    # Add normal moves to the commutators
+    for name, move in moves.items():
+        commutators.append(Move(name, move, [name]))
 
     params = {
         'wildcards': wildcards,
