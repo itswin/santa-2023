@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 import pandas as pd
-import json
 import numpy as np
 import argparse
 import heapq
 import time
 from typing import Dict, Tuple, List
-import sys
 import random
 from util import *
+import os
+
+# ./scripts/ida_comms.py 240 -conjugate_file ./data/tws_phases/cube_5_5_5/expanded_comms_conjugates.txt
 
 def evaluate_score(current_state, final_state):
     # Reward having the final position match, and also reward having 2 of the same state adjacent to each other
     # This has to be fast since it's called so often
-    return np.count_nonzero(current_state != final_state) + \
-        0.5 * np.count_nonzero(current_state[1:] != current_state[:-1])
+    return np.count_nonzero(current_state != final_state)
 
 class Node:
     def __init__(self, priority, state, path):
@@ -137,6 +137,8 @@ def depth_limited_search(commutators, initial_state, final_state, closed_set, pa
 
         closed_set.add(tuple(node.state))
 
+        random.shuffle(commutators)
+
         for commutator in commutators:
             # Skip this move if it's the inverse of the last one we did
             # last_move = node.path[-1] if len(node.path) > 0 else None
@@ -164,7 +166,7 @@ def depth_limited_search(commutators, initial_state, final_state, closed_set, pa
                 new_path = node.path + commutator.moves
 
             if tuple(new_state) not in closed_set:
-                heapq.heappush(open_set, Node(node.priority + commutator.length - cancels + new_difference, new_state, new_path))
+                heapq.heappush(open_set, Node(node.priority + commutator.length - 2 * cancels + new_difference, new_state, new_path))
                 node_counter += 1
 
     # If no solutions are found:
@@ -175,7 +177,11 @@ def depth_limited_search(commutators, initial_state, final_state, closed_set, pa
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("id", type=int)
-    parser.add_argument("commutator_file", type=str)
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-commutator_file", type=str)
+    group.add_argument("-conjugate_file", type=str)
+
     parser.add_argument("--timeout", type=int, default=60 * 60 * 2)
     parser.add_argument("--iterations", type=int, default=50)
     parser.add_argument("--from_progress", action="store_true", default=False)
@@ -187,6 +193,7 @@ def main():
     parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
     parser.add_argument("--always_write", action="store_true", default=False)
     parser.add_argument("--partial_sol", type=str, default=None)
+    parser.add_argument("--add_normal_moves", action="store_true", default=False)
     args = parser.parse_args()
 
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
@@ -201,15 +208,26 @@ def main():
     n = int(puzzle_type.split("/")[-1])
     move_map = get_move_map(n)
 
-    commutators = create_commutators(args.commutator_file, moves, move_map)
-    conjugates = create_conjugates(commutators, moves, max_setup_moves=1)
-    print(f"Number of commutators: {len(commutators)}")
-    print(f"Number of conjugates: {len(conjugates)}")
+    if args.commutator_file:
+        commutators = create_commutators(args.commutator_file, moves, move_map, 5)
+        print(f"Number of commutators: {len(commutators)}")
 
-    commutators = commutators + conjugates
-    avg_commutator_length = np.mean([c.length for c in commutators])
-    print(f"Number of commutating moves: {len(commutators)}")
-    print(f"Average commutator length: {avg_commutator_length}")
+        if args.create_conjugates:
+            conjugates = create_conjugates(commutators, moves, max_setup_moves=2)
+            print(f"Number of conjugates: {len(conjugates)}")
+
+            commutators = commutators + conjugates
+            print(f"Number of commutating moves: {len(commutators)}")
+
+            # Write the commutators to a file in the same folder as the commutator file
+            commutator_folder = os.path.dirname(args.commutator_file)  
+            conjugate_file = os.path.join(commutator_folder, "expanded_comms_conjugates2.txt")
+            with open(conjugate_file, "w") as fp:
+                for comm in commutators:
+                    fp.write(comm.name + "\n")
+    elif args.conjugate_file:
+        commutators = read_conjugates(args.conjugate_file, moves)
+        print(f"Number of conjugates: {len(commutators)}")
 
     wildcards = puzzle['num_wildcards']
     current_solution = []
@@ -218,8 +236,9 @@ def main():
         current_solution = fp.read().split(".")
 
     # Add normal moves to the commutators
-    for name, move in moves.items():
-        commutators.append(Move(name, move, [name]))
+    if args.add_normal_moves:
+        for name, move in moves.items():
+            commutators.append(Move(name, move, [name]))
 
     params = {
         'wildcards': wildcards,

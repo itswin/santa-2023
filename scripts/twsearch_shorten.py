@@ -55,6 +55,7 @@ def invert_if_cyclic_and_inverted(move):
         return move
 
 scramble = " ".join(list(map(invert_if_cyclic_and_inverted, current_solution))) + "\n"
+print(f"Current solution length: {len(current_solution)}")
 print(scramble)
 
 if args.moves:
