@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import argparse
+from collections import Counter
 import pandas as pd
 import itertools
 import numpy as np
@@ -12,6 +13,65 @@ import os
 
 # seq 209 209 | xargs -I {} sh -c "python3 scripts/solve_reskin.py {} && ./scripts/ida_comms.py {} ./data/tws_phases/cube_4_4_4/4x4x4_center_comms.txt --partial_sol data/partial_sol.txt --clear_when_new_best"
 
+# Identify cycles and find a commutator that affects them both
+def join_cycles(initial_state, solution_state, commutators: List[Move]) -> Move:
+    piece_to_cycle = identify_cycles(initial_state, solution_state)
+
+    print(f"Found {len(set(piece_to_cycle.values()))} cycles")
+    print(f"Piece to cycle: {piece_to_cycle}")
+
+    # Find a commutator that affects both cycles that results in the fewest number of cycles
+    best_commutator = None
+    exists_2_cycle = 2 in Counter(piece_to_cycle.values()).values()
+    num_cycles = len(set(piece_to_cycle.values()))
+    best_compare = (exists_2_cycle, num_cycles + 5)
+
+    for commutator in commutators:
+        # Check if this commutator affects both cycles
+        if not any(commutator.move[i] != i for i in piece_to_cycle.keys()):
+            continue
+
+        # Apply the commutator to the initial state
+        new_state = initial_state[commutator.move]
+
+        # Identify the cycles in the new state
+        new_piece_to_cycle = identify_cycles(new_state, solution_state)
+        num_cycles = len(set(new_piece_to_cycle.values()))
+        new_exists_2_cycle = 2 in Counter(new_piece_to_cycle.values()).values()
+        compare = (new_exists_2_cycle, num_cycles)
+
+        if compare < best_compare:
+            best_compare = compare
+            best_commutator = commutator
+
+    return best_commutator
+
+def remove_2_cycles(state, solution_state, commutators: List[Move]):
+    piece_to_cycle = identify_cycles(state, solution_state)
+
+    # print(f"Found {len(set(piece_to_cycle.values()))} cycles")
+    # print(f"Piece to cycle: {piece_to_cycle}")
+
+    # Find a commutator that affects both cycles that results in the fewest number of cycles
+    result_commutator = None
+
+    while 2 in Counter(piece_to_cycle.values()).values():
+        join_commutator = join_cycles(state, solution_state, commutators)
+        if join_commutator is None:
+            print("No join commutator found to remove 2 cycles")
+            break
+
+        # print(f"Join commutator: {join_commutator.name}")
+        state = state[join_commutator.move]
+        piece_to_cycle = identify_cycles(state, solution_state)
+
+        if result_commutator is None:
+            result_commutator = join_commutator
+        else:
+            result_commutator = result_commutator.compose(join_commutator)
+
+    return result_commutator
+
 def find_best_commutator(initial_state, solution_state, commutators: List[Move], in_a_row=1) -> Move:
     num_wrong = evaluate_difference(initial_state, solution_state)
 
@@ -19,6 +79,9 @@ def find_best_commutator(initial_state, solution_state, commutators: List[Move],
     # Find the one that results in the lowest number of wrong stickers
 
     random.shuffle(commutators)
+
+    piece_to_cycle = identify_cycles(initial_state, solution_state)
+    exists_2_cycle = 2 in Counter(piece_to_cycle.values()).values()
 
     best_pieces_solved_per_move = -1
     best_new_num_wrong = num_wrong + 5
@@ -31,13 +94,30 @@ def find_best_commutator(initial_state, solution_state, commutators: List[Move],
 
         new_state = initial_state[commutator.move]
         new_num_wrong = evaluate_difference(new_state, solution_state)
-        if new_num_wrong > num_wrong:
-            continue
+        # if new_num_wrong > num_wrong:
+        #     continue
 
-        new_solved_per_move = (num_wrong - new_num_wrong) / commutator.length
-        if new_solved_per_move > best_pieces_solved_per_move:
-            best_pieces_solved_per_move = new_solved_per_move
+        # if new_num_wrong == num_wrong:
+        #     continue
+
+        # if new_num_wrong == 4:
+        #     continue
+
+        # Do not create a 2 cycle if there is not already one
+        # if not exists_2_cycle:
+        #     new_piece_to_cycle = identify_cycles(new_state, solution_state)
+        #     new_exists_2_cycle = 2 in Counter(new_piece_to_cycle.values()).values()
+        #     if new_exists_2_cycle:
+        #         continue
+
+        if new_num_wrong < best_new_num_wrong:
+            best_new_num_wrong = new_num_wrong
             best_commutator = commutator
+
+        # new_solved_per_move = (num_wrong - new_num_wrong) / commutator.length
+        # if new_solved_per_move > best_pieces_solved_per_move:
+        #     best_pieces_solved_per_move = new_solved_per_move
+        #     best_commutator = commutator
 
     # if best_new_num_wrong >= num_wrong:
     #     print(f"Cound not find a commutator that improved the number of wrong stickers. Best stickers {best_new_num_wrong} vs {num_wrong}")
@@ -118,7 +198,7 @@ in_a_row = 1
 last_num_wrong = num_wrong
 iters_since_improvement = 0
 best_num_wrong = num_wrong
-best_solution = None
+best_solution = solution
 
 while num_wrong > wildcards:
     best_comm = find_best_commutator(initial_state, solution_state, commutators, in_a_row)
@@ -137,20 +217,40 @@ while num_wrong > wildcards:
     print(f"Best commutator: {best_comm.name}")
     initial_state = initial_state[best_comm.move]
     num_wrong = evaluate_difference(initial_state, solution_state)
-    print(f"Number of wrong stickers: {num_wrong}")
+    print(f"\tNumber of wrong stickers: {num_wrong}")
+
+    # print_wrong_stickers(initial_state, solution_state)
 
     if solution is None:
         solution = best_comm.moves_named
     else:
         solution += "." + best_comm.moves_named
 
-    print(f"Solution length so far: {len(solution.split('.'))}")
+    print(f"\tSolution length so far: {len(solution.split('.'))}")
 
     if num_wrong >= last_num_wrong:
         iters_since_improvement += 1
-        if iters_since_improvement > 5:
+        if iters_since_improvement > 20:
             print("No improvement in 5 iterations. Giving up")
             break
+
+        # join_commutator = remove_2_cycles(initial_state, solution_state, commutators)
+        # if join_commutator is None:
+        #     print("No 2 cycles")
+        #     continue
+
+        # print(f"Join commutator: {join_commutator.name}")
+        # initial_state = initial_state[join_commutator.move]
+        # num_wrong = evaluate_difference(initial_state, solution_state)
+        # last_num_wrong = num_wrong
+        # print(f"\tNumber of wrong stickers: {num_wrong}")
+
+        # # print_wrong_stickers(initial_state, solution_state)
+
+        # if solution is None:
+        #     solution = join_commutator.moves_named
+        # else:
+        #     solution += "." + join_commutator.moves_named
     else:
         iters_since_improvement = 0
         last_num_wrong = num_wrong
@@ -166,6 +266,32 @@ print("Solution:", solution)
 best_solution_moves = best_solution.split(".")
 print(f"Best Solution length: {len(best_solution_moves)}")
 print("Best Solution:", best_solution)
+
+
+# for commutator in commutators:
+#     if commutator.move[7] != 7:
+#         print(f"Comm {commutator.name} affects 7. Num wrong {commutator.num_wrong}")
+#         print(f"Move: {commutator.move}")
+#         break
+wrong_indices = np.where(solution_state != initial_state)[0]
+print(sorted(wrong_indices))
+wrong_to_count = {}
+for commutator in commutators:
+    # Count how many of the wrong stickers are affected by this commutator
+    c = np.count_nonzero(commutator.move[wrong_indices] != wrong_indices)
+    wrong_to_count[c] = wrong_to_count.get(c, 0) + 1
+
+print("Wrong to count", wrong_to_count)
+
+# index_affected_count = {}
+# for commutator in commutators:
+#     for i in range(len(commutator.move)):
+#         if commutator.move[i] != i:
+#             index_affected_count[i] = index_affected_count.get(i, 0) + 1
+
+# print("Index affected count:")
+# for index, count in sorted(index_affected_count.items()):
+#     print(f"{index}: {count}")
 
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")

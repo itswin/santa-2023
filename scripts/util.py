@@ -743,3 +743,27 @@ def create_invert_if_not_cycle(is_move_cyclic):
         else:
             return "-" + move
     return f
+
+def print_wrong_stickers(initial_state, solution_state):
+    for i in range(len(solution_state)):
+        if solution_state[i] != initial_state[i]:
+            print(f"\tSticker {i}: {initial_state[i]} -> {solution_state[i]}")
+
+def identify_cycles(initial_state, solution_state):
+    # Find the cycles
+    piece_to_cycle = {}
+    cycle = 0
+    for i in range(len(solution_state)):
+        if solution_state[i] != initial_state[i]:
+            if i in piece_to_cycle:
+                continue
+
+            piece_to_cycle[i] = cycle
+            j = int(initial_state[i][1:])
+            while j != i:
+                piece_to_cycle[j] = cycle
+                j = int(initial_state[j][1:])
+            
+            cycle += 1
+
+    return piece_to_cycle

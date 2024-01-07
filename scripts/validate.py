@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import numpy as np
 from util import *
+from collections import Counter
 
 def validate_one(id, sol_file_name, verbose=False):
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[id]
@@ -37,9 +38,12 @@ def validate_one(id, sol_file_name, verbose=False):
         print(f"Got: \t\t{';'.join(state)}")
         print(f"Num different: {np.count_nonzero(puzzle['solution_state'].split(';') != state)}")
 
-        for i in range(len(solution_state)):
-            if solution_state[i] != state[i]:
-                print(f"Sticker {i}: {state[i]} -> {solution_state[i]}")
+        print_wrong_stickers(state, solution_state)
+
+        piece_to_cycle = identify_cycles(state, solution_state)
+
+        print(f"Found {len(set(piece_to_cycle.values()))} cycles")
+        print(f"Cycle lengths: {Counter(piece_to_cycle.values())}")
         assert False
 
     if verbose:

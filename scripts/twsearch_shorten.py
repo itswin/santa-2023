@@ -47,7 +47,8 @@ print(f"Current solution length: {len(current_solution)}")
 print(scramble)
 
 if args.moves:
-    with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
+    # with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
+    with open("./moves.txt", "w") as fp:
         fp.write(scramble)
 
 SOLVER_PATH = f"/Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -q --microthreads 16 --shortenseqs -M 32768 {tws_file}".split()

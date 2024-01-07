@@ -69,7 +69,8 @@ else:
 print(scramble)
 
 if args.moves:
-    with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
+    # with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
+    with open("./moves.txt", "w") as fp:
         fp.write(scramble)
     exit()
 
@@ -92,6 +93,9 @@ for line in out:
 if not sol:
     print("No solution found.")
     print(out)
+
+    # Print stderr
+    print(p.stderr.read().decode("utf-8"))
     exit()
 
 sol = sol.split(".")

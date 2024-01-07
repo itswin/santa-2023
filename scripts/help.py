@@ -9,19 +9,8 @@ args = parser.parse_args()
 
 with open(args.input, 'r') as f:
     lines = f.readlines()
-    num_conj = 0
-    num_comms = 0
-    other = 0
-    for line in lines:
-        if line[0] == '(':
-            num_conj += 1
-        elif line[0] == '[':
-            num_comms += 1
-        else:
-            other += 1
-            print(line)
+    moves_found = []
+    moves = set(lines[0].strip().split(' '))
 
-    print(f"Conjugates: {num_conj}")
-    print(f"Commutators: {num_comms}")
-    print(f"Other: {other}")
-    print(f"Total: {num_conj + num_comms + other}")
+    print(f"Number of moves: {len(moves)}")
+    print(f"Moves: {moves}")
