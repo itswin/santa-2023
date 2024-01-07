@@ -91,7 +91,7 @@ if args.commutator_file:
     print(f"Number of commutators: {len(commutators)}")
 
     if args.create_conjugates:
-        conjugates = create_conjugates(commutators, moves, max_setup_moves=4)
+        conjugates = create_conjugates(commutators, moves, max_setup_moves=2)
         print(f"Number of conjugates: {len(conjugates)}")
 
         commutators = commutators + conjugates
@@ -99,7 +99,7 @@ if args.commutator_file:
 
         # Write the commutators to a file in the same folder as the commutator file
         commutator_folder = os.path.dirname(args.commutator_file)  
-        conjugate_file = os.path.join(commutator_folder, "expanded_comms_conjugates2.txt")
+        conjugate_file = os.path.join(commutator_folder, "expanded_comms_conjugates.txt")
         with open(conjugate_file, "w") as fp:
             for comm in commutators:
                 fp.write(comm.name + "\n")
