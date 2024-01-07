@@ -17,6 +17,7 @@ parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 parser.add_argument("--moves", action="store_true", default=False)
 parser.add_argument("--unique", action="store_true", default=False)
 parser.add_argument("--commutator_file", type=str, default=None)
+parser.add_argument("--tws_file", type=str, default=None)
 
 args = parser.parse_args()
 
@@ -35,7 +36,10 @@ commutators = None
 if args.commutator_file:
     commutators = create_commutators(args.commutator_file, moves)
 
-tws_file = write_tws_file(puzzle, args.unique, commutators)
+if args.tws_file:
+    tws_file = args.tws_file
+else:
+    tws_file = write_tws_file(puzzle, args.unique, commutators)
 
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
@@ -78,11 +82,17 @@ p.wait()
 out = out.decode("utf-8").strip()
 out = out.split("\n")
 
+sol = None
 # Search for the solution line
 for line in out:
     if line.startswith("FOUND SOLUTION: "):
         sol = line.split(":")[1].strip()
         break
+
+if not sol:
+    print("No solution found.")
+    print(out)
+    exit()
 
 sol = sol.split(".")
 

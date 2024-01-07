@@ -114,7 +114,7 @@ wildcards = puzzle['num_wildcards']
 last_num_wrong = num_wrong
 iters_since_improvement = 0
 
-while num_wrong > 8:
+while num_wrong > wildcards:
     best_comm = find_best_commutator(initial_state, solution_state, commutators)
 
     if best_comm is None:

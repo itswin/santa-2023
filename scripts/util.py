@@ -465,7 +465,7 @@ def create_commutators(commutator_file, moves, move_map=None, max_wrong=5):
                 continue
 
             if commutator.num_wrong > max_wrong:
-                print(f"Skipping {commutator.name} because it commutes too many pieces. Commutes {commutator.num_wrong} > {max_wrong}. {commutator_name}")
+                print(f"Skipping {commutator.name} because it commutes too many pieces. Commutes {commutator.num_wrong} > {max_wrong}.")
                 continue
 
             commutators.append(commutator)

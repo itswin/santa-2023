@@ -134,7 +134,7 @@ while num_wrong > wildcards:
         # print(f"Current state: {initial_state}")
         # continue
 
-    print(f"Best commutator: {best_comm.name} ({best_comm.move})")
+    print(f"Best commutator: {best_comm.name}")
     initial_state = initial_state[best_comm.move]
     num_wrong = evaluate_difference(initial_state, solution_state)
     print(f"Number of wrong stickers: {num_wrong}")
