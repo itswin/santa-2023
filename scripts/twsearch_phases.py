@@ -67,21 +67,9 @@ if args.write_tws:
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")
 
-is_move_cyclic = {}
-identity = np.arange(len(initial_state))
-for name, move in moves.items():
-    m = move[move]
-    is_move_cyclic[name] = (m == identity).all()
+is_move_cyclic = get_cyclic_moves(moves)
 
-def invert_if_not_cycle(move):
-    if move[0] == '-':
-        return move[1:]
-    elif is_move_cyclic[move]:
-        return move
-    else:
-        return "-" + move
-
-scramble = " ".join(reversed(list(map(invert_if_not_cycle, current_solution))))
+scramble = " ".join(reversed(list(map(create_invert_if_not_cycle(is_move_cyclic), current_solution))))
 # partial_sol = "f3.f2.d0.d1.r0.r1.d3.d2.r3.r3.f3.f2.d3.d3.-f3.r0.r1.f3.d0.d0.d1.d1.r0.r0.f3.f3.d3.r3.r2.f3.d0.f3.f3.f2.f2.r0.r0.r1.r1.d3.d3.r0.r0.f0.d0.d0.r3.r3.r2.r2.-d0.f0.f0.f3.f3.f2.f2.-d0.r3.r3.r2.r2.d3.d3.r3.r3.r2.r2.f0.f0.-r3.f0.d3.f3.r3.d0.-r3.f0.d3.r0.d3.f0.f0.f3.f3.r3.r3.-d3.f3.f3.r3.r3.-d0.f0.f0.-d3"
 # scramble += " " + " ".join(partial_sol.split("."))
 print(scramble)

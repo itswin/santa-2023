@@ -39,21 +39,29 @@ def validate_one(id, sol_file_name, verbose=False):
 
         for i in range(len(solution_state)):
             if solution_state[i] != state[i]:
-                print(f"Sticker {i}: {solution_state[i]} -> {state[i]}")
+                print(f"Sticker {i}: {state[i]} -> {solution_state[i]}")
         assert False
 
     if verbose:
         print("Solution is correct")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--lo", type=int)
-parser.add_argument("--hi", type=int)
-parser.add_argument("--all", action="store_true")
+parser.add_argument("type", type=str)
 parser.add_argument("--sol_dir", type=str, default="data/solutions")
-parser.add_argument("--id", type=int)
 parser.add_argument("--sol", type=str)
 parser.add_argument("--verbose", action="store_true", default=True)
 args = parser.parse_args()
+
+args.all = None
+args.lo = None
+args.hi = None
+
+if args.type == "all":
+    args.all = True
+elif "," in args.type:
+    args.lo, args.hi = map(int, args.type.split(","))
+else:
+    args.id = int(args.type)
 
 if args.all:
     args.lo = 0

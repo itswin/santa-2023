@@ -48,13 +48,13 @@ def find_best_commutator(initial_state, solution_state, commutators: List[Move],
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
+parser.add_argument("partial_sol", type=str)
 
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument("-commutator_file", type=str)
 group.add_argument("-conjugate_file", type=str)
 
 parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
-parser.add_argument("--partial_sol", type=str, default=None)
 parser.add_argument("--create_conjugates", action="store_true", default=False)
 
 args = parser.parse_args()
@@ -70,13 +70,10 @@ print(f"Number of moves: {len(moves)}")
 initial_state = np.array(puzzle["initial_state"].split(";"))
 solution_state = np.array(puzzle["solution_state"].split(";"))
 
-if args.partial_sol:
-    with open(args.partial_sol, "r") as fp:
-        solution = fp.read().strip()
-    for move in solution.split("."):
-        initial_state = initial_state[moves[move]]
-else:
-    solution = None
+with open(args.partial_sol, "r") as fp:
+    solution = fp.read().strip()
+for move in solution.split("."):
+    initial_state = initial_state[moves[move]]
 
 if puzzle_type.startswith("cube"):
     move_map = get_move_map(n)
@@ -114,25 +111,15 @@ print(f"Number of commutating moves after inversion: {len(commutators)}")
 
 wildcards = puzzle['num_wildcards']
 
-in_a_row = 1
 last_num_wrong = num_wrong
 iters_since_improvement = 0
-best_num_wrong = num_wrong
-best_solution = None
 
-while num_wrong > wildcards:
-    best_comm = find_best_commutator(initial_state, solution_state, commutators, in_a_row)
+while num_wrong > 8:
+    best_comm = find_best_commutator(initial_state, solution_state, commutators)
 
     if best_comm is None:
         print("No commutator found")
         break
-        # in_a_row += 1
-        # if in_a_row > 2:
-        #     print("Giving up")
-        #     break
-        # print("No commutator found. Trying more in a row")
-        # print(f"Current state: {initial_state}")
-        # continue
 
     print(f"Best commutator: {best_comm.name} ({best_comm.move})")
     initial_state = initial_state[best_comm.move]
@@ -146,7 +133,7 @@ while num_wrong > wildcards:
 
     print(f"Solution length so far: {len(solution.split('.'))}")
 
-    if num_wrong >= last_num_wrong:
+    if num_wrong == last_num_wrong:
         iters_since_improvement += 1
         if iters_since_improvement > 5:
             print("No improvement in 5 iterations. Giving up")
@@ -155,24 +142,16 @@ while num_wrong > wildcards:
         iters_since_improvement = 0
         last_num_wrong = num_wrong
 
-    if num_wrong < best_num_wrong:
-        best_num_wrong = num_wrong
-        best_solution = solution
-
 solution_moves = solution.split(".")
-print(f"Last Solution length: {len(solution_moves)}")
+print(f"Solution length: {len(solution_moves)}")
 print("Solution:", solution)
-
-best_solution_moves = best_solution.split(".")
-print(f"Best Solution length: {len(best_solution_moves)}")
-print("Best Solution:", best_solution)
 
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")
 
 print(f"Validating")
 state = np.array(puzzle["initial_state"].split(";"))
-for move_name in best_solution_moves:
+for move_name in solution_moves:
     state = state[moves[move_name]]
 
 num_difference = evaluate_difference(state, solution_state)
@@ -181,9 +160,9 @@ if num_difference <= wildcards:
     print(f"Solution is valid. Diff to WC: {num_difference} <= {wildcards}")
     # Write it to the solution file
 
-    print(f"Length of new solution: {len(best_solution_moves)}")
+    print(f"Length of new solution: {len(solution_moves)}")
     print(f"Length of current solution: {len(current_solution)}")
-    if len(best_solution_moves) < len(current_solution):
+    if len(solution_moves) < len(current_solution):
         print(f"New solution is shorter than current solution. Writing to file.")
         with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
             fp.write(solution)

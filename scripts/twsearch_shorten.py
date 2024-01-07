@@ -40,21 +40,9 @@ tws_file = write_tws_file(puzzle, True)
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")
 
-is_move_cyclic = {}
-identity = np.arange(len(initial_state))
-for name, move in moves.items():
-    m = move[move]
-    is_move_cyclic[name] = (m == identity).all()
+is_move_cyclic = get_cyclic_moves(moves)
 
-def invert_if_cyclic_and_inverted(move):
-    if move[0] != '-':
-        return move
-    elif is_move_cyclic[move[1:]]:
-        return move[1:]
-    else:
-        return move
-
-scramble = " ".join(list(map(invert_if_cyclic_and_inverted, current_solution))) + "\n"
+scramble = " ".join(list(map(create_normalize_inverted_cyclic(is_move_cyclic), current_solution))) + "\n"
 print(f"Current solution length: {len(current_solution)}")
 print(scramble)
 

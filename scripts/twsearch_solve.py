@@ -11,6 +11,7 @@ from util import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
+parser.add_argument("--partial_sol", type=str)
 parser.add_argument("--sol_dir", type=str, default="data/solutions")
 parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 parser.add_argument("--moves", action="store_true", default=False)
@@ -40,21 +41,27 @@ tws_file = write_tws_file(puzzle, args.unique, commutators)
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")
 
-is_move_cyclic = {}
-identity = np.arange(len(initial_state))
-for name, move in moves.items():
-    m = move[move]
-    is_move_cyclic[name] = (m == identity).all()
+is_move_cyclic = get_cyclic_moves(moves)
 
-def invert_if_not_cycle(move):
-    if move[0] == '-':
-        return move[1:]
-    elif is_move_cyclic[move]:
-        return move
+# Invert the current solution as a scramble
+scramble = " ".join(reversed(list(map(create_invert_if_not_cycle(is_move_cyclic), current_solution))))
+
+if args.partial_sol:
+    with open(args.partial_sol, "r") as fp:
+        partial_solution = fp.read().strip()
+
+    if "." in partial_solution:
+        partial_solution = partial_solution.split(".")
     else:
-        return "-" + move
+        partial_solution = partial_solution.split(" ")
 
-scramble = " ".join(reversed(list(map(invert_if_not_cycle, current_solution))))
+    partial_solution = list(map(create_normalize_inverted_cyclic(is_move_cyclic), partial_solution))
+    scramble = scramble + " " + " ".join(partial_solution)
+
+    print(f"Applying partial sol of length {len(partial_solution)}")
+else:
+    partial_solution = None
+
 print(scramble)
 
 if args.moves:
@@ -79,8 +86,13 @@ for line in out:
 
 sol = sol.split(".")
 
+if partial_solution:
+    sol = partial_solution + sol
+
 if len(sol) < len(current_solution):
     print(f"New solution is shorter than current solution. Writing to file.")
+    print(f"Length of new solution: {len(sol)}")
+    print(f"Length of current solution: {len(current_solution)}")
     with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
         fp.write(".".join(sol))
 else:

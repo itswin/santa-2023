@@ -337,6 +337,13 @@ class Move:
     def compose(self, other):
         return Move(self.name + "." + other.name, self.move[other.move], self.moves + other.moves)
 
+    def invert(self):
+        return Move(
+            invert(self.name) if "," not in self.name else "-" + self.name,
+            np.argsort(self.move),
+            list(map(invert, reversed(self.moves)))
+        )
+
 class Commutator(Move):
     def __init__(self, name, puzzle_moves, move_map=None):
         commutator_re = re.compile("\\[(.*),(.*)\\]")
@@ -538,7 +545,7 @@ def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_piec
     return conjugates
 
 # Look at moves which overlap to some degree with each other to create new moves
-def expand_moves(moves):
+def square_moves(moves):
     all_move_set = set()
     for move in moves:
         all_move_set.add(tuple(move.move))
@@ -562,6 +569,22 @@ def expand_moves(moves):
             new_moves.append(new_move)
             # print(f"Found new move. Commutes {new_move.num_wrong}", new_move.name)
             all_move_set.add(tuple(new_move.move))
+
+    return new_moves
+
+def invert_moves(moves):
+    all_move_set = set()
+    for move in moves:
+        all_move_set.add(tuple(move.move))
+
+    new_moves = []
+    for move in moves:
+        new_move = move.invert()
+        if tuple(new_move.move) in all_move_set:
+            continue
+
+        new_moves.append(new_move)
+        all_move_set.add(tuple(new_move.move))
 
     return new_moves
 
@@ -688,3 +711,35 @@ def clear_line():
 
 def evaluate_difference(current_state, final_state):
     return np.count_nonzero(current_state != final_state)
+
+def create_normalize_inverted_cyclic(is_move_cyclic):
+    def f(move):
+        if move[0] != '-':
+            return move
+        elif is_move_cyclic[move[1:]]:
+            return move[1:]
+        else:
+            return move
+    return f
+
+def get_cyclic_moves(moves):
+    is_move_cyclic = {}
+    identity = np.arange(len(moves[list(moves.keys())[0]]))
+    for name, move in moves.items():
+        m = move[move]
+        is_move_cyclic[name] = (m == identity).all()
+    return is_move_cyclic
+
+def create_invert_if_not_cycle(is_move_cyclic):
+    def f(move):
+        if move[0] == '-':
+            return move[1:]
+        elif is_move_cyclic[move]:
+            # Remove the "-" on cyclic moves
+            if move[0] == '-':
+                return move[1:]
+            else:
+                return move
+        else:
+            return "-" + move
+    return f
