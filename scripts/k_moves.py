@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-# seq 210 234 | xargs -P 4 -I {} python3 scripts/k_moves.py --id {}
+# seq 210 234 | xargs -P 4 -I {} python3 scripts/k_moves.py {}
 
 class ExceedMaxSizeError(RuntimeError):
     pass
@@ -51,7 +51,7 @@ def get_moves(puzzle_type: str) -> dict[str, tuple[int, ...]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--id", type=int, required=True)
+    parser.add_argument("id", type=int)
     parser.add_argument("--time_limit", type=float, default=2 * 60 * 60)  # 2h
     args = parser.parse_args()
 

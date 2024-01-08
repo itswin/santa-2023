@@ -538,65 +538,86 @@ def create_commutators(commutator_file, moves, move_map=None, max_wrong=5, annou
 
     return commutators
 
+def get_setup_moves(moves, max_setup_moves, expand_moves=False):
+    setup_move_set = set()
+
+    if expand_moves:
+        new_moves = {}
+        for name, move in moves.items():
+            new_moves[name] = move
+            if name[0] != "-":
+                new_moves[name + "." + name] = move[move]
+        moves = new_moves
+
+    # Add the identity
+    setup_move_set.add(tuple(identity))
+    identity = np.arange(len(moves[list(moves.keys())[0]]))
+
+    setup_moves = []
+
+    for num_setup_moves in range(1, max_setup_moves + 1):
+        for setup_moves in itertools.product(moves.keys(), repeat=num_setup_moves):
+            setup_move = moves[setup_moves[0]]
+            for i in range(1, len(setup_moves)):
+                setup_move = setup_move[moves[setup_moves[i]]]
+
+            if tuple(setup_move) in setup_move_set:
+                continue
+
+            setup_move_set.add(tuple(setup_move))
+
+            if count_wrong(setup_move) == 0:
+                continue
+
+            setup_moves_inv = list(map(invert, reversed(setup_moves)))
+            setup_move_inv = moves[setup_moves_inv[0]]
+            for i in range(1, len(setup_moves_inv)):
+                setup_move_inv = setup_move_inv[moves[setup_moves_inv[i]]]
+
+            setup = Move("|".join(setup_moves), setup_move, setup_moves)
+            setup_inv = Move("|".join(setup_moves_inv), setup_move_inv, setup_moves_inv)
+
+            setup_moves.append((setup, setup_inv))
+
+    return setup_moves
+
 def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_pieces_changed=2, max_wrong=5):
     global identity
     identity = np.arange(len(moves[list(moves.keys())[0]]))
 
     all_move_set = set()
+    all_move_set.add(tuple(identity))
     for commutator in commutators:
         all_move_set.add(tuple(commutator.move))
 
+    setup_moves = get_setup_moves(moves, max_setup_moves)
+
     conjugates = []
     for commutator in commutators:
-        setup_move_set = set()
-        for num_setup_moves in range(1, max_setup_moves + 1):
-            for setup_moves in itertools.product(moves.keys(), repeat=num_setup_moves):
-                setup_moves = list(setup_moves)
-                # Skip setup moves which are the identity
-                setup_move = moves[setup_moves[0]]
-                for i in range(1, len(setup_moves)):
-                    setup_move = setup_move[moves[setup_moves[i]]]
+        for setup, setup_inv in setup_moves:
+            # Skip setup moves which cancel with the commutator
+            # if commutator.count_pre_cancels(setup_moves) > 0:
+            #     continue
 
-                if tuple(setup_move) in setup_move_set:
-                    continue
+            conjugate_moves = setup.moves + commutator.moves + setup_inv.moves
+            conjugate_move = setup.move[commutator.move][setup_inv.move]
 
-                setup_move_set.add(tuple(setup_move))
+            # Skip conjugates which are the same as any existing commutator or conjugate
+            if tuple(conjugate_move) in all_move_set:
+                continue
 
-                if count_wrong(setup_move) == 0:
-                    continue
+            all_move_set.add(tuple(conjugate_move))
 
-                # Skip setup moves which cancel with the commutator
-                if commutator.count_pre_cancels(setup_moves) > 0:
-                    continue
+            # Format conjugate names as (setup,commutator)
+            conjugate = Move(f"({setup.name},{commutator.name})", conjugate_move, conjugate_moves)
 
-                setup_moves_inv = list(map(invert, reversed(setup_moves)))
-                setup_move_inv = moves[setup_moves_inv[0]]
-                for i in range(1, len(setup_moves_inv)):
-                    setup_move_inv = setup_move_inv[moves[setup_moves_inv[i]]]
+            if conjugate.num_wrong > commutator.num_wrong + max_additional_pieces_changed:
+                continue
 
-                conjugate_moves = setup_moves + commutator.moves + setup_moves_inv
-                conjugate_move = setup_move[commutator.move][setup_move_inv]
+            if conjugate.num_wrong > max_wrong:
+                continue
 
-                # Skip conjugates which are the identity
-                if count_wrong(conjugate_move) == 0:
-                    continue
-
-                # Skip conjugates which are the same as any existing commutator or conjugate
-                if tuple(conjugate_move) in all_move_set:
-                    continue
-
-                all_move_set.add(tuple(conjugate_move))
-
-                # Format conjugate names as (setup,commutator)
-                conjugate = Move(f"({'|'.join(setup_moves)},{commutator.name})", conjugate_move, conjugate_moves)
-
-                if conjugate.num_wrong > commutator.num_wrong + max_additional_pieces_changed:
-                    continue
-
-                if conjugate.num_wrong > max_wrong:
-                    continue
-
-                conjugates.append(conjugate)
+            conjugates.append(conjugate)
 
     return conjugates
 
