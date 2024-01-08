@@ -172,7 +172,7 @@ def print_faces(faces, n):
         for row in chunks(faces[face], n):
             print("\t", " ".join(row))
 
-def get_edges(n, skip=2):
+def get_edges(n, skip=1):
     edges = []
 
     n2 = n ** 2
@@ -301,6 +301,70 @@ def make_odd_center_reskin_map(odd_centers, reskin_solution, normal_solution):
         odd_center_map[reskin_solution[center]] = normal_solution[center]
     return odd_center_map
 
+def get_corners(n):
+    corners = []
+
+    n2 = n ** 2
+    # UFR corner:
+    #   U: [n2 - 1]
+    #   F: [n2 + n - 1]
+    #   R: [2 * n2]
+    corners.append((n2 - 1, n2 + n - 1, 2 * n2))
+
+    # URB corner:
+    #   U: [n - 1]
+    #   R: [2 * n2 + n - 1]
+    #   B: [3 * n2]
+    corners.append((n - 1, 2 * n2 + n - 1, 3 * n2))
+
+    # UBL corner:
+    #   U: [0]
+    #   B: [3 * n2 + n - 1]
+    #   L: [4 * n2]
+    corners.append((0, 3 * n2 + n - 1, 4 * n2))
+
+    # ULF corner:
+    #   U: [n2 - n]
+    #   L: [4 * n2 + n - 1]
+    #   F: [n2]
+    corners.append((n2 - n, 4 * n2 + n - 1, n2))
+
+    # DRF corner:
+    #   D: [5 * n2 + n - 1]
+    #   R: [2 * n2 + (n-1) * n]
+    #   F: [2 * n2 - 1]
+    corners.append((5 * n2 + n - 1, 2 * n2 + (n-1) * n, 2 * n2 - 1))
+
+    # DFL corner:
+    #   D: [5 * n2]
+    #   F: [n2 + (n-1) * n]
+    #   L: [5 * n2 - 1]
+    corners.append((5 * n2, n2 + (n-1) * n, 5 * n2 - 1))
+
+    # DLB corner:
+    #   D: [5 * n2 + n * (n-1)]
+    #   L: [4 * n2 + (n-1) * n]
+    #   B: [4 * n2 - 1]
+    corners.append((5 * n2 + n * (n-1), 4 * n2 + (n-1) * n, 4 * n2 - 1))
+
+    # DBR corner:
+    #   D: [6 * n2 - 1]
+    #   B: [3 * n2 + (n-1) * n]
+    #   R: [3 * n2 - 1]
+    corners.append((6 * n2 - 1, 3 * n2 + (n-1) * n, 3 * n2 - 1))
+
+    return corners
+
+def get_centers(n):
+    edge_pairs = get_edges(n)
+    corner_triplets = get_corners(n)
+    other = []
+    for edge_pair in edge_pairs:
+        other.extend(edge_pair)
+    for corner_triplet in corner_triplets:
+        other.extend(corner_triplet)
+    return list(set(range(6 * n ** 2)) - set(other))
+
 def invert(move):
     if "." in move:
         return ".".join(map(invert, move.split(".")))
@@ -309,7 +373,6 @@ def invert(move):
         return move[1:]
     else:
         return "-" + move
-
 
 def count_wrong(move):
     identity = np.arange(len(move))
@@ -401,7 +464,7 @@ class Conjugate(Move):
         self.num_wrong = count_wrong(self.move)
 
 
-def read_conjugates(moves_file, moves, move_map=None, max_wrong=5):
+def read_conjugates(moves_file, moves, move_map=None, max_wrong=5, announce_skip=True):
     conjugates = []
     all_move_set = set()
     identity = np.arange(len(moves[list(moves.keys())[0]]))
@@ -430,7 +493,8 @@ def read_conjugates(moves_file, moves, move_map=None, max_wrong=5):
                 continue
 
             if move.num_wrong > max_wrong:
-                print(f"Skipping {move.name} because it commutes too many pieces. Commutes {move.num_wrong} > {max_wrong}.")
+                if announce_skip:
+                    print(f"Skipping {move.name} because it commutes too many pieces. Commutes {move.num_wrong} > {max_wrong}.")
                 continue
 
             conjugates.append(move)
@@ -438,7 +502,7 @@ def read_conjugates(moves_file, moves, move_map=None, max_wrong=5):
 
     return conjugates
 
-def create_commutators(commutator_file, moves, move_map=None, max_wrong=5):
+def create_commutators(commutator_file, moves, move_map=None, max_wrong=5, announce_skip=True):
     commutator_re = re.compile(".*(\\[.*\\])")
     commutators = []
     identity = np.arange(len(moves[list(moves.keys())[0]]))
@@ -465,28 +529,12 @@ def create_commutators(commutator_file, moves, move_map=None, max_wrong=5):
                 continue
 
             if commutator.num_wrong > max_wrong:
-                print(f"Skipping {commutator.name} because it commutes too many pieces. Commutes {commutator.num_wrong} > {max_wrong}.")
+                if announce_skip:
+                    print(f"Skipping {commutator.name} because it commutes too many pieces. Commutes {commutator.num_wrong} > {max_wrong}.")
                 continue
 
             commutators.append(commutator)
             all_move_set.add(tuple(commutator.move))
-
-    # Create commutators back to back
-    # Cm Cn
-    # comms2 = []
-    # for commutator_list in itertools.product(commutators, repeat=2):
-    #     new_comm = commutator_list[0].compose(commutator_list[1])
-
-    #     # Skip comms which are the identity
-    #     if new_comm.num_wrong == 0 or new_comm.num_wrong > max_wrong:
-    #         continue
-
-    #     if tuple(new_comm.move) in all_move_set:
-    #         continue
-
-    #     comms2.append(new_comm)
-
-    # commutators.extend(comms2)
 
     return commutators
 
@@ -500,6 +548,7 @@ def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_piec
 
     conjugates = []
     for commutator in commutators:
+        setup_move_set = set()
         for num_setup_moves in range(1, max_setup_moves + 1):
             for setup_moves in itertools.product(moves.keys(), repeat=num_setup_moves):
                 setup_moves = list(setup_moves)
@@ -507,6 +556,11 @@ def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_piec
                 setup_move = moves[setup_moves[0]]
                 for i in range(1, len(setup_moves)):
                     setup_move = setup_move[moves[setup_moves[i]]]
+
+                if tuple(setup_move) in setup_move_set:
+                    continue
+
+                setup_move_set.add(tuple(setup_move))
 
                 if count_wrong(setup_move) == 0:
                     continue
@@ -531,8 +585,11 @@ def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_piec
                 if tuple(conjugate_move) in all_move_set:
                     continue
 
+                all_move_set.add(tuple(conjugate_move))
+
                 # Format conjugate names as (setup,commutator)
                 conjugate = Move(f"({'|'.join(setup_moves)},{commutator.name})", conjugate_move, conjugate_moves)
+
                 if conjugate.num_wrong > commutator.num_wrong + max_additional_pieces_changed:
                     continue
 
@@ -540,7 +597,6 @@ def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_piec
                     continue
 
                 conjugates.append(conjugate)
-                all_move_set.add(tuple(conjugate_move))
 
     return conjugates
 

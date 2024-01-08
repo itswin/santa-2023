@@ -12,6 +12,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
 parser.add_argument("--sol_dir", type=str, default="data/solutions")
 parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
+parser.add_argument("--partial_sol", type=str, default=None)
+parser.add_argument("--show_faces_only", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -40,13 +42,20 @@ print(state)
 
 print("INITIAL", state)
 
-if n % 2 == 0:
-    center_orienting_seq = []
+if args.partial_sol:
+    with open(args.partial_sol, "r") as fp:
+        center_orienting_seq = fp.read().split(".")
+    for move_name in center_orienting_seq:
+        state = state[moves[move_name]]
+    print("PARTIAL", state)
 else:
-    state, center_orienting_seq = orient_centers(state, moves, n)
+    if n % 2 == 0:
+        center_orienting_seq = []
+    else:
+        state, center_orienting_seq = orient_centers(state, moves, n)
 
-print("ORIENTED", state)
-print("ORIENT_CENTERS", center_orienting_seq)
+    print("ORIENTED", state)
+    print("ORIENT_CENTERS", center_orienting_seq)
 
 state = "".join(STICKER_MAP[c] for c in state)
 faces = state_to_faces(state, n)
@@ -55,6 +64,9 @@ print_faces(faces, n)
 
 cubestring = make_cubestring(faces)
 print(cubestring)
+
+if args.show_faces_only:
+    exit()
 
 move_map = get_move_map(n)
 print(move_map)
@@ -81,8 +93,10 @@ mapped_sol = []
 for move in sol.split(" "):
     mapped_sol.append(move_map[move])
 
-mapped_sol = (".".join(center_orienting_seq) + "." if len(center_orienting_seq) > 0 else "") + ".".join(mapped_sol)
-print(mapped_sol)
+mapped_sol = center_orienting_seq + mapped_sol
+formatted_sol = ".".join(mapped_sol)
+mapped_sol = formatted_sol.split(".")
+print(formatted_sol)
 
 current_solution = []
 with open(f"{args.sol_dir}/{args.id}.txt", "r") as fp:
@@ -90,8 +104,10 @@ with open(f"{args.sol_dir}/{args.id}.txt", "r") as fp:
 
 if len(mapped_sol) < len(current_solution):
     print(f"New solution is shorter than current solution. Writing to file.")
+    print(f"Length of new solution: {len(mapped_sol)}")
+    print(f"Length of current solution: {len(current_solution)}")
     with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
-        fp.write(".".join(mapped_sol))
+        fp.write(formatted_sol)
 else:
     print(f"New solution is longer than current solution.")
     print(f"Length of new solution: {len(mapped_sol)}")

@@ -72,16 +72,20 @@ def remove_2_cycles(state, solution_state, commutators: List[Move]):
 
     return result_commutator
 
-def find_best_commutator(initial_state, solution_state, commutators: List[Move], in_a_row=1) -> Move:
-    num_wrong = evaluate_difference(initial_state, solution_state)
+def make_center_evalute_difference(n):
+    center_indices = get_centers(n)
+    return lambda state, solution_state: np.count_nonzero(state[center_indices] != solution_state[center_indices])
+
+def find_best_commutator(initial_state, solution_state, commutators: List[Move], in_a_row=1, difference_function=evaluate_difference) -> Move:
+    num_wrong = difference_function(initial_state, solution_state)
 
     # Go through each commutator and apply it to the initial state
     # Find the one that results in the lowest number of wrong stickers
 
     random.shuffle(commutators)
 
-    piece_to_cycle = identify_cycles(initial_state, solution_state)
-    exists_2_cycle = 2 in Counter(piece_to_cycle.values()).values()
+    # piece_to_cycle = identify_cycles(initial_state, solution_state)
+    # exists_2_cycle = 2 in Counter(piece_to_cycle.values()).values()
 
     best_pieces_solved_per_move = -1
     best_new_num_wrong = num_wrong + 5
@@ -93,7 +97,7 @@ def find_best_commutator(initial_state, solution_state, commutators: List[Move],
             commutator = commutator.compose(commutator_list[i])
 
         new_state = initial_state[commutator.move]
-        new_num_wrong = evaluate_difference(new_state, solution_state)
+        new_num_wrong = difference_function(new_state, solution_state)
         # if new_num_wrong > num_wrong:
         #     continue
 
@@ -110,14 +114,14 @@ def find_best_commutator(initial_state, solution_state, commutators: List[Move],
         #     if new_exists_2_cycle:
         #         continue
 
-        if new_num_wrong < best_new_num_wrong:
-            best_new_num_wrong = new_num_wrong
-            best_commutator = commutator
-
-        # new_solved_per_move = (num_wrong - new_num_wrong) / commutator.length
-        # if new_solved_per_move > best_pieces_solved_per_move:
-        #     best_pieces_solved_per_move = new_solved_per_move
+        # if new_num_wrong < best_new_num_wrong:
+        #     best_new_num_wrong = new_num_wrong
         #     best_commutator = commutator
+
+        new_solved_per_move = (num_wrong - new_num_wrong) / commutator.length
+        if new_solved_per_move > best_pieces_solved_per_move:
+            best_pieces_solved_per_move = new_solved_per_move
+            best_commutator = commutator
 
     # if best_new_num_wrong >= num_wrong:
     #     print(f"Cound not find a commutator that improved the number of wrong stickers. Best stickers {best_new_num_wrong} vs {num_wrong}")
@@ -136,6 +140,7 @@ group.add_argument("-conjugate_file", type=str)
 parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 parser.add_argument("--partial_sol", type=str, default=None)
 parser.add_argument("--create_conjugates", action="store_true", default=False)
+parser.add_argument("--centers_only", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -147,6 +152,12 @@ n = int(puzzle_type.split("/")[-1])
 moves = get_moves(puzzle["puzzle_type"])
 print(f"Number of moves: {len(moves)}")
 
+if args.centers_only:
+    assert puzzle_type.startswith("cube")
+    difference_function = make_center_evalute_difference(n)
+else:
+    difference_function = evaluate_difference
+
 initial_state = np.array(puzzle["initial_state"].split(";"))
 solution_state = np.array(puzzle["solution_state"].split(";"))
 
@@ -156,10 +167,19 @@ if args.partial_sol:
     for move in solution.split("."):
         initial_state = initial_state[moves[move]]
 else:
-    solution = None
+    if puzzle_type.startswith("cube"):
+        if n % 2 == 0:
+            center_orienting_seq = []
+        else:
+            initial_state, center_orienting_seq = orient_centers(initial_state, moves, n)
+
+        solution = ".".join(center_orienting_seq) if center_orienting_seq else None
+    else:
+        solution = None
 
 if puzzle_type.startswith("cube"):
     move_map = get_move_map(n)
+    print(move_map)
 else:
     move_map = None
 
@@ -167,7 +187,7 @@ num_wrong = evaluate_difference(initial_state, solution_state)
 print(f"Number of wrong stickers: {num_wrong}")
 
 if args.commutator_file:
-    commutators = create_commutators(args.commutator_file, moves, move_map, 5)
+    commutators = create_commutators(args.commutator_file, moves, move_map, 25, False)
     print(f"Number of commutators: {len(commutators)}")
 
     if args.create_conjugates:
@@ -185,7 +205,7 @@ if args.commutator_file:
                 fp.write(comm.name + "\n")
 
 elif args.conjugate_file:
-    commutators = read_conjugates(args.conjugate_file, moves)
+    commutators = read_conjugates(args.conjugate_file, moves, None, 25, False)
     print(f"Number of conjugates: {len(commutators)}")
 
 inverted_commutators = invert_moves(commutators)
@@ -201,7 +221,7 @@ best_num_wrong = num_wrong
 best_solution = solution
 
 while num_wrong > wildcards:
-    best_comm = find_best_commutator(initial_state, solution_state, commutators, in_a_row)
+    best_comm = find_best_commutator(initial_state, solution_state, commutators, in_a_row, difference_function)
 
     if best_comm is None:
         print("No commutator found")
@@ -216,7 +236,7 @@ while num_wrong > wildcards:
 
     print(f"Best commutator: {best_comm.name}")
     initial_state = initial_state[best_comm.move]
-    num_wrong = evaluate_difference(initial_state, solution_state)
+    num_wrong = difference_function(initial_state, solution_state)
     print(f"\tNumber of wrong stickers: {num_wrong}")
 
     # print_wrong_stickers(initial_state, solution_state)
@@ -241,7 +261,7 @@ while num_wrong > wildcards:
 
         # print(f"Join commutator: {join_commutator.name}")
         # initial_state = initial_state[join_commutator.move]
-        # num_wrong = evaluate_difference(initial_state, solution_state)
+        # num_wrong = difference_function(initial_state, solution_state)
         # last_num_wrong = num_wrong
         # print(f"\tNumber of wrong stickers: {num_wrong}")
 
@@ -273,15 +293,15 @@ print("Best Solution:", best_solution)
 #         print(f"Comm {commutator.name} affects 7. Num wrong {commutator.num_wrong}")
 #         print(f"Move: {commutator.move}")
 #         break
-wrong_indices = np.where(solution_state != initial_state)[0]
-print(sorted(wrong_indices))
-wrong_to_count = {}
-for commutator in commutators:
-    # Count how many of the wrong stickers are affected by this commutator
-    c = np.count_nonzero(commutator.move[wrong_indices] != wrong_indices)
-    wrong_to_count[c] = wrong_to_count.get(c, 0) + 1
+# wrong_indices = np.where(solution_state != initial_state)[0]
+# print(sorted(wrong_indices))
+# wrong_to_count = {}
+# for commutator in commutators:
+#     # Count how many of the wrong stickers are affected by this commutator
+#     c = np.count_nonzero(commutator.move[wrong_indices] != wrong_indices)
+#     wrong_to_count[c] = wrong_to_count.get(c, 0) + 1
 
-print("Wrong to count", wrong_to_count)
+# print("Wrong to count", wrong_to_count)
 
 # index_affected_count = {}
 # for commutator in commutators:
