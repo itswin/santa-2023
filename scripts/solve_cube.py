@@ -6,7 +6,7 @@ import numpy as np
 import subprocess
 from util import *
 
-# seq 210 234 | xargs -P 4 -I {} python3 scripts/solve_odd.py {}
+# seq 210 234 | xargs -P 4 -I {} python3 scripts/solve_cube.py {}
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
@@ -42,9 +42,21 @@ print(state)
 
 print("INITIAL", state)
 
+move_map = get_move_map(n)
+print(move_map)
+
 if args.partial_sol:
     with open(args.partial_sol, "r") as fp:
-        center_orienting_seq = fp.read().split(".")
+        sol = fp.read()
+        delimiter = "." if "." in sol else " "
+        sol = sol.split(delimiter)
+
+        center_orienting_seq = []
+        if sol[0].lower() != sol[0]:
+            for move in sol:
+                center_orienting_seq.extend(move_map[move].split("."))
+        else:
+            center_orienting_seq = sol
     for move_name in center_orienting_seq:
         state = state[moves[move_name]]
     print("PARTIAL", state)
@@ -67,9 +79,6 @@ print(cubestring)
 
 if args.show_faces_only:
     exit()
-
-move_map = get_move_map(n)
-print(move_map)
 
 SOLVER_PATH = "/Users/Win33/Documents/Programming/rubiks-cube-NxNxN-solver/rubiks-cube-solver.py"
 cmd = [SOLVER_PATH, "--state", cubestring]
@@ -102,13 +111,33 @@ current_solution = []
 with open(f"{args.sol_dir}/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")
 
-if len(mapped_sol) < len(current_solution):
-    print(f"New solution is shorter than current solution. Writing to file.")
-    print(f"Length of new solution: {len(mapped_sol)}")
-    print(f"Length of current solution: {len(current_solution)}")
-    with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
-        fp.write(formatted_sol)
+wildcards = puzzle['num_wildcards']
+
+print(f"Validating")
+state = np.array(puzzle["initial_state"].split(";"))
+for move_name in mapped_sol:
+    state = state[moves[move_name]]
+
+num_difference = evaluate_difference(state, solution_state)
+
+if num_difference <= wildcards:
+    print(f"Solution is valid. Diff to WC: {num_difference} <= {wildcards}")
+    # Write it to the solution file
+    if len(mapped_sol) < len(current_solution):
+        print(f"New solution is shorter than current solution. Writing to file.")
+        print(f"Length of new solution: {len(mapped_sol)}")
+        print(f"Length of current solution: {len(current_solution)}")
+        with open(f"{args.out_sol_dir}/{args.id}.txt", "w") as fp:
+            fp.write(formatted_sol)
+    else:
+        print(f"New solution is longer than current solution.")
+        print(f"Length of new solution: {len(mapped_sol)}")
+        print(f"Length of current solution: {len(current_solution)}")
 else:
-    print(f"New solution is longer than current solution.")
-    print(f"Length of new solution: {len(mapped_sol)}")
-    print(f"Length of current solution: {len(current_solution)}")
+    print(f"Solution is invalid. Diff to WC: {num_difference} > {wildcards}")
+    print(f"Expected: {solution_state}")
+    print(f"Got: {state}")
+    print(f"Writing to partial solution file")
+
+    with open(f"data/cube_partial_sol.txt", "w") as f:
+        f.write(formatted_sol)

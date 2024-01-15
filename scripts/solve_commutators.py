@@ -141,6 +141,7 @@ parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 parser.add_argument("--partial_sol", type=str, default=None)
 parser.add_argument("--create_conjugates", action="store_true", default=False)
 parser.add_argument("--centers_only", action="store_true", default=False)
+parser.add_argument("--prune_moves", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -187,11 +188,26 @@ num_wrong = evaluate_difference(initial_state, solution_state)
 print(f"Number of wrong stickers: {num_wrong}")
 
 if args.commutator_file:
-    commutators = create_commutators(args.commutator_file, moves, move_map, 25, False)
+    commutators = create_commutators(args.commutator_file, 
+        moves, move_map=move_map, max_wrong=6, announce_skip=False)
     print(f"Number of commutators: {len(commutators)}")
 
     if args.create_conjugates:
-        conjugates = create_conjugates(commutators, moves, max_setup_moves=2)
+        if args.prune_moves:
+            conjugate_moves = {}
+            allowed_moves = set(["f0", "d0", "r0", f"f{n-1}", f"d{n-1}", f"r{n-1}"])
+            for name, move in moves.items():
+                if name not in allowed_moves:
+                    continue
+                conjugate_moves[name] = move
+                # This creates f0.f0 as well as -f0.-f0, but we don't consider
+                # repeated setup moves in get_setup_moves
+                conjugate_moves[name + "." + name] = move[move]
+                conjugate_moves["-" + name] = np.argsort(move)
+        else:
+            conjugate_moves = moves
+
+        conjugates = create_conjugates(commutators, conjugate_moves, max_setup_moves=2, max_wrong=6)
         print(f"Number of conjugates: {len(conjugates)}")
 
         commutators = commutators + conjugates
@@ -199,7 +215,7 @@ if args.commutator_file:
 
         # Write the commutators to a file in the same folder as the commutator file
         commutator_folder = os.path.dirname(args.commutator_file)  
-        conjugate_file = os.path.join(commutator_folder, "expanded_comms_conjugates.txt")
+        conjugate_file = os.path.join(commutator_folder, "expanded_algs_conjugates.txt")
         with open(conjugate_file, "w") as fp:
             for comm in commutators:
                 fp.write(comm.name + "\n")

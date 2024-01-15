@@ -18,6 +18,7 @@ parser.add_argument("--moves", action="store_true", default=False)
 parser.add_argument("--unique", action="store_true", default=False)
 parser.add_argument("--commutator_file", type=str, default=None)
 parser.add_argument("--tws_file", type=str, default=None)
+parser.add_argument("--cube_notation", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -66,6 +67,9 @@ if args.partial_sol:
 else:
     partial_solution = None
 
+if args.cube_notation:
+    inverse_move_map = get_inverse_move_map(n)
+    scramble = " ".join(list(map(lambda x: inverse_move_map[x], scramble.split())))
 print(scramble)
 
 if args.moves:

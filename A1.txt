@@ -1,0 +1,7 @@
+# This is twsearch  (C) 2022 Tomas Rokicki.
+# /Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -A1 --microthreads 16 -M 32768 --omit PIECE0 --omit PIECE1 --omit PIECE2 --omit PIECE3 --omit PIECE4 --omit PIECE5 --omit PIECE8 --omit PIECE9 --omit PIECE10 --omit PIECE11 --omit PIECE16 --omit PIECE24 ./data/tws_phases/cube_7_7_7/cube_7_7_7_cube.tws
+Created new moves F2 -F 3F2 -3F 4B2 -4B 3B2 -3B B2 -B R2 -R 3R2 -3R 4L2 -4L 3L2 -3L L2 -L D2 -D 3D2 -3D 4U2 -4U 3U2 -3U U2 -U
+State size is 3246670537110000 log2 51.5279
+Requiring 69 bits 12 bytes per entry; 16 from identity.
+Found 672 canonical move states.
+Calculated canonical states in 0.00188303

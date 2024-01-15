@@ -1,0 +1,3 @@
+F 2D' F 4U F2 4U' F 2D F'
+3L' U 3L U 3L' U2 3L
+3R U' 2L' U 3R' U' 2L U

@@ -86,7 +86,7 @@ print_faces(normal_solution_faces, n)
 move_map = get_move_map(n)
 print(move_map)
 
-edges = get_edges(n)
+edges = get_edges(n, skip=2)
 odd_centers = get_diff_odd_centers(n)
 
 print(f"Edges {len(edges)}", edges)
@@ -106,9 +106,9 @@ faces = state_to_faces(state, n)
 print("INITIAL FACES")
 print_faces(faces, n)
 
-# state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
-# print("RESKINNED", state)
-# print(type(state))
+state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
+print("RESKINNED", state)
+print(type(state))
 
 state = "".join(STICKER_MAP[c] for c in state)
 faces = state_to_faces(state, n)

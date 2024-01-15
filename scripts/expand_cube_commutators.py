@@ -97,5 +97,5 @@ print(f"Found {len(commutators)} commutators")
 twsearch_puzzle = f"./data/tws_phases/cube_{n}_{n}_{n}"
 Path(twsearch_puzzle).mkdir(parents=True, exist_ok=True)
 
-with open(twsearch_puzzle + "/comms.txt", 'w') as f:
+with open(twsearch_puzzle + "/exp_comms.txt", 'w') as f:
     f.write("\n".join(commutators))

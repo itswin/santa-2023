@@ -82,6 +82,7 @@ def orient_centers(state, moves, n, solution=None):
         seqs = new_seqs
     return state, new_seq
 
+# Cube notation to santa notation
 def get_move_map(n):
     base_moves = {
         "F": "f",
@@ -102,7 +103,7 @@ def get_move_map(n):
     # "3F": "f2",
     for move in "DFR":
         # Number of layers
-        for i in range(1, n // 2 + 1):
+        for i in range(1, n // 2 + 2):
             if i == 1:
                 move_map[f"{move}"] = f"{base_moves[move]}0"
                 move_map[f"{move}'"] = f"-{base_moves[move]}0"
@@ -117,6 +118,7 @@ def get_move_map(n):
                 move_map[f"2{move}"] = f"{base_moves[move]}1"
                 move_map[f"2{move}2"] = f"{base_moves[move]}1.{base_moves[move]}1"
                 move_map[f"-2{move}"] = f"-{base_moves[move]}1"
+                move_map[f"2{move}'"] = f"-{base_moves[move]}1"
                 move_map[f"-2{move}2"] = f"-{base_moves[move]}1.-{base_moves[move]}1"
 
                 # For some reason it also has these
@@ -131,10 +133,11 @@ def get_move_map(n):
                 move_map[f"{i}{move}"] = f"{base_moves[move]}{i - 1}"
                 move_map[f"{i}{move}2"] = f"{base_moves[move]}{i - 1}.{base_moves[move]}{i - 1}"
                 move_map[f"-{i}{move}"] = f"-{base_moves[move]}{i - 1}"
+                move_map[f"{i}{move}'"] = f"-{base_moves[move]}{i - 1}"
                 move_map[f"-{i}{move}2"] = f"-{base_moves[move]}{i - 1}.-{base_moves[move]}{i - 1}"
     for move in "BUL":
         # Number of layers
-        for i in range(1, n // 2 + 1):
+        for i in range(1, n // 2 + 2):
             if i == 1:
                 move_map[f"{move}"] = f"-{base_moves[move]}{n - 1}"
                 move_map[f"{move}'"] = f"{base_moves[move]}{n - 1}"
@@ -149,6 +152,7 @@ def get_move_map(n):
                 move_map[f"2{move}"] = f"-{base_moves[move]}{n - 2}"
                 move_map[f"2{move}2"] = f"-{base_moves[move]}{n - 2}.-{base_moves[move]}{n - 2}"
                 move_map[f"-2{move}"] = f"{base_moves[move]}{n - 2}"
+                move_map[f"2{move}'"] = f"{base_moves[move]}{n - 2}"
                 move_map[f"-2{move}2"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 2}"
 
                 # For some reason it also has these
@@ -160,11 +164,20 @@ def get_move_map(n):
                 move_map[f"{i}{move}w'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(i)])
                 move_map[f"{i}{move}w2"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(i)] + [f"{base_moves[move]}{n - 1 - j}" for j in range(i)])
 
-                move_map[f"{i}{move}"] = f"{base_moves[move]}{n - i}"
-                move_map[f"{i}{move}2"] = f"{base_moves[move]}{n - i}.{base_moves[move]}{n - i}"
-                move_map[f"-{i}{move}"] = f"-{base_moves[move]}{n - i}"
-                move_map[f"-{i}{move}2"] = f"-{base_moves[move]}{n - i}.-{base_moves[move]}{n - i}"
+                move_map[f"{i}{move}"] = f"-{base_moves[move]}{n - i}"
+                move_map[f"{i}{move}2"] = f"-{base_moves[move]}{n - i}.-{base_moves[move]}{n - i}"
+                move_map[f"-{i}{move}"] = f"{base_moves[move]}{n - i}"
+                move_map[f"{i}{move}'"] = f"{base_moves[move]}{n - i}"
+                move_map[f"-{i}{move}2"] = f"{base_moves[move]}{n - i}.{base_moves[move]}{n - i}"
     return move_map
+
+# Santa notation to cube notation
+def get_inverse_move_map(n):
+    move_map = get_move_map(n)
+    inverse_move_map = {}
+    for move, inverse in move_map.items():
+        inverse_move_map[inverse] = move
+    return inverse_move_map
 
 def print_faces(faces, n):
     for face in faces:
@@ -390,6 +403,8 @@ class Move:
     def count_pre_cancels(self, moves):
         # Count the number of moves that cancel between the 
         # beginning of this commutator and the end of the other commutator
+        if moves is None:
+            return 0
 
         for i in range(0, min(self.length, len(moves))):
             if self.moves[i] != invert(moves[-i - 1]):
@@ -406,6 +421,13 @@ class Move:
             np.argsort(self.move),
             list(map(invert, reversed(self.moves)))
         )
+
+def append_move_cancel(moves: List[str], move: Move):
+    cancels = move.count_pre_cancels(moves)
+    if cancels == 0:
+        return moves + move.moves
+    else:
+        return moves[:-cancels] + move.moves[cancels:]
 
 class Commutator(Move):
     def __init__(self, name, puzzle_moves, move_map=None):
@@ -538,25 +560,60 @@ def create_commutators(commutator_file, moves, move_map=None, max_wrong=5, annou
 
     return commutators
 
-def get_setup_moves(moves, max_setup_moves, expand_moves=False):
-    setup_move_set = set()
-
-    if expand_moves:
-        new_moves = {}
-        for name, move in moves.items():
-            new_moves[name] = move
-            if name[0] != "-":
-                new_moves[name + "." + name] = move[move]
-        moves = new_moves
-
-    # Add the identity
-    setup_move_set.add(tuple(identity))
+def create_algs(alg_file, moves, move_map=None, max_wrong=5, announce_skip=True):
+    algs = []
     identity = np.arange(len(moves[list(moves.keys())[0]]))
 
-    setup_moves = []
+    all_move_set = set()
+    with open(alg_file, "r") as fp:
+        lines = fp.readlines()
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            alg_moves = line.split(" ")
+            if move_map:
+                alg_moves = list(map(lambda x: move_map[x], alg_moves))
+            move = moves[alg_moves[0]]
+            for i in range(1, len(alg_moves)):
+                for m in alg_moves[i].split("."):
+                    move = move[moves[m]]
+
+            alg = Move(line, move, alg_moves)
+
+            # Skip algs which are the identity
+            if (alg.move == identity).all():
+                continue
+
+            # Skip algs which are the same as any existing alg
+            if tuple(alg.move) in all_move_set:
+                continue
+
+            if alg.num_wrong > max_wrong:
+                if announce_skip:
+                    print(f"Skipping {alg.name} because it commutes too many pieces. Commutes {alg.num_wrong} > {max_wrong}.")
+                continue
+
+            algs.append(alg)
+            all_move_set.add(tuple(alg.move))
+
+    return algs
+
+def get_setup_moves(moves, max_setup_moves):
+    setup_move_set = set()
+
+    # Add the identity
+    identity = np.arange(len(moves[list(moves.keys())[0]]))
+    setup_move_set.add(tuple(identity))
+
+    inverter = lambda x: x if "." in x else invert(x)
+
+    setups = []
 
     for num_setup_moves in range(1, max_setup_moves + 1):
         for setup_moves in itertools.product(moves.keys(), repeat=num_setup_moves):
+            setup_moves = list(setup_moves)
             setup_move = moves[setup_moves[0]]
             for i in range(1, len(setup_moves)):
                 setup_move = setup_move[moves[setup_moves[i]]]
@@ -569,7 +626,7 @@ def get_setup_moves(moves, max_setup_moves, expand_moves=False):
             if count_wrong(setup_move) == 0:
                 continue
 
-            setup_moves_inv = list(map(invert, reversed(setup_moves)))
+            setup_moves_inv = list(map(inverter, reversed(setup_moves)))
             setup_move_inv = moves[setup_moves_inv[0]]
             for i in range(1, len(setup_moves_inv)):
                 setup_move_inv = setup_move_inv[moves[setup_moves_inv[i]]]
@@ -577,9 +634,9 @@ def get_setup_moves(moves, max_setup_moves, expand_moves=False):
             setup = Move("|".join(setup_moves), setup_move, setup_moves)
             setup_inv = Move("|".join(setup_moves_inv), setup_move_inv, setup_moves_inv)
 
-            setup_moves.append((setup, setup_inv))
+            setups.append((setup, setup_inv))
 
-    return setup_moves
+    return setups
 
 def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_pieces_changed=2, max_wrong=5):
     global identity
@@ -591,6 +648,7 @@ def create_conjugates(commutators, moves, max_setup_moves=1, max_additional_piec
         all_move_set.add(tuple(commutator.move))
 
     setup_moves = get_setup_moves(moves, max_setup_moves)
+    print(f"Number of setup moves: {len(setup_moves)}")
 
     conjugates = []
     for commutator in commutators:
@@ -844,3 +902,51 @@ def identify_cycles(initial_state, solution_state):
             cycle += 1
 
     return piece_to_cycle
+
+def decompose(solution_state, moves):
+    piece_to_set = {i: i for i in range(len(solution_state))}
+
+    def change_all_sets(old_set, new_set):
+        for i in range(len(solution_state)):
+            if piece_to_set[i] == old_set:
+                piece_to_set[i] = new_set
+
+    for i in range(len(solution_state)):
+        for name, move in moves.items():
+            new_piece = move[i]
+            if piece_to_set[i] != piece_to_set[new_piece]:
+                merged_set = min(piece_to_set[i], piece_to_set[new_piece])
+                change_all_sets(piece_to_set[i], merged_set)
+                change_all_sets(piece_to_set[new_piece], merged_set)
+
+    # Print each set
+    sets = {}
+    for i in range(len(solution_state)):
+        set = piece_to_set[i]
+        if set not in sets:
+            sets[set] = []
+        sets[set].append(i)
+
+    for set, pieces in sets.items():
+        print(f"{set}: {pieces}")
+
+    # Assign each piece an index in the set
+    piece_to_set_index = {}
+    for set, pieces in sets.items():
+        for i, piece in enumerate(pieces):
+            piece_to_set_index[piece] = i + 1
+
+    # Convert solution state pieces within each set to indexes
+    set_to_sol_piece_to_index = {}
+    set_to_last_index = {}
+
+    for i, piece in enumerate(solution_state):
+        set_num = piece_to_set[i]
+        if set_num not in set_to_sol_piece_to_index:
+            set_to_sol_piece_to_index[set_num] = {}
+            set_to_last_index[set_num] = 1
+        if piece not in set_to_sol_piece_to_index[set_num]:
+            set_to_sol_piece_to_index[set_num][piece] = str(set_to_last_index[set_num])
+            set_to_last_index[set_num] += 1
+
+    return sets, piece_to_set_index, set_to_sol_piece_to_index

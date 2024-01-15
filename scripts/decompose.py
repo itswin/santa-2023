@@ -11,6 +11,7 @@ from os.path import isfile, join
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
+parser.add_argument("--cube_move_names", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -29,41 +30,9 @@ identity = np.arange(len(solution_state))
 # Apply each move, if a piece is in the same set as another piece, merge the sets
 # Repeat until no more sets are merged
 
-piece_to_set = {i: i for i in range(len(solution_state))}
+sets, piece_to_set_index, set_to_sol_piece_to_index = decompose(solution_state, moves)
 
-def change_all_sets(old_set, new_set):
-    for i in range(len(solution_state)):
-        if piece_to_set[i] == old_set:
-            piece_to_set[i] = new_set
-
-for i in range(len(solution_state)):
-    for name, move in moves.items():
-        new_piece = move[i]
-        if piece_to_set[i] != piece_to_set[new_piece]:
-            merged_set = min(piece_to_set[i], piece_to_set[new_piece])
-            change_all_sets(piece_to_set[i], merged_set)
-            change_all_sets(piece_to_set[new_piece], merged_set)
-
-# Print each set
-sets = {}
-for i in range(len(solution_state)):
-    set = piece_to_set[i]
-    if set not in sets:
-        sets[set] = []
-    sets[set].append(i)
-
-for set, pieces in sets.items():
-    print(f"{set}: {pieces}")
-
-# Assign each piece an index in the set
-piece_to_set_index = {}
-for set, pieces in sets.items():
-    for i, piece in enumerate(pieces):
-        piece_to_set_index[piece] = i + 1
-
-
-    out = f"""
-Name {puzzle["puzzle_type"]}_decomposed
+out = f"""Name {puzzle["puzzle_type"]}_decomposed
 
 """
 
@@ -83,20 +52,6 @@ solved_set_str = """
 PIECE{set_num}
 {solved}"""
 
-# Convert solution state pieces within each set to indexes
-set_to_sol_piece_to_index = {}
-set_to_last_index = {}
-
-for i, piece in enumerate(solution_state):
-    set_num = piece_to_set[i]
-    if set_num not in set_to_sol_piece_to_index:
-        set_to_sol_piece_to_index[set_num] = {}
-        set_to_last_index[set_num] = 1
-    if piece not in set_to_sol_piece_to_index[set_num]:
-        set_to_sol_piece_to_index[set_num][piece] = str(set_to_last_index[set_num])
-        set_to_last_index[set_num] += 1
-
-
 solved_sets = ""
 for set, pieces in sets.items():
     solved = " ".join([set_to_sol_piece_to_index[set][solution_state[piece]] for piece in pieces])
@@ -113,10 +68,17 @@ set_move_str = """PIECE{set_num}
 {set_move}
 """
 
+n = int(puzzle_type.split("_")[-1])
+inverse_move_map = get_inverse_move_map(n)
+
 for name, move in moves.items():
+    if args.cube_move_names:
+        name = inverse_move_map[name]
+
     # Skip inverted moves
     if name.startswith("-"):
         continue
+
     set_moves = ""
     for set, pieces in sets.items():
         set_move = " ".join([str(piece_to_set_index[move[piece]]) for piece in pieces])
@@ -131,5 +93,5 @@ for name, move in moves.items():
 
 twsearch_puzzles = f"./data/tws_phases/{puzzle_type}/"
 Path(twsearch_puzzles).mkdir(parents=True, exist_ok=True)
-with open(f"{twsearch_puzzles}/{puzzle_type}_decomposed.tws", "w") as fp:
+with open(f"{twsearch_puzzles}/{puzzle_type}_{"decomposed" if not args.cube_move_names else "cube"}.tws", "w") as fp:
     fp.write(out)

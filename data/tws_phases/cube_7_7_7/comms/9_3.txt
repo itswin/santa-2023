@@ -1,0 +1,2 @@
+# This is twsearch  (C) 2022 Tomas Rokicki.
+# /Users/Win33/Documents/Programming/twsearch/build/bin/twsearch -A3 --microthreads 16 -M 32768 --omit PIECE0 --omit PIECE1 --omit PIECE2 --omit PIECE3 --omit PIECE4 --omit PIECE5 --omit PIECE8 --omit PIECE9 --omit PIECE10 --omit PIECE11 --omit PIECE16 --omit PIECE17 --omit PIECE24 ./data/tws_phases/cube_7_7_7/cube_7_7_7_cube.tws
