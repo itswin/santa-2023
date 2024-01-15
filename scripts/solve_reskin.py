@@ -156,11 +156,23 @@ for move_name in solution:
 num_difference = evaluate_difference(state, solution_state)
 wildcards = puzzle['num_wildcards']
 
+current_solution = []
+with open(f"{args.sol_dir}/{args.id}.txt", "r") as fp:
+    current_solution = fp.read().split(".")
+
 if num_difference <= wildcards:
     print(f"Solution is valid. Diff to WC: {num_difference} <= {wildcards}")
     # Write it to the solution file
-    with open(f"data/solutions/{args.id}.txt", "w") as f:
-        f.write(mapped_sol)
+    if len(solution) < len(current_solution):
+        print(f"New solution is shorter than current solution. Writing to file.")
+        print(f"Length of new solution: {len(solution)}")
+        print(f"Length of current solution: {len(current_solution)}")
+        with open(f"data/solutions/{args.id}.txt", "w") as fp:
+            fp.write(mapped_sol)
+    else:
+        print(f"New solution is longer than current solution.")
+        print(f"Length of new solution: {len(solution)}")
+        print(f"Length of current solution: {len(current_solution)}")
 else:
     print(f"Solution is invalid. Diff to WC: {num_difference} > {wildcards}")
     print(f"Expected: {solution_state}")
