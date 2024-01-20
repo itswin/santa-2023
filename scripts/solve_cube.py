@@ -133,6 +133,10 @@ if num_difference <= wildcards:
         print(f"New solution is longer than current solution.")
         print(f"Length of new solution: {len(mapped_sol)}")
         print(f"Length of current solution: {len(current_solution)}")
+
+        print(f"Writing to partial solution file")
+        with open(f"data/cube_partial_sol.txt", "w") as f:
+            f.write(formatted_sol)
 else:
     print(f"Solution is invalid. Diff to WC: {num_difference} > {wildcards}")
     print(f"Expected: {solution_state}")

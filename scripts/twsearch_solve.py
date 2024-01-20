@@ -19,6 +19,7 @@ parser.add_argument("--unique", action="store_true", default=False)
 parser.add_argument("--commutator_file", type=str, default=None)
 parser.add_argument("--tws_file", type=str, default=None)
 parser.add_argument("--cube_notation", action="store_true", default=False)
+parser.add_argument("--cube_moves", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -71,6 +72,17 @@ if args.cube_notation:
     inverse_move_map = get_inverse_move_map(n)
     scramble = " ".join(list(map(lambda x: inverse_move_map[x], scramble.split())))
 print(scramble)
+
+
+if args.cube_moves:
+    # with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:
+    move_map = get_inverse_move_map(n, False)
+    print(move_map)
+    cube_scramble = " ".join(list(map(lambda x: move_map[x], scramble.split())))
+    print(cube_scramble)
+    with open("./moves.txt", "w") as fp:
+        fp.write(cube_scramble)
+    exit()
 
 if args.moves:
     # with open("/Users/Win33/Documents/Programming/twsearch/moves.txt", "w") as fp:

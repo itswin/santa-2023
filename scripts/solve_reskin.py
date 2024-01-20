@@ -24,6 +24,8 @@ def reskin(state, edges, edge_map, odd_centers, odd_center_reskin_map):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
+parser.add_argument("--sol_dir", type=str, default="data/solutions")
+parser.add_argument("--add_picture_state", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -71,6 +73,12 @@ else:
 print("ORIENTED", state)
 print("ORIENT_CENTERS", center_orienting_seq)
 
+pre_reskin = np.array(initial_state)
+for move_name in center_orienting_seq:
+    pre_reskin = pre_reskin[moves[move_name]]
+print("PRE RESKIN FACES after orienting centers")
+print_faces(state_to_faces(pre_reskin, n), n)
+
 n2 = n ** 2
 NORMAL_SOLUTION = "A" * n2 + "B" * n2 + "C" * n2 + "D" * n2 + "E" * n2 + "F" * n2
 
@@ -84,7 +92,7 @@ print("NORMAL SOLUTION FACES")
 print_faces(normal_solution_faces, n)
 
 move_map = get_move_map(n)
-print(move_map)
+# print(move_map)
 
 edges = get_edges(n, skip=2)
 odd_centers = get_diff_odd_centers(n)
@@ -106,9 +114,9 @@ faces = state_to_faces(state, n)
 print("INITIAL FACES")
 print_faces(faces, n)
 
-state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
-print("RESKINNED", state)
-print(type(state))
+# state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
+# print("RESKINNED", state)
+# print(type(state))
 
 state = "".join(STICKER_MAP[c] for c in state)
 faces = state_to_faces(state, n)
@@ -123,6 +131,9 @@ print(cubestring)
 SOLVER_PATH = "/Users/Win33/Documents/Programming/rubiks-cube-NxNxN-solver/rubiks-cube-solver.py"
 cmd = [SOLVER_PATH, "--state", cubestring]
 # cmd = ["cat", "scripts/split.py"]
+
+if args.add_picture_state:
+    cmd.extend(["--picture_state", ";".join(pre_reskin).replace("N", "")])
 
 out = subprocess.check_output(cmd)
 
@@ -178,6 +189,10 @@ else:
     print(f"Expected: {solution_state}")
     print(f"Got: {state}")
     print(f"Writing to partial solution file")
+
+    faces = state_to_faces(state, n)
+    print("GOT FACES")
+    print_faces(faces, n)
 
     with open(f"data/reskin_partial_sol.txt", "w") as f:
         f.write(mapped_sol)

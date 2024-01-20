@@ -59,7 +59,7 @@ def extend_move_seq(seq, moves):
 def orient_centers(state, moves, n, solution=None):
     center_slice_moves = get_center_slice_moves(moves, n)
     print("Orienting centers")
-    print(center_slice_moves)
+    # print(center_slice_moves)
 
     # Try longer sequences of moves if the centers are not aligned
     seqs = [[]]
@@ -172,10 +172,13 @@ def get_move_map(n):
     return move_map
 
 # Santa notation to cube notation
-def get_inverse_move_map(n):
+def get_inverse_move_map(n, use_minus=True):
     move_map = get_move_map(n)
     inverse_move_map = {}
     for move, inverse in move_map.items():
+        if not use_minus:
+            if "-" in move:
+                move = move[1:] + "'"
         inverse_move_map[inverse] = move
     return inverse_move_map
 
@@ -379,6 +382,9 @@ def get_centers(n):
     return list(set(range(6 * n ** 2)) - set(other))
 
 def invert(move):
+    if isinstance(move, list):
+        return [invert(m) for m in reversed(move)]
+
     if "." in move:
         return ".".join(map(invert, move.split(".")))
 
