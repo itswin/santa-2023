@@ -388,7 +388,7 @@ def get_sse_to_santa_move_map(n):
             if i == 2:
                 sse_to_santa["V" + move] = f"-{base_moves[move]}{n - 2}.-{base_moves[move]}{n - 3}"
                 sse_to_santa["V" + move + "'"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
-                sse_to_santa["V" + move + "3"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
+                sse_to_santa["V" + move + "2"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
             else:
                 sse_to_santa[f"V{i}{move}"] = ".".join([f"-{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
                 sse_to_santa[f"V{i}{move}'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
