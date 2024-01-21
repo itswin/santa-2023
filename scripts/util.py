@@ -265,6 +265,33 @@ def get_sse_to_santa_move_map(n):
         sse_to_santa["M" + move] = f"-{base_moves[move]}{n - 1 - half_n_1}"
         sse_to_santa["M" + move + "'"] = f"{base_moves[move]}{n - 1 - half_n_1}"
         sse_to_santa["M" + move + "2"] = f"{base_moves[move]}{n - 1 - half_n_1}.{base_moves[move]}{n - 1 - half_n_1}"
+    if n in (6, 7):
+        if n == 6:
+            mid_layer_map = {
+                2: [2, 3],
+                3: [1, 2, 3],
+                # 4 is just a wide layer twist it shouldn't exist
+                # 4: [1, 2, 3, 4]
+            }
+        else:
+            mid_layer_map = {
+                2: [2, 3],
+                3: [2, 3, 4],
+                4: [1, 2, 3, 4]
+                # 5 is just a wide layer twist it shouldn't exist
+                # 5: [1, 2, 3, 4, 5]
+            }
+        for move in "FRD":
+            for i, layers in mid_layer_map.items():
+                sse_to_santa[f"M{i}{move}"] = ".".join([f"{base_moves[move]}{j}" for j in layers])
+                sse_to_santa[f"M{i}{move}'"] = ".".join([f"-{base_moves[move]}{j}" for j in layers])
+                sse_to_santa[f"M{i}{move}2"] = sse_to_santa[f"M{i}{move}"] + "." + sse_to_santa[f"M{i}{move}"]
+        for move in "ULB":
+            for i, layers in mid_layer_map.items():
+                sse_to_santa[f"M{i}{move}"] = ".".join([f"-{base_moves[move]}{n - 1 - j}" for j in layers])
+                sse_to_santa[f"M{i}{move}'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in layers])
+                sse_to_santa[f"M{i}{move}2"] = sse_to_santa[f"M{i}{move}"] + "." + sse_to_santa[f"M{i}{move}"]
+
 
     # Numbered layer twists
     for i in range(2, n - 1):
