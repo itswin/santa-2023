@@ -19,8 +19,8 @@ n = int(puzzle_type.split("/")[-1])
 moves = get_moves(puzzle["puzzle_type"])
 # print(f"Number of moves: {len(moves)}")
 
-# initial_state = puzzle["initial_state"].split(";")
-# solution_state = puzzle["solution_state"].split(";")
+initial_state = puzzle["initial_state"].split(";")
+solution_state = puzzle["solution_state"].split(";")
 
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")
@@ -28,136 +28,44 @@ with open(f"data/solutions/{args.id}.txt", "r") as fp:
 # with open(args.moves, "r") as fp:
 #     moves = fp.read().split()
 
-santa_to_sse = {}
+santa_to_sse = get_santa_to_sse_move_map(n)
+print("Santa to SSE", santa_to_sse)
 
-sse_to_santa = {}
-
-flip_move = {
-    "U": "D",
-    "D": "U",
-    "L": "R",
-    "R": "L",
-    "F": "B",
-    "B": "F"
-}
-
-for move in moves:
-    regex = re.compile(r"(-?)([a-z])(\d+)")
-    match = regex.match(move)
-    
-    inverse = match.group(1) == "-"
-    move_type = match.group(2).upper()
-    layer = int(match.group(3))
-    add_invert = "'" if inverse else ""
-
-    if layer >= n // 2:
-        move_type = flip_move[move_type]
-        layer = n - layer - 1
-        add_invert = "" if inverse else "'"
-
-    if layer == 0:
-        # r0 to R
-        # r5 to L
-        santa_to_sse[move] = move_type + add_invert
-    elif layer == 1:
-        # r1 to NR
-        santa_to_sse[move] = "N" + move_type + add_invert
-    else:
-        santa_to_sse[move] = "N" + move_type + str(layer) + add_invert
-
-print(santa_to_sse)
-
-sse_to_santa = {}
-
-base_moves = {
-    "F": "f",
-    "R": "r",
-    "D": "d",
-    "U": "d",
-    "B": "f",
-    "L": "r",
-}
-
-# Normal moves
-for move in "FRD":
-    sse_to_santa[move] = f"{base_moves[move]}0"
-    sse_to_santa[move + "'"] = f"-{base_moves[move]}0"
-    sse_to_santa[move + "2"] = f"{base_moves[move]}0.{base_moves[move]}0"
-for move in "ULB":
-    sse_to_santa[move] = f"-{base_moves[move]}{n - 1}"
-    sse_to_santa[move + "'"] = f"{base_moves[move]}{n - 1}"
-    sse_to_santa[move + "2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 1}"
-
-# Mid layer twists
-for move in "FRD":
-    sse_to_santa["M" + move] = f"{base_moves[move]}1"
-    sse_to_santa["M" + move + "'"] = f"-{base_moves[move]}1"
-    sse_to_santa["M" + move + "2"] = f"{base_moves[move]}1.{base_moves[move]}1"
-for move in "ULB":
-    sse_to_santa["M" + move] = f"-{base_moves[move]}{n - 2}"
-    sse_to_santa["M" + move + "'"] = f"{base_moves[move]}{n - 2}"
-    sse_to_santa["M" + move + "2"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 2}"
-for move in "FRD":
-    sse_to_santa["N" + move] = f"{base_moves[move]}1"
-    sse_to_santa["N" + move + "'"] = f"-{base_moves[move]}1"
-    sse_to_santa["N" + move + "2"] = f"{base_moves[move]}1.{base_moves[move]}1"
-for move in "ULB":
-    sse_to_santa["N" + move] = f"-{base_moves[move]}{n - 2}"
-    sse_to_santa["N" + move + "'"] = f"{base_moves[move]}{n - 2}"
-    sse_to_santa["N" + move + "2"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 2}"
-
-# Slice twists
-for move in "FRD":
-    slice = "S" + move
-    sse_to_santa[slice] = f"{sse_to_santa[move]}.{invert(sse_to_santa[flip_move[move]])}"
-    sse_to_santa[slice + "'"] = f"{sse_to_santa[move + "'"]}.{invert(sse_to_santa[flip_move[move] + "'"])}"
-    sse_to_santa[slice + "2"] = f"{sse_to_santa[slice]}.{sse_to_santa[slice]}"
-for move in "ULB":
-    slice = "S" + move
-    sse_to_santa[slice] = f"{sse_to_santa[move]}.{invert(sse_to_santa[flip_move[move]])}"
-    sse_to_santa[slice + "'"] = f"{sse_to_santa[move + "'"]}.{invert(sse_to_santa[flip_move[move] + "'"])}"
-    sse_to_santa[slice + "2"] = f"{sse_to_santa[slice]}.{sse_to_santa[slice]}"
-
-# Wide layer twists
-for move in "FRD":
-    sse_to_santa["W" + move] = f"{base_moves[move]}2.{base_moves[move]}1"
-    sse_to_santa["W" + move + "'"] = f"-{base_moves[move]}2.-{base_moves[move]}1"
-    sse_to_santa["W" + move + "2"] = f"{base_moves[move]}2.{base_moves[move]}2"
-for move in "ULB":
-    sse_to_santa["W" + move] = invert(sse_to_santa["W" + flip_move[move]])
-    sse_to_santa["W" + move + "'"] = sse_to_santa["W" + flip_move[move]]
-    sse_to_santa["W" + move + "2"] = sse_to_santa["W" + flip_move[move] + "2"]
-
-# Tier twists
-for move in "FRD":
-    sse_to_santa["T" + move] = f"{base_moves[move]}0.{base_moves[move]}1"
-    sse_to_santa["T" + move + "'"] = f"-{base_moves[move]}0.-{base_moves[move]}1"
-    sse_to_santa["T" + move + "2"] = f"{base_moves[move]}0.{base_moves[move]}1.{base_moves[move]}0.{base_moves[move]}1"
-for move in "ULB":
-    sse_to_santa["T" + move] = f"-{base_moves[move]}{n - 1}.-{base_moves[move]}{n - 2}"
-    sse_to_santa["T" + move + "'"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}"
-    sse_to_santa["T" + move + "2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}"
-
-print(sse_to_santa)
-# with open(args.moves, "r") as fp:
-#     solution = fp.read().split()
+sse_to_santa = get_sse_to_santa_move_map(n)
+print("SSE to Santa", sse_to_santa)
 
 scramble = invert(current_solution)
 sse_solution = []
 
+move_map = get_inverse_move_map(n, False)
+print(move_map)
+cube_scramble = " ".join(scramble)
+cube_scramble = list(map(lambda x: move_map[x], cube_scramble.split()))
+cube_scramble = " ".join(cube_scramble)
+print("Cube scramble")
+print(cube_scramble)
+print()
+
 for move in scramble:
+    print(move, "\t", santa_to_sse[move])
     sse_solution.append(santa_to_sse[move])
 
+print("SSE Scramble")
 print(" ".join(sse_solution))
+print()
 
 # sse_solution = "D R2 L' SF' MU2 SR2 SF2 MD2 SR2 F2 B U2 B' ML D' MF' U' MF D L2 MF' U MF ML' U' L2 U MR' D' MB U' MB' D L2 MB U MB' MR U' L2 U R' L' F2 L R B L' R' F2 L R B'".split()
 sse_solution = """
-
-R' U B2 L2 MB' MD' B MD MB MD' B' MR' B2 MF MU F2 MF' MU ML' MU' ML F2 MU' B2 WR MU L2 MU' ML MU L2 MU' R2 MR MU' R MU MR' MU MB2 MU2 MB2 R' MU R2 U' MU ML' U2 MB' U2 ML U2 MU' F2 MU MB MU' F2 U' MD F U F' MD' F MU L MU' L' SU' L MU L' MU' D' F' D' F' L F MR B L' MB' L B' F' L' F MB MR' D ML SF' L SF ML' SF' L' SF U2 L MD' L' U2 L MD L' TU F' U R F MU' F' MU R' TU' F' U' F2 U B F2 U' F2 U B' F2 U' R' U2 R F' D2 F R' U2 R F' D2 F'
+NB N3B2 D NL D' N3B2 D NL' N3F2 D' NB' D N3F2 D' R' ND R N3U R' ND' R N3U' N2U' F ND NL F' N3D2 F NL' F' N3D F ND' NU N3F NU' F' NU N3F' NU' L N3R' B2 N3R NF' N3R' B2 U2 NF' U2 N3R U2 NF U2 NF TL' B N3L B' NL NU2 B N3L B' NU2 B N3L2 B2 NF' N3R B' U N3R' U' NF NR' U N3R U' B N3R' B' NR N3F' N3B' NR B2 N3F L2 N3U' N3F' B2 NR' B2 N3F N3U L2 N3B N3D L2 N3D2 R2 N3L' NB L2 NB' N3L NB SR2 N3D2 R2 NB' SR2 N3D' TR2 ND' R NB' R' NB ND NR2 NB' R NB R B2 NR' ND2 U' NL' U ND2 NR' U' NL U NR2 B2 NF2 D' NR NF2 NR' NF ND2 NF D NF ND2 NF NR' NF' D NB D' NF NL2 D NB' D' TL2 NR SF' SU' B' N3D' B N3D SU F N3D' B' N3D SR' N3F' L F2 B L' N3F L F2 B' R' U N3F' U' R' SF' R U N3F U' R' SF R' D' N3B' D F D' N3B SU' F2 SU N3F SU' F2 SU N3F' D F' N3B L' F L N3B' L' F' L F D' F NU' F' D F NU F' L' NB' L SF' L' NB L B' NU2 R U R' NU2 R U' R' NL' F' ND' F' SR' U SR F ND F' SR' U' SR F2 NL R B R' NF2 R B' R2 U2 NF U2 R U2 R' NF' R U2 NF2 SF U B2 SU B' ND B SU' B' ND' B' U' SF' L D F' U F D' B' F' U' F U B U' L' D2 L' B U2 B' L D2 L' B U2 B' L B2 R' D F2 D' R B2 R' D F2 D' R
 """.split()
+
+# 245
+# NB N3B2 D NL D' N3B2 D NL' N3F2 D' NB' D N3F2 D' R' ND R N3U R' ND' R M2U' F ND NL F' N3D2 F NL' F' N3D F ND' NU N3F NU' F' NU N3F' NU' L N3R' B2 N3R NF' N3R' B2 U2 NF' U2 N3R U2 NF U2 NF TL' B N3L B' NL NU2 B N3L B' NU2 B N3L2 B2 NF' N3R B' U N3R' U' NF NR' U N3R U' B N3R' B' NR N3F' N3B' NR B2 N3F L2 N3U' N3F' B2 NR' B2 N3F N3U L2 N3B N3D L2 N3D2 R2 N3L' NB L2 NB' N3L NB SR2 N3D2 R2 NB' SR2 N3D' TR2 ND' R NB' R' NB ND NR2 NB' R NB R B2 NR' ND2 U' NL' U ND2 NR' U' NL U NR2 B2 NF2 D' NR NF2 NR' NF ND2 NF D NF ND2 NF NR' NF' D NB D' NF NL2 D NB' D' TL2 NR SF' SU' B' N3D' B N3D SU F N3D' B' N3D SR' N3F' L F2 B L' N3F L F2 B' R' U N3F' U' R' SF' R U N3F U' R' SF R' D' N3B' D F D' N3B SU' F2 SU N3F SU' F2 SU N3F' D F' N3B L' F L N3B' L' F' L F D' F NU' F' D F NU F' L' NB' L SF' L' NB L B' NU2 R U R' NU2 R U' R' NL' F' ND' F' SR' U SR F ND F' SR' U' SR F2 NL R B R' NF2 R B' R2 U2 NF U2 R U2 R' NF' R U2 NF2 SF U B2 SU B' ND B SU' B' ND' B' U' SF' L D F' U F D' B' F' U' F U B U' L' D2 L' B U2 B' L D2 L' B U2 B' L B2 R' D F2 D' R B2 R' D F2 D' R
+
 # move_map = get_move_map(n)
 santa_solution = []
 for move in sse_solution:
+    # print(move, "\t", sse_to_santa[move])
     santa_solution.append(sse_to_santa[move])
 
 santa_solution = ".".join(santa_solution).split(".")
@@ -165,11 +73,41 @@ santa_solution = ".".join(santa_solution).split(".")
 
 print(".".join(santa_solution))
 
-# move_map = get_inverse_move_map(n, False)
-# print(move_map)
-# for move in santa_solution:
-#     print(move_map[move], end=" ")
+print(f"Validating")
+state = np.array(puzzle["initial_state"].split(";"))
+for move_name in santa_solution:
+    state = state[moves[move_name]]
 
-# print()
+num_difference = evaluate_difference(state, solution_state)
+wildcards = puzzle['num_wildcards']
 
-# print(".".join(current_solution))
+print(f"Num difference: {num_difference}")
+print(f"Num wildcards: {wildcards}")
+
+
+if num_difference <= wildcards:
+    print(f"Solution is valid. Diff to WC: {num_difference} <= {wildcards}")
+    # Write it to the solution file
+    if len(santa_solution) < len(current_solution):
+        print(f"New solution is shorter than current solution. Writing to file.")
+        print(f"Length of new solution: {len(santa_solution)}")
+        print(f"Length of current solution: {len(current_solution)}")
+        with open(f"data/solutions/{args.id}.txt", "w") as f:
+            f.write(".".join(santa_solution))
+    else:
+        print(f"New solution is longer than current solution.")
+        print(f"Length of new solution: {len(santa_solution)}")
+        print(f"Length of current solution: {len(current_solution)}")
+else:
+    print(f"Solution is invalid. Diff to WC: {num_difference} > {wildcards}")
+    print(f"Expected: {solution_state}")
+    print(f"Got: {state}")
+    print(f"Writing to partial solution file")
+
+    with open(f"data/sse_partial_sol.txt", "w") as f:
+        f.write(".".join(santa_solution))
+
+    cube_scramble = " ".join(list(map(lambda x: move_map[x], santa_solution)))
+
+    print(cube_scramble)
+

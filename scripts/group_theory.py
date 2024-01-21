@@ -192,27 +192,28 @@ def regroup(groups):
     return group_cube_moves(moves)
 
 
-def optimize_solution(moves, puzzle="cube"):
+def optimize_solution(moves, puzzle_type):
     """Apply optimizations while length of moves is decreasing"""
     
     groups = group_cube_moves(moves)
     previous_length = len(moves)
     keep_optimizing = True
+    # print("Optimizing")
     
     while keep_optimizing:
-        if puzzle == "cube":
+        if "cube" in puzzle_type:
             # First try to remove as many meaningless moves as possible
             # print("Removing 4s")
             groups = [remove_multiples_of_four(group) for group in groups]
             groups = regroup(groups)  # If some groups became empty, other groups can appear so we need to regroup
         
-        if puzzle in ("cube", "wreath"):
+        if "cube" in puzzle_type or "wreath" in puzzle_type:
             # Try to remove more elements by throwing out cancellations
             # print("Removing pairs")
             groups = [remove_cancelling_pairs(group) for group in groups]
             groups = regroup(groups)
         
-        if puzzle == "cube":
+        if "cube" in puzzle_type:
             # Finally, try to reduce length a bit by substituting triplets. It will not require regrouping
             # print("Substituting triplets")
             groups = [substitute_three_for_inverse(group) for group in groups]
@@ -377,6 +378,7 @@ class RotationError(ValueError):
     pass
 
 def optimize_full_cube_rotations(current_solution, allowed_moves, rotated_face_to_moves, initial_state, solution_state, cube_size):
+    # print("Optimizing full cube rotations")
     updated_solution_moves, full_cube_rotations = substitute_full_cube_rotations(current_solution, rotated_face_to_moves)
 
     optimized_solution = updated_solution_moves # + inverse_rotation_moves
@@ -422,7 +424,6 @@ with open(f"data/solutions/{args.id}.txt", "r") as fp:
 
 if "cube" in puzzle_type:
     cube_size = int(puzzle_type.split("/")[-1])
-    print("Optimizing")
 
     rotated_face_to_moves = get_full_face_rotations_substitutions(moves, cube_size, initial_state)
     

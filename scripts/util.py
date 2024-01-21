@@ -182,6 +182,194 @@ def get_inverse_move_map(n, use_minus=True):
         inverse_move_map[inverse] = move
     return inverse_move_map
 
+def get_santa_to_sse_move_map(n):
+    moves = get_moves(f"cube_{n}/{n}/{n}")
+    santa_to_sse = {}
+
+    flip_move = {
+        "U": "D",
+        "D": "U",
+        "L": "R",
+        "R": "L",
+        "F": "B",
+        "B": "F"
+    }
+
+    for move in moves:
+        regex = re.compile(r"(-?)([a-z])(\d+)")
+        match = regex.match(move)
+
+        inverse = match.group(1) == "-"
+        move_type = match.group(2).upper()
+        layer = int(match.group(3))
+        add_invert = "'" if inverse else ""
+
+        if layer >= n // 2:
+            move_type = flip_move[move_type]
+            layer = n - layer - 1
+            add_invert = "" if inverse else "'"
+
+        if layer == 0:
+            # r0 to R
+            # r5 to L
+            santa_to_sse[move] = move_type + add_invert
+        elif layer == 1:
+            # r1 to NR
+            santa_to_sse[move] = "N" + move_type + add_invert
+        else:
+            santa_to_sse[move] = "N" + str(layer) + move_type + add_invert
+
+    return santa_to_sse
+
+def get_sse_to_santa_move_map(n):
+    sse_to_santa = {}
+
+    base_moves = {
+        "F": "f",
+        "R": "r",
+        "D": "d",
+        "U": "d",
+        "B": "f",
+        "L": "r",
+    }
+
+    flip_move = {
+        "U": "D",
+        "D": "U",
+        "L": "R",
+        "R": "L",
+        "F": "B",
+        "B": "F"
+    }
+
+    # Normal moves
+    for move in "FRD":
+        sse_to_santa[move] = f"{base_moves[move]}0"
+        sse_to_santa[move + "'"] = f"-{base_moves[move]}0"
+        sse_to_santa[move + "2"] = f"{base_moves[move]}0.{base_moves[move]}0"
+    for move in "ULB":
+        sse_to_santa[move] = f"-{base_moves[move]}{n - 1}"
+        sse_to_santa[move + "'"] = f"{base_moves[move]}{n - 1}"
+        sse_to_santa[move + "2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 1}"
+
+    # 4x4 biases towards the side given
+    # 5x5 is only the center
+    half_n_1 = (n - 1) // 2
+
+    # Mid layer twists
+    for move in "FRD":
+        sse_to_santa["M" + move] = f"{base_moves[move]}{half_n_1}"
+        sse_to_santa["M" + move + "'"] = f"-{base_moves[move]}{half_n_1}"
+        sse_to_santa["M" + move + "2"] = f"{base_moves[move]}{half_n_1}.{base_moves[move]}{half_n_1}"
+    for move in "ULB":
+        sse_to_santa["M" + move] = f"-{base_moves[move]}{n - 1 - half_n_1}"
+        sse_to_santa["M" + move + "'"] = f"{base_moves[move]}{n - 1 - half_n_1}"
+        sse_to_santa["M" + move + "2"] = f"{base_moves[move]}{n - 1 - half_n_1}.{base_moves[move]}{n - 1 - half_n_1}"
+
+    # Numbered layer twists
+    for i in range(1, n - 1):
+        for move in "FRD":
+            sse_name = f"N{i}{move}" if i > 1 else f"N{move}"
+            sse_to_santa[sse_name] = f"{base_moves[move]}{i}"
+            sse_to_santa[sse_name + "'"] = f"-{base_moves[move]}{i}"
+            sse_to_santa[sse_name + "2"] = f"{base_moves[move]}{i}.{base_moves[move]}{i}"
+        for move in "ULB":
+            sse_name = f"N{i}{move}" if i > 1 else f"N{move}"
+            sse_to_santa[sse_name] = f"-{base_moves[move]}{n - i - 1}"
+            sse_to_santa[sse_name + "'"] = f"{base_moves[move]}{n - i - 1}"
+            sse_to_santa[sse_name + "2"] = f"{base_moves[move]}{n - i - 1}.{base_moves[move]}{n - i - 1}"
+
+    # Tier twists
+    for i in range(2, n):
+        for move in "FRD":
+            if i == 2:
+                sse_to_santa["T" + move] = f"{base_moves[move]}0.{base_moves[move]}1"
+                sse_to_santa["T" + move + "'"] = f"-{base_moves[move]}0.-{base_moves[move]}1"
+                sse_to_santa["T" + move + "2"] = f"{base_moves[move]}0.{base_moves[move]}1.{base_moves[move]}0.{base_moves[move]}1"
+            else:
+                sse_to_santa[f"T{i}{move}"] = ".".join([f"{base_moves[move]}{j}" for j in range(i)])
+                sse_to_santa[f"T{i}{move}'"] = ".".join([f"-{base_moves[move]}{j}" for j in range(i)])
+                sse_to_santa[f"T{i}{move}2"] = ".".join([f"{base_moves[move]}{j}" for j in range(i)] + [f"{base_moves[move]}{j}" for j in range(i)])
+
+        for move in "ULB":
+            if i == 2:
+                sse_to_santa["T" + move] = f"-{base_moves[move]}{n - 1}.-{base_moves[move]}{n - 2}"
+                sse_to_santa["T" + move + "'"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}"
+                sse_to_santa["T" + move + "2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}"
+            else:
+                sse_to_santa[f"T{i}{move}"] = ".".join([f"-{base_moves[move]}{n - 1 - j}" for j in range(i)])
+                sse_to_santa[f"T{i}{move}'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(i)])
+                sse_to_santa[f"T{i}{move}2"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(i)] + [f"{base_moves[move]}{n - 1 - j}" for j in range(i)])
+
+    # Slice twists
+    for i in range(1, n // 2):
+        for move in "FRD":
+            if i == 1:
+                slice = "S" + move
+                sse_to_santa[slice] = f"{sse_to_santa[move]}.{invert(sse_to_santa[flip_move[move]])}"
+                sse_to_santa[slice + "'"] = f"{sse_to_santa[move + "'"]}.{invert(sse_to_santa[flip_move[move] + "'"])}"
+                sse_to_santa[slice + "2"] = f"{sse_to_santa[slice]}.{sse_to_santa[slice]}"
+            else:
+                slice = f"S{i}{move}"
+
+                tier_twist = f"T{i}{move}" if i > 2 else f"T{move}"
+                tier_twist_flipped = f"T{i}{flip_move[move]}" if i > 2 else f"T{flip_move[move]}"
+
+                sse_to_santa[slice] = f"{sse_to_santa[tier_twist]}.{sse_to_santa[tier_twist_flipped]}"
+                sse_to_santa[slice + "'"] = f"{sse_to_santa[tier_twist + "'"]}.{sse_to_santa[tier_twist_flipped + "'"]}"
+                sse_to_santa[slice + "2"] = f"{sse_to_santa[tier_twist]}.{sse_to_santa[tier_twist]}"
+        for move in "ULB":
+            if i == 1:
+                slice = "S" + move
+                sse_to_santa[slice] = f"{sse_to_santa[move]}.{invert(sse_to_santa[flip_move[move]])}"
+                sse_to_santa[slice + "'"] = f"{sse_to_santa[move + "'"]}.{invert(sse_to_santa[flip_move[move] + "'"])}"
+                sse_to_santa[slice + "2"] = f"{sse_to_santa[slice]}.{sse_to_santa[slice]}"
+            else:
+                slice = f"S{i}{move}"
+
+                tier_twist = f"T{i}{move}" if i > 2 else f"T{move}"
+                tier_twist_flipped = f"T{i}{flip_move[move]}" if i > 2 else f"T{flip_move[move]}"
+
+                sse_to_santa[slice] = f"{sse_to_santa[tier_twist]}.{sse_to_santa[tier_twist_flipped]}"
+                sse_to_santa[slice + "'"] = f"{sse_to_santa[tier_twist + "'"]}.{sse_to_santa[tier_twist_flipped + "'"]}"
+                sse_to_santa[slice + "2"] = f"{sse_to_santa[tier_twist]}.{sse_to_santa[tier_twist]}"
+
+    # Wide layer twists all inner layers
+    for move in "FRD":
+        sse_to_santa["W" + move] = ".".join([f"{base_moves[move]}{j}" for j in range(1, n - 1)])
+        sse_to_santa["W" + move + "'"] = invert(sse_to_santa["W" + move])
+        sse_to_santa["W" + move + "2"] = sse_to_santa["W" + move] + "." + sse_to_santa["W" + move]
+    for move in "ULB":
+        sse_to_santa["W" + move] = ".".join([f"-{base_moves[move]}{j}" for j in range(1, n - 1)])
+        sse_to_santa["W" + move + "'"] = invert(sse_to_santa["W" + move])
+        sse_to_santa["W" + move + "2"] = sse_to_santa["W" + move] + "." + sse_to_santa["W" + move]
+
+    # Void twists
+    # Tier twist without the outer face
+    for i in range(2, n - 1):
+        for move in "FRD":
+            if i == 2:
+                sse_to_santa["V" + move] = f"{base_moves[move]}1.{base_moves[move]}2"
+                sse_to_santa["V" + move + "'"] = f"-{base_moves[move]}1.-{base_moves[move]}2"
+                sse_to_santa["V" + move + "2"] = f"{base_moves[move]}1.{base_moves[move]}2.{base_moves[move]}1.{base_moves[move]}2"
+            else:
+                sse_to_santa[f"V{i}{move}"] = ".".join([f"{base_moves[move]}{j}" for j in range(1, i + 1)])
+                sse_to_santa[f"V{i}{move}'"] = ".".join([f"-{base_moves[move]}{j}" for j in range(1, i + 1)])
+                sse_to_santa[f"V{i}{move}2"] = ".".join([f"{base_moves[move]}{j}" for j in range(1, i + 1)] + [f"{base_moves[move]}{j}" for j in range(1, i + 1)])
+
+        for move in "ULB":
+            if i == 2:
+                sse_to_santa["T" + move] = f"-{base_moves[move]}{n - 2}.-{base_moves[move]}{n - 3}"
+                sse_to_santa["T" + move + "'"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
+                sse_to_santa["T" + move + "3"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
+            else:
+                sse_to_santa[f"T{i}{move}"] = ".".join([f"-{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
+                sse_to_santa[f"T{i}{move}'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
+                sse_to_santa[f"T{i}{move}2"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)] + [f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
+
+
+    return sse_to_santa
+
 def print_faces(faces, n):
     for face in faces:
         print(face)
