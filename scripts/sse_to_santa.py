@@ -19,8 +19,8 @@ n = int(puzzle_type.split("/")[-1])
 moves = get_moves(puzzle["puzzle_type"])
 # print(f"Number of moves: {len(moves)}")
 
-initial_state = puzzle["initial_state"].split(";")
-solution_state = puzzle["solution_state"].split(";")
+initial_state = np.array(puzzle["initial_state"].split(";"))
+solution_state = np.array(puzzle["solution_state"].split(";"))
 
 with open(f"data/solutions/{args.id}.txt", "r") as fp:
     current_solution = fp.read().split(".")
@@ -29,13 +29,32 @@ with open(f"data/solutions/{args.id}.txt", "r") as fp:
 #     moves = fp.read().split()
 
 santa_to_sse = get_santa_to_sse_move_map(n)
-print("Santa to SSE", santa_to_sse)
+print("Santa to SSE")
+print(santa_to_sse)
+# for k, v in santa_to_sse.items():
+#     print(k, "\t", v)
 
 sse_to_santa = get_sse_to_santa_move_map(n)
-print("SSE to Santa", sse_to_santa)
+print("SSE to Santa")
+print(sse_to_santa)
+# for k, v in sse_to_santa.items():
+#     print(k, "\t", v)
 
 scramble = invert(current_solution)
-sse_solution = []
+
+state = solution_state
+for move_name in scramble:
+    state = state[moves[move_name]]
+
+# assert np.all(state == initial_state)
+
+# if n % 2 == 0:
+#     center_orienting_seq = []
+# else:
+#     initial_state, center_orienting_seq = orient_centers(initial_state, moves, n, solution_state)
+#     print("Center orienting seq")
+#     print(center_orienting_seq)
+#     scramble += center_orienting_seq
 
 move_map = get_inverse_move_map(n, False)
 print(move_map)
@@ -46,25 +65,32 @@ print("Cube scramble")
 print(cube_scramble)
 print()
 
+sse_scramble = []
 for move in scramble:
-    print(move, "\t", santa_to_sse[move])
-    sse_solution.append(santa_to_sse[move])
-
+    # print(move, "\t", santa_to_sse[move])
+    sse_scramble.append(santa_to_sse[move])
 print("SSE Scramble")
-print(" ".join(sse_solution))
+print(" ".join(sse_scramble))
 print()
 
-# sse_solution = "D R2 L' SF' MU2 SR2 SF2 MD2 SR2 F2 B U2 B' ML D' MF' U' MF D L2 MF' U MF ML' U' L2 U MR' D' MB U' MB' D L2 MB U MB' MR U' L2 U R' L' F2 L R B L' R' F2 L R B'".split()
-sse_solution = """
-NB N3B2 D NL D' N3B2 D NL' N3F2 D' NB' D N3F2 D' R' ND R N3U R' ND' R N3U' N2U' F ND NL F' N3D2 F NL' F' N3D F ND' NU N3F NU' F' NU N3F' NU' L N3R' B2 N3R NF' N3R' B2 U2 NF' U2 N3R U2 NF U2 NF TL' B N3L B' NL NU2 B N3L B' NU2 B N3L2 B2 NF' N3R B' U N3R' U' NF NR' U N3R U' B N3R' B' NR N3F' N3B' NR B2 N3F L2 N3U' N3F' B2 NR' B2 N3F N3U L2 N3B N3D L2 N3D2 R2 N3L' NB L2 NB' N3L NB SR2 N3D2 R2 NB' SR2 N3D' TR2 ND' R NB' R' NB ND NR2 NB' R NB R B2 NR' ND2 U' NL' U ND2 NR' U' NL U NR2 B2 NF2 D' NR NF2 NR' NF ND2 NF D NF ND2 NF NR' NF' D NB D' NF NL2 D NB' D' TL2 NR SF' SU' B' N3D' B N3D SU F N3D' B' N3D SR' N3F' L F2 B L' N3F L F2 B' R' U N3F' U' R' SF' R U N3F U' R' SF R' D' N3B' D F D' N3B SU' F2 SU N3F SU' F2 SU N3F' D F' N3B L' F L N3B' L' F' L F D' F NU' F' D F NU F' L' NB' L SF' L' NB L B' NU2 R U R' NU2 R U' R' NL' F' ND' F' SR' U SR F ND F' SR' U' SR F2 NL R B R' NF2 R B' R2 U2 NF U2 R U2 R' NF' R U2 NF2 SF U B2 SU B' ND B SU' B' ND' B' U' SF' L D F' U F D' B' F' U' F U B U' L' D2 L' B U2 B' L D2 L' B U2 B' L B2 R' D F2 D' R B2 R' D F2 D' R
+# sse_scramble = "D R2 L' SF' MU2 SR2 SF2 MD2 SR2 F2 B U2 B' ML D' MF' U' MF D L2 MF' U MF ML' U' L2 U MR' D' MB U' MB' D L2 MB U MB' MR U' L2 U R' L' F2 L R B L' R' F2 L R B'".split()
+sse_scramble = """
+MU MF2 MR' MU' VR U' F2 U' L' U R' F2 U' L2 D2 L' U R' D2 R2 U F' L U2 L' F D2 F' L U2 L' F SU2 NR D NR' SU R D NR D' NR' F' NR' F R' F' NR F U' F' NU' F U2 F' NU NL F L' R' F' NL' F R L2 D' L NF NU L' D L NU' F' D' NF' D TU R SU R' NU' R SU' R' U' F L2 D' R MF R' U2 R MF' R' D MF U2 MF' R2 F D' MF D SF2 D' MF' D B2 F R2 F D' L F' D MR2 D' F L' D F' MR2 U NF' NL' ND NF NL U NL' NF' ND' NL NF U2 B' NL NB NL' F B NL' NB' NL F' NB NR' NB' L' NB NR NB' L D NL NU NL' D' NL NU' NL' R F' NL' NF' NL F NL NF R' NL' NF NL' B' NL NF' NU2 NL' NU2 B NU2 NL NU2 R NF' R' MU' MF' R NF' R' MF R NF2 R' MU ND NB' MR' F MR NB2 B D2 MR' ND2 MR TD2 TB' MR' F' MR ND' NU2 F NR F' MU' F NR2 MU2 NR MU2 F' WU MF D' MF' NU MR' NU' MR NU MF D MF' ND
 """.split()
 
-# 245
-# NB N3B2 D NL D' N3B2 D NL' N3F2 D' NB' D N3F2 D' R' ND R N3U R' ND' R M2U' F ND NL F' N3D2 F NL' F' N3D F ND' NU N3F NU' F' NU N3F' NU' L N3R' B2 N3R NF' N3R' B2 U2 NF' U2 N3R U2 NF U2 NF TL' B N3L B' NL NU2 B N3L B' NU2 B N3L2 B2 NF' N3R B' U N3R' U' NF NR' U N3R U' B N3R' B' NR N3F' N3B' NR B2 N3F L2 N3U' N3F' B2 NR' B2 N3F N3U L2 N3B N3D L2 N3D2 R2 N3L' NB L2 NB' N3L NB SR2 N3D2 R2 NB' SR2 N3D' TR2 ND' R NB' R' NB ND NR2 NB' R NB R B2 NR' ND2 U' NL' U ND2 NR' U' NL U NR2 B2 NF2 D' NR NF2 NR' NF ND2 NF D NF ND2 NF NR' NF' D NB D' NF NL2 D NB' D' TL2 NR SF' SU' B' N3D' B N3D SU F N3D' B' N3D SR' N3F' L F2 B L' N3F L F2 B' R' U N3F' U' R' SF' R U N3F U' R' SF R' D' N3B' D F D' N3B SU' F2 SU N3F SU' F2 SU N3F' D F' N3B L' F L N3B' L' F' L F D' F NU' F' D F NU F' L' NB' L SF' L' NB L B' NU2 R U R' NU2 R U' R' NL' F' ND' F' SR' U SR F ND F' SR' U' SR F2 NL R B R' NF2 R B' R2 U2 NF U2 R U2 R' NF' R U2 NF2 SF U B2 SU B' ND B SU' B' ND' B' U' SF' L D F' U F D' B' F' U' F U B U' L' D2 L' B U2 B' L D2 L' B U2 B' L B2 R' D F2 D' R B2 R' D F2 D' R
+
+# CR CF2
+# B D' L' B R U2 SF2 D2 L B' R' U2 SF2 D' B R' D F2 D' R B2 R' D F2 D' R
+# B NL' B L B' NL B L' B' D' R' SU' F NL' F' SU R' SU' F NL F' SU R2 D L U' NL' U SR U' NL U R' B' U' F2 U NF2 U' F2 U NF2 L2 ND2 R ND2 R' D' B' D' R ND2 R' ND2 D B SU' NR U L2 U' NR' U
+# B' MU2 B' MU2 B L D' L2 B' MU2 B MU2 L2 D L' B MR' D' R2 SU' MR' D' MR U R2 MR' D MR2
+# NU' NB' U NF' NU B NU' NF NB NU NB' B' U' NB F' ND2 R ND' NF2 ND NF2 R' NF2 ND' NF2 ND' F NU' F' NR' NF2 NB' NR F NR' NB NF2 NR NU NB' R' NF' R NB R' NF R NF ND NF' ND U NR' ND' NR U' ND'
+# MR' L NF' MR F2 MR NF MR' F2 L' NB2 R U2 B' MU' NB MU NB' B U2 R' NB2 MF' L MF NR2 MF' L' MF NR2 NL2 D NL2 MF2 NL' MF2 NL D' MR' D NL2 D' MR D2 NR D2 L' MF L D2 NR' ND2 D2 L' MF' L ND2 NL2
+
 
 # move_map = get_move_map(n)
 santa_solution = []
-for move in sse_solution:
+# santa_solution = center_orienting_seq
+for move in sse_scramble:
     # print(move, "\t", sse_to_santa[move])
     santa_solution.append(sse_to_santa[move])
 
@@ -74,7 +100,7 @@ santa_solution = ".".join(santa_solution).split(".")
 print(".".join(santa_solution))
 
 print(f"Validating")
-state = np.array(puzzle["initial_state"].split(";"))
+state = initial_state
 for move_name in santa_solution:
     state = state[moves[move_name]]
 

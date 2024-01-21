@@ -217,7 +217,7 @@ def get_santa_to_sse_move_map(n):
             # r1 to NR
             santa_to_sse[move] = "N" + move_type + add_invert
         else:
-            santa_to_sse[move] = "N" + str(layer) + move_type + add_invert
+            santa_to_sse[move] = "N" + str(layer + 1) + move_type + add_invert
 
     return santa_to_sse
 
@@ -267,17 +267,17 @@ def get_sse_to_santa_move_map(n):
         sse_to_santa["M" + move + "2"] = f"{base_moves[move]}{n - 1 - half_n_1}.{base_moves[move]}{n - 1 - half_n_1}"
 
     # Numbered layer twists
-    for i in range(1, n - 1):
+    for i in range(2, n - 1):
         for move in "FRD":
-            sse_name = f"N{i}{move}" if i > 1 else f"N{move}"
-            sse_to_santa[sse_name] = f"{base_moves[move]}{i}"
-            sse_to_santa[sse_name + "'"] = f"-{base_moves[move]}{i}"
-            sse_to_santa[sse_name + "2"] = f"{base_moves[move]}{i}.{base_moves[move]}{i}"
+            sse_name = f"N{i}{move}" if i > 2 else f"N{move}"
+            sse_to_santa[sse_name] = f"{base_moves[move]}{i - 1}"
+            sse_to_santa[sse_name + "'"] = f"-{base_moves[move]}{i - 1}"
+            sse_to_santa[sse_name + "2"] = f"{base_moves[move]}{i - 1}.{base_moves[move]}{i - 1}"
         for move in "ULB":
-            sse_name = f"N{i}{move}" if i > 1 else f"N{move}"
-            sse_to_santa[sse_name] = f"-{base_moves[move]}{n - i - 1}"
-            sse_to_santa[sse_name + "'"] = f"{base_moves[move]}{n - i - 1}"
-            sse_to_santa[sse_name + "2"] = f"{base_moves[move]}{n - i - 1}.{base_moves[move]}{n - i - 1}"
+            sse_name = f"N{i}{move}" if i > 2 else f"N{move}"
+            sse_to_santa[sse_name] = f"-{base_moves[move]}{n - i}"
+            sse_to_santa[sse_name + "'"] = f"{base_moves[move]}{n - i}"
+            sse_to_santa[sse_name + "2"] = f"{base_moves[move]}{n - i}.{base_moves[move]}{n - i}"
 
     # Tier twists
     for i in range(2, n):
@@ -359,14 +359,22 @@ def get_sse_to_santa_move_map(n):
 
         for move in "ULB":
             if i == 2:
-                sse_to_santa["T" + move] = f"-{base_moves[move]}{n - 2}.-{base_moves[move]}{n - 3}"
-                sse_to_santa["T" + move + "'"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
-                sse_to_santa["T" + move + "3"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
+                sse_to_santa["V" + move] = f"-{base_moves[move]}{n - 2}.-{base_moves[move]}{n - 3}"
+                sse_to_santa["V" + move + "'"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
+                sse_to_santa["V" + move + "3"] = f"{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 3}"
             else:
-                sse_to_santa[f"T{i}{move}"] = ".".join([f"-{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
-                sse_to_santa[f"T{i}{move}'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
-                sse_to_santa[f"T{i}{move}2"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)] + [f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
+                sse_to_santa[f"V{i}{move}"] = ".".join([f"-{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
+                sse_to_santa[f"V{i}{move}'"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
+                sse_to_santa[f"V{i}{move}2"] = ".".join([f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)] + [f"{base_moves[move]}{n - 1 - j}" for j in range(1, i + 1)])
 
+    # Cube rotations
+    # These really should not exist...
+    for move in "FRD":
+        sse_to_santa["C" + move] = ".".join([f"{base_moves[move]}{j}" for j in range(n)])
+        sse_to_santa["C" + move + "2"] = sse_to_santa["C" + move] + "." + sse_to_santa["C" + move]
+    for move in "ULB":
+        sse_to_santa["C" + move] = ".".join([f"-{base_moves[move]}{j}" for j in range(n)])
+        sse_to_santa["C" + move + "2"] = sse_to_santa["C" + move] + "." + sse_to_santa["C" + move]
 
     return sse_to_santa
 

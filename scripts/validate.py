@@ -31,7 +31,8 @@ def validate_one(id, sol_file_name, verbose=False):
         state = state[moves[move_name]]
 
     solution_state = puzzle["solution_state"].split(";")
-    if (sum(solution_state != state) > num_wildcards):
+    num_wrong = sum(solution_state != state)
+    if (num_wrong > num_wildcards):
         print(f"Solution is incorrect for problem {id}")
         print(f"Number of wildcards: {num_wildcards}")
         print(f"Expected: \t{puzzle['solution_state']}")
@@ -47,7 +48,7 @@ def validate_one(id, sol_file_name, verbose=False):
         assert False
 
     if verbose:
-        print("Solution is correct")
+        print(f"Solution is correct: {num_wrong} <= {num_wildcards}")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("type", type=str)

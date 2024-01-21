@@ -26,6 +26,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
 parser.add_argument("--sol_dir", type=str, default="data/solutions")
 parser.add_argument("--add_picture_state", action="store_true", default=False)
+parser.add_argument("--partial_sol", type=str, default=None)
 
 args = parser.parse_args()
 
@@ -65,13 +66,32 @@ if solution_state[0] == "N0":
 
 print("INITIAL", state)
 
-if n % 2 == 0:
-    center_orienting_seq = []
-else:
-    state, center_orienting_seq = orient_centers(state, moves, n)
+move_map = get_move_map(n)
+# print(move_map)
 
-print("ORIENTED", state)
-print("ORIENT_CENTERS", center_orienting_seq)
+if args.partial_sol:
+    with open(args.partial_sol, "r") as fp:
+        sol = fp.read()
+        delimiter = "." if "." in sol else " "
+        sol = sol.split(delimiter)
+
+        center_orienting_seq = []
+        if sol[0].lower() != sol[0]:
+            for move in sol:
+                center_orienting_seq.extend(move_map[move].split("."))
+        else:
+            center_orienting_seq = sol
+    for move_name in center_orienting_seq:
+        state = state[moves[move_name]]
+    print("PARTIAL", state)
+else:
+    if n % 2 == 0 or True:
+        center_orienting_seq = []
+    else:
+        state, center_orienting_seq = orient_centers(state, moves, n)
+
+    print("ORIENTED", state)
+    print("ORIENT_CENTERS", center_orienting_seq)
 
 pre_reskin = np.array(initial_state)
 for move_name in center_orienting_seq:
@@ -90,9 +110,6 @@ print_faces(solution_faces, n)
 
 print("NORMAL SOLUTION FACES")
 print_faces(normal_solution_faces, n)
-
-move_map = get_move_map(n)
-# print(move_map)
 
 edges = get_edges(n, skip=2)
 odd_centers = get_diff_odd_centers(n)
