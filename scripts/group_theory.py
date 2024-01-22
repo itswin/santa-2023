@@ -217,7 +217,8 @@ def optimize_solution(moves, puzzle_type):
             # Finally, try to reduce length a bit by substituting triplets. It will not require regrouping
             # print("Substituting triplets")
             groups = [substitute_three_for_inverse(group) for group in groups]
-            moves = groups_to_solution(groups)
+
+        moves = groups_to_solution(groups)
 
         keep_optimizing = (len(moves) != previous_length)
         previous_length = len(moves)

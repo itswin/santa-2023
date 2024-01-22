@@ -19,6 +19,17 @@ def evaluate_score(current_state, final_state):
         np.count_nonzero(current_state[3:] != current_state[:-3]) + \
         np.count_nonzero(current_state[4:] != current_state[:-4])
 
+# def evaluate_score(current_state, final_state):
+#     wrong_indices = [0, 25]
+#     score = normal_evaluate_score(current_state, final_state)
+
+#     # Also add cost for distance of wrong stickers from "wrong_indices"
+#     for i, piece in enumerate(current_state):
+#         if piece != final_state[i]:
+#             score += min(abs(i - wrong_indices[0]), abs(i - wrong_indices[1])) / 25
+
+#     return score
+
 def build_globe_lookup_table():
     # Goals
     # A -> 0, C -> 2, E -> 4, G -> 6, I -> 8, K -> 10, M -> 12, O -> 14
@@ -248,8 +259,15 @@ def main():
             initial_state = initial_state[moves[move]]
         print(f"Progress length: {len(progress)}. Diff: {evaluate_difference(initial_state, solution_state)}")
 
+    fake_initial_state = initial_state.copy()
+    fake_initial_state[fake_initial_state == "C"] = "A"
+    fake_solution_state = solution_state.copy()
+    fake_solution_state[fake_solution_state == "C"] = "A"
+    print(f"Fake initial state: {fake_initial_state}")
+    print(f"Fake solution state: {fake_solution_state}")
+
     print(f"Starting testing with parameters: {params}")
-    solution_path, iteration_counter, valid = idastar(moves, initial_state, solution_state, params, progress, args.clear_when_new_best)
+    solution_path, iteration_counter, valid = idastar(moves, fake_initial_state, fake_solution_state, params, progress, args.clear_when_new_best)
     if valid:
         print(f"Solution found in {iteration_counter} iterations.")
         print(f"Solution path: {solution_path}")
