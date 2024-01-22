@@ -14,10 +14,10 @@ def evaluate_score(current_state, final_state):
     # Reward having the final position match, and also reward having 2 of the same state adjacent to each other
     # This has to be fast since it's called so often
     return np.count_nonzero(current_state != final_state) + \
-        np.count_nonzero(current_state[1:] != current_state[:-1]) + \
-        np.count_nonzero(current_state[2:] != current_state[:-2]) + \
-        np.count_nonzero(current_state[3:] != current_state[:-3]) + \
-        np.count_nonzero(current_state[4:] != current_state[:-4])
+        np.count_nonzero(current_state[1:] != current_state[:-1])
+        # np.count_nonzero(current_state[2:] != current_state[:-2]) + \
+        # np.count_nonzero(current_state[3:] != current_state[:-3]) + \
+        # np.count_nonzero(current_state[4:] != current_state[:-4])
 
 # def evaluate_score(current_state, final_state):
 #     wrong_indices = [0, 25]
@@ -259,15 +259,15 @@ def main():
             initial_state = initial_state[moves[move]]
         print(f"Progress length: {len(progress)}. Diff: {evaluate_difference(initial_state, solution_state)}")
 
-    fake_initial_state = initial_state.copy()
-    fake_initial_state[fake_initial_state == "C"] = "A"
-    fake_solution_state = solution_state.copy()
-    fake_solution_state[fake_solution_state == "C"] = "A"
-    print(f"Fake initial state: {fake_initial_state}")
-    print(f"Fake solution state: {fake_solution_state}")
+    # fake_initial_state = initial_state.copy()
+    # fake_initial_state[fake_initial_state == "C"] = "A"
+    # fake_solution_state = solution_state.copy()
+    # fake_solution_state[fake_solution_state == "C"] = "A"
+    # print(f"Fake initial state: {fake_initial_state}")
+    # print(f"Fake solution state: {fake_solution_state}")
 
     print(f"Starting testing with parameters: {params}")
-    solution_path, iteration_counter, valid = idastar(moves, fake_initial_state, fake_solution_state, params, progress, args.clear_when_new_best)
+    solution_path, iteration_counter, valid = idastar(moves, initial_state, solution_state, params, progress, args.clear_when_new_best)
     if valid:
         print(f"Solution found in {iteration_counter} iterations.")
         print(f"Solution path: {solution_path}")
