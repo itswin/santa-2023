@@ -207,6 +207,7 @@ def main():
     parser.add_argument("--sol_dir", type=str, default="data/solutions")
     parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
     parser.add_argument("--always_write", action="store_true", default=False)
+    parser.add_argument("--max_moves", type=int, default=None)
     args = parser.parse_args()
 
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
@@ -216,6 +217,9 @@ def main():
 
     initial_state = np.array(puzzle["initial_state"].split(";"))
     solution_state = np.array(puzzle["solution_state"].split(";"))
+
+    difference = evaluate_difference(initial_state, solution_state)
+    print(f"Initial difference: {difference}")
 
     moves = get_moves(puzzle['puzzle_type'])
 
@@ -231,7 +235,7 @@ def main():
         'max_iteration_nodes': args.max_iter_nodes,
         'max_overall_time': args.timeout,
         'max_overall_iterations': args.iterations,
-        'max_moves': len(current_solution),
+        'max_moves': len(current_solution) if args.max_moves is None else args.max_moves,
         'set_downsampling': args.downsampling
     }
 
