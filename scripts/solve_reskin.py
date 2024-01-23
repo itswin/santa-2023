@@ -132,9 +132,9 @@ faces = state_to_faces(state, n)
 print("INITIAL FACES")
 print_faces(faces, n)
 
-# state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
-# print("RESKINNED", state)
-# print(type(state))
+state = reskin(state, edges, edge_map, odd_centers, odd_center_map)
+print("RESKINNED", state)
+print(type(state))
 
 state = "".join(STICKER_MAP[c] for c in state)
 faces = state_to_faces(state, n)
