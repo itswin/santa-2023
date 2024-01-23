@@ -27,6 +27,7 @@ parser.add_argument("id", type=int)
 parser.add_argument("--sol_dir", type=str, default="data/solutions")
 parser.add_argument("--add_picture_state", action="store_true", default=False)
 parser.add_argument("--partial_sol", type=str, default=None)
+parser.add_argument("--solve_sub3", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -85,7 +86,7 @@ if args.partial_sol:
         state = state[moves[move_name]]
     print("PARTIAL", state)
 else:
-    if n % 2 == 0 or True:
+    if n % 2 == 0:
         center_orienting_seq = []
     else:
         state, center_orienting_seq = orient_centers(state, moves, n)
@@ -138,8 +139,13 @@ print_faces(faces, n)
 state = "".join(STICKER_MAP[c] for c in state)
 faces = state_to_faces(state, n)
 
-print("INITIAL FACES")
-print_faces(faces, n)
+if args.solve_sub3:
+    faces = get_3x3_faces(faces, n)
+    print("INITIAL FACES")
+    print_faces(faces, 3)
+else:
+    print("INITIAL FACES")
+    print_faces(faces, n)
 
 print(faces)
 cubestring = make_cubestring(faces)

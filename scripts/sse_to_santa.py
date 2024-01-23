@@ -87,8 +87,7 @@ with open(f"data/sse_scramble.txt", "w") as f:
 
 sse_scramble = """
 
-MR' MU MR MF' MU B' L2 B' R2 B L2 B' R2 B2 U2 L' D L U' R U' L' U R' U' D' L U B2 U L' F2 L U' B2 U L' F2 L U2 NB U' F U NB' U' F' U NF R' F' NL F SR F' NL' F L NF D NF' U2 NF D' NF' U2 NF' R2 NB ND2 R' F R F' ND2 NB' F R' F' R' NU' B NR' B' U2 SR2 B U2 NR U2 B' SR2 U2 NU SR2 F' U' MR U F R2 L U' F' MR' F U MF' L F' L' MF L F D F' R MU' R' F D' R F' MU F R' D' NL2 NB' NL2 NB2 D NL2 NB' NL2 NB D' NB' D F NR NF NR' F' NR' NF' NB NR B2 NR' NB' NR B2 U' NL U2 NL' U2 NU NL' NB NL NB' U2 NL NU' U2 NL' U2 NL ND' NL' U' NL ND NL' B MU' B' R ND2 R' B MU B' R ND2 SR2 MF' L MU NR' MU' L' MF L2 MU NR MU' L MU NL MU' L' MU D NL MU' NL' D' NL' R NU' MR' B NU' B' MR B MR NU' MR' NU2 B' NU
-
+NU SF2 R NF' R' F' B' R NF R' F' B' U F U' NF U F' U' NF NR U D B' ND B SU B' ND' B U2 NR' NF2 NB2 D' B D NB2 D' B' D F' ND' SF D2 SF' ND SF D2 B U' NF2 U B U' NF2 U B' NU NL B NU' NR NU NF' NR' B' NR NF NL' NU' NR' R NF' ND2 NB' ND NF U' NF' ND NF U NB2 U2 NR NU2 NR' TU2 NB' R MR B MU' NB MU B' MR' B2 MR NB' MR' B2 SR2 NR' MU NR U NR MU' NR' U' L' R' TD' B' NL' MU NL MU' B TD SR F' MR' F NL' F' MR F D MF' ND B' ND MF ND' B TD' NL
 
 """.split()
 

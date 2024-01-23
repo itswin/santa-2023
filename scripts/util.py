@@ -13,6 +13,28 @@ def get_moves(puzzle_type: str) -> Dict[str, List[int]]:
         np_moves["-" + key] = np.argsort(moves[key])
     return np_moves
 
+def expand_moves(moves: Dict[str, List[int]]) -> Dict[str, List[int]]:
+    expanded_moves = {}
+    identity = np.arange(len(moves[list(moves.keys())[0]]))
+    for name, move in moves.items():
+        expanded_moves[name] = move
+        next_move = move[move]
+        # Find the cycle length
+        cycle_length = 1
+        while not np.array_equal(next_move, identity):
+            next_move = move[next_move]
+            cycle_length += 1
+
+        next_move = move[move]
+        i = 1
+        last_name = name
+        while not np.array_equal(next_move, identity) and i < cycle_length / 2:
+            last_name += "." + name
+            expanded_moves[last_name] = next_move
+            next_move = move[next_move]
+            i += 1
+    return expanded_moves
+
 def state_to_faces(state_string, n):
     n2 = n ** 2
     return {
@@ -22,6 +44,24 @@ def state_to_faces(state_string, n):
         "B": list(state_string[3 * n2:4 * n2]),
         "L": list(state_string[4 * n2:5 * n2]),
         "D": list(state_string[5 * n2:6 * n2]),
+    }
+
+def get_3x3_faces(faces, n):
+    assert n % 2 == 1
+    n2 = n ** 2
+    indices = np.asarray([
+        0, n // 2, n - 1,
+        n // 2 * n, n // 2 * n + n // 2, n // 2 * n + n - 1,
+        n2 - n, n2 - n // 2 - 1, n2 - 1
+    ])
+    print(faces)
+    return {
+        "U": list(np.asarray(faces["U"])[indices]),
+        "F": list(np.asarray(faces["F"])[indices]),
+        "R": list(np.asarray(faces["R"])[indices]),
+        "B": list(np.asarray(faces["B"])[indices]),
+        "L": list(np.asarray(faces["L"])[indices]),
+        "D": list(np.asarray(faces["D"])[indices]),
     }
 
 def chunks(lst, n):
@@ -603,6 +643,12 @@ def get_centers(n):
     for corner_triplet in corner_triplets:
         other.extend(corner_triplet)
     return list(set(range(6 * n ** 2)) - set(other))
+
+def remove_invert(move):
+    if move[0] == "-":
+        return move[1:]
+    else:
+        return move
 
 def invert(move):
     if isinstance(move, list):
