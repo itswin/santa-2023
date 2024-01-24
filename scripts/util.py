@@ -166,6 +166,10 @@ def get_move_map(n):
                 move_map[f"{move}w'"] = f"-{base_moves[move]}0.-{base_moves[move]}1"
                 move_map[f"{move}w2"] = f"{base_moves[move]}0.{base_moves[move]}0.{base_moves[move]}1.{base_moves[move]}1"
 
+                move_map[f"{move.lower()}"] = move_map[f"{move}w"]
+                move_map[f"{move.lower()}'"] = move_map[f"{move}w'"]
+                move_map[f"{move.lower()}2"] = move_map[f"{move}w2"]
+
                 move_map[f"2{move}"] = f"{base_moves[move]}1"
                 move_map[f"2{move}2"] = f"{base_moves[move]}1.{base_moves[move]}1"
                 move_map[f"-2{move}"] = f"-{base_moves[move]}1"
@@ -199,6 +203,10 @@ def get_move_map(n):
                 move_map[f"{move}w"] = f"-{base_moves[move]}{n - 1}.-{base_moves[move]}{n - 2}"
                 move_map[f"{move}w'"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}"
                 move_map[f"{move}w2"] = f"{base_moves[move]}{n - 1}.{base_moves[move]}{n - 1}.{base_moves[move]}{n - 2}.{base_moves[move]}{n - 2}"
+
+                move_map[f"{move.lower()}"] = move_map[f"{move}w"]
+                move_map[f"{move.lower()}'"] = move_map[f"{move}w'"]
+                move_map[f"{move.lower()}2"] = move_map[f"{move}w2"]
 
                 move_map[f"2{move}"] = f"-{base_moves[move]}{n - 2}"
                 move_map[f"2{move}2"] = f"-{base_moves[move]}{n - 2}.-{base_moves[move]}{n - 2}"
@@ -1236,3 +1244,17 @@ def decompose(solution_state, moves):
             set_to_last_index[set_num] += 1
 
     return sets, piece_to_set_index, set_to_sol_piece_to_index
+
+def reskin(state, edges, edge_map, odd_centers, odd_center_reskin_map):
+    new_state = state.copy()
+
+    for edge in edges:
+        print(edge, state[edge[0]] + state[edge[1]])
+        new_state[edge[0]] = edge_map[state[edge[0]] + state[edge[1]]][0]
+        new_state[edge[1]] = edge_map[state[edge[0]] + state[edge[1]]][1]
+        print(new_state[edge[0]] + new_state[edge[1]])
+    
+    for odd_center in odd_centers:
+        new_state[odd_center] = odd_center_reskin_map[state[odd_center]]
+
+    return new_state

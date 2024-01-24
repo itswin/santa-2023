@@ -8,20 +8,6 @@ from util import *
 
 # seq 210 234 | xargs -P 4 -I {} python3 scripts/solve_reskin.py {}
 
-def reskin(state, edges, edge_map, odd_centers, odd_center_reskin_map):
-    new_state = state.copy()
-
-    for edge in edges:
-        print(edge, state[edge[0]] + state[edge[1]])
-        new_state[edge[0]] = edge_map[state[edge[0]] + state[edge[1]]][0]
-        new_state[edge[1]] = edge_map[state[edge[0]] + state[edge[1]]][1]
-        print(new_state[edge[0]] + new_state[edge[1]])
-    
-    for odd_center in odd_centers:
-        new_state[odd_center] = odd_center_reskin_map[state[odd_center]]
-
-    return new_state
-
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
 parser.add_argument("--sol_dir", type=str, default="data/solutions")

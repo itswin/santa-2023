@@ -50,6 +50,8 @@ def validate_one(id, sol_file_name, verbose=False):
     if verbose:
         print(f"Solution is correct: {num_wrong} <= {num_wildcards}")
 
+    return (num_wrong, num_wildcards)
+
 parser = argparse.ArgumentParser()
 parser.add_argument("type", type=str)
 parser.add_argument("--sol_dir", type=str, default="data/solutions")
@@ -77,8 +79,13 @@ if args.lo is not None and args.hi is not None:
         sol_file_name = f"{args.sol_dir}/{id}.txt"
         if os.path.exists(sol_file_name):
             if args.verbose:
-                print(f"Validating problem {id}")
-            validate_one(id, sol_file_name)
+                print(f"Validating problem {id}", end="")
+            num_wrong, num_wildcards = validate_one(id, sol_file_name)
+            if args.verbose:
+                if num_wildcards != 0:
+                    print(f" ({num_wrong} <= {num_wildcards})")
+                else:
+                    print()
 else:
     assert args.id is not None
 
