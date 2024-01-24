@@ -133,6 +133,17 @@ def get_move_map(n):
         "L": "r",
     }
     move_map = {}
+
+    # Cube rotations
+    move_map["y"] = ".".join(f"-d{j}" for j in range(n))
+    move_map["y'"] = invert(move_map["y"])
+    move_map["y2"] = move_map["y"] + "." + move_map["y"]
+    move_map["x"] = ".".join(f"r{j}" for j in range(n))
+    move_map["x'"] = invert(move_map["x"])
+    move_map["x2"] = move_map["x"] + "." + move_map["x"]
+    move_map["z"] = ".".join(f"f{j}" for j in range(n))
+    move_map["z'"] = invert(move_map["z"])
+
     # "F": "f0",
     # "F'": "-f0",
     # "F2": "f0.f0",
