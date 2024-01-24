@@ -80,11 +80,12 @@ print(cubestring)
 if args.show_faces_only:
     exit()
 
-SOLVER_PATH = "/Users/Win33/Documents/Programming/rubiks-cube-NxNxN-solver/rubiks-cube-solver.py"
+directory = "/Users/Win33/Documents/Programming/rubiks-cube-NxNxN-solver/"
+SOLVER_PATH = "./rubiks-cube-solver.py"
 cmd = [SOLVER_PATH, "--state", cubestring]
 # cmd = ["cat", "scripts/split.py"]
 
-out = subprocess.check_output(cmd)
+out = subprocess.check_output(cmd, cwd=directory)
 
 out = out.decode("utf-8").strip()
 out = out.split("\n")
