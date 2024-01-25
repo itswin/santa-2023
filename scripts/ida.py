@@ -13,9 +13,9 @@ from util import *
 def evaluate_score(current_state, final_state):
     # Reward having the final position match, and also reward having 2 of the same state adjacent to each other
     # This has to be fast since it's called so often
-    return np.count_nonzero(current_state != final_state)
-        # np.count_nonzero(current_state[1:] != current_state[:-1])
-        # np.count_nonzero(current_state[2:] != current_state[:-2]) + \
+    return np.count_nonzero(current_state != final_state) + \
+        np.count_nonzero(current_state[1:] != current_state[:-1])
+        # np.count_nonzero(current_state[2:] != current_state[:-2])
         # np.count_nonzero(current_state[3:] != current_state[:-3]) + \
         # np.count_nonzero(current_state[4:] != current_state[:-4])
 

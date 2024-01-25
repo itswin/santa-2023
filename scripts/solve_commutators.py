@@ -351,6 +351,10 @@ if num_difference <= wildcards:
             fp.write(solution)
     else:
         print(f"New solution is longer than current solution.")
+        print(f"Writing to partial solution file")
+
+        with open(f"data/comms_partial_sol.txt", "w") as f:
+            f.write(solution)
 else:
     print(f"Solution is invalid. Diff to WC: {num_difference} > {wildcards}")
     print(f"Expected: {solution_state}")

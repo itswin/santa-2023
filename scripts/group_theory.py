@@ -105,6 +105,7 @@ assert remove_multiples_of_four(['r1', 'r1', 'r1']) == ['r1', 'r1', 'r1']
 assert sorted(remove_multiples_of_four(['r1', 'r1', 'r1', 'r1', 'r1', 'r0', 'r1', 'r0', 'r0', 'r0'])) == ['r1', 'r1']
 assert remove_multiples_of_four(['r1', 'r1', 'r1', 'r1', 'r0', 'r1', 'r1', 'r1', 'r1']) == ['r0']
 assert sorted(remove_multiples_of_four(['r1', 'r1', 'r1', 'r1', 'r0', 'r1', 'r1', 'r1', 'r1', 'r1'])) == ['r0', 'r1']
+assert remove_multiples_of_four(['r1', 'r0', 'r1', 'r1', 'r1']) == ['r0']
 
 
 def remove_cancelling_pairs(group):
@@ -207,12 +208,18 @@ def optimize_solution(moves, puzzle_type):
             groups = [remove_multiples_of_four(group) for group in groups]
             groups = regroup(groups)  # If some groups became empty, other groups can appear so we need to regroup
         
+        if "globe" in puzzle_type:
+            # Try to remove more elements by throwing out cancellations
+            # print("Removing pairs")
+            groups = [remove_multiples_of_two(group) for group in groups]
+            groups = regroup(groups)
+
         if "cube" in puzzle_type or "wreath" in puzzle_type:
             # Try to remove more elements by throwing out cancellations
             # print("Removing pairs")
             groups = [remove_cancelling_pairs(group) for group in groups]
             groups = regroup(groups)
-        
+
         if "cube" in puzzle_type:
             # Finally, try to reduce length a bit by substituting triplets. It will not require regrouping
             # print("Substituting triplets")
