@@ -89,8 +89,7 @@ with open(f"data/sse_scramble.txt", "w") as f:
     f.write(" ".join(sse_scramble))
 
 sse_scramble = """
-NR F D B R' SF NR2 SF' R SF NR2 F' D' F' NR' NF' U' L' D' F' NU' F D L U F' D' L' NU L D NF D F ND F' D' F ND L ND NU R2 NU' ND' L' ND NU R2 ND NU'
-
+F L' B' L N3F R B N3L' B' R' L' B L N3L N3F' F' D L' N3D' L D' L' N3D SR' D U2 B' N3D B U2 N3B' D' B' D N3B N3D' D' B F N3R F' R' L' F N3R' F' L R2 F' N3D' F D' F' N3D F D
 
 """.split()
 
