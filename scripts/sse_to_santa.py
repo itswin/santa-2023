@@ -8,6 +8,7 @@ import re
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
 parser.add_argument("--partial_sol", type=str, default=None)
+parser.add_argument("--use_minus", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -65,7 +66,7 @@ else:
 #     print(center_orienting_seq)
 #     scramble += center_orienting_seq
 
-move_map = get_inverse_move_map(n, False)
+move_map = get_inverse_move_map(n, args.use_minus)
 # print(move_map)
 cube_scramble = " ".join(scramble)
 cube_scramble = list(map(lambda x: move_map[x], cube_scramble.split()))
@@ -88,6 +89,8 @@ with open(f"data/sse_scramble.txt", "w") as f:
     f.write(" ".join(sse_scramble))
 
 sse_scramble = """
+NR F D B R' SF NR2 SF' R SF NR2 F' D' F' NR' NF' U' L' D' F' NU' F D L U F' D' L' NU L D NF D F ND F' D' F ND L ND NU R2 NU' ND' L' ND NU R2 ND NU'
+
 
 """.split()
 

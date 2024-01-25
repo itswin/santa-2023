@@ -1,1 +1,1 @@
-R' R' D' B R' 3U' R B' D R' B 3U B' R' B' F R' D' R B 3U' B' R' D R B 3U 3B U B' U' 3B' L' B 3L' B' L U B U' 3L F'
+r1 f0 d0 -f4 -r0 f0 f4 r1 r1 -f0 -f4 r0 f0 f4 r1 r1 -f0 -d0 -f0 -r1 -f1 d4 r4 -d0 -f0 d3 f0 d0 -r4 -d4 -f0 -d0 r4 -d3 -r4 d0 f1 d0 f0 d1 -f0 -d0 f0 d1 -r4 d1 -d3 r0 r0 d3 -d1 r4 d1 -d3 r0 r0 d1 d3

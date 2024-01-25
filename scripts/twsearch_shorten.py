@@ -20,6 +20,7 @@ parser.add_argument("--sol_dir", type=str, default="data/solutions")
 parser.add_argument("--out_sol_dir", type=str, default="data/solutions")
 parser.add_argument("--moves", action="store_true", default=False)
 parser.add_argument("--timeout", type=int, default=5 * 60)
+parser.add_argument("--decomposed", action="store_false", default=True)
 
 args = parser.parse_args()
 
@@ -27,14 +28,21 @@ puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[args.id]
 print(puzzle)
 
 puzzle_type = puzzle["puzzle_type"]
-n = int(puzzle_type.split("/")[-1])
+puzzle_type = puzzle_type.replace("/", "_")
+n = int(puzzle_type.split("_")[-1])
 moves = get_moves(puzzle["puzzle_type"])
 print(f"Number of moves: {len(moves)}")
 
 initial_state = puzzle["initial_state"].split(";")
 solution_state = puzzle["solution_state"].split(";")
 
-tws_file = write_tws_file(puzzle, True)
+if args.decomposed:
+    # Run decompose.py
+    subprocess.run(["python3", "scripts/decompose.py", str(args.id), "--unique"])
+
+    tws_file = f"./data/tws_phases/{puzzle_type}/{puzzle_type}_unique_decomposed.tws"
+else:
+    tws_file = write_tws_file(puzzle, True)
 
 # Use the current solution as a scramble
 with open(f"data/solutions/{args.id}.txt", "r") as fp:

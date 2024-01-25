@@ -12,6 +12,7 @@ from os.path import isfile, join
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
 parser.add_argument("--cube_move_names", action="store_true", default=False)
+parser.add_argument("--unique", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -54,7 +55,10 @@ PIECE{set_num}
 
 solved_sets = ""
 for set, pieces in sets.items():
-    solved = " ".join([set_to_sol_piece_to_index[set][solution_state[piece]] for piece in pieces])
+    if args.unique:
+        solved = " ".join([str(i) for i in range(1, len(pieces) + 1)])
+    else:
+        solved = " ".join([set_to_sol_piece_to_index[set][solution_state[piece]] for piece in pieces])
     solved_sets += solved_set_str.format(set_num=set, solved=solved)
 
 out += solved_str.format(SOLVED_SETS=solved_sets)
@@ -93,5 +97,8 @@ for name, move in moves.items():
 
 twsearch_puzzles = f"./data/tws_phases/{puzzle_type}/"
 Path(twsearch_puzzles).mkdir(parents=True, exist_ok=True)
-with open(f"{twsearch_puzzles}/{puzzle_type}_{"decomposed" if not args.cube_move_names else "cube"}.tws", "w") as fp:
+
+file_name = f"{puzzle_type}_{"unique_" if args.unique else ""}{"decomposed" if not args.cube_move_names else "cube"}.tws"
+
+with open(f"{twsearch_puzzles}/{file_name}", "w") as fp:
     fp.write(out)
