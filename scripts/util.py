@@ -457,9 +457,11 @@ def get_sse_to_santa_move_map(n):
     # These really should not exist...
     for move in "FRD":
         sse_to_santa["C" + move] = ".".join([f"{base_moves[move]}{j}" for j in range(n)])
+        sse_to_santa["C" + move + "'"] = ".".join([f"-{base_moves[move]}{j}" for j in range(n)])
         sse_to_santa["C" + move + "2"] = sse_to_santa["C" + move] + "." + sse_to_santa["C" + move]
     for move in "ULB":
         sse_to_santa["C" + move] = ".".join([f"-{base_moves[move]}{j}" for j in range(n)])
+        sse_to_santa["C" + move + "'"] = ".".join([f"{base_moves[move]}{j}" for j in range(n)])
         sse_to_santa["C" + move + "2"] = sse_to_santa["C" + move] + "." + sse_to_santa["C" + move]
 
     return sse_to_santa
