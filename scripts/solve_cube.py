@@ -100,7 +100,7 @@ print(sol)
 
 # Map it back to our move set
 mapped_sol = []
-for move in sol.split(" "):
+for move in sol.split():
     mapped_sol.append(move_map[move])
 
 mapped_sol = center_orienting_seq + mapped_sol

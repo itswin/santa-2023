@@ -727,13 +727,22 @@ def append_move_cancel(moves: List[str], move: Move):
 
 class Commutator(Move):
     def __init__(self, name, puzzle_moves, move_map=None):
-        commutator_re = re.compile("\\[(.*),(.*)\\]")
-        comm = commutator_re.match(name)
-        delimiter = '|' if '|' in comm.group(1) else ' '
-        X = comm.group(1).split(delimiter)
-        Y = comm.group(2).split(delimiter)
+        # Type 1: [X,Y]
+
+        reverse_X = name[0] == "]"
+        reverse_Y = name[-1] == "["
+
+        delimiter = '|' if '|' in name else ' '
+        split_idx = name.find(",")
+        X = name[1:split_idx].split(delimiter)
+        Y = name[split_idx + 1:-1].split(delimiter)
         X_inv = list(map(invert, reversed(X)))
         Y_inv = list(map(invert, reversed(Y)))
+
+        if reverse_X:
+            X_inv = list(reversed(X_inv))
+        if reverse_Y:
+            Y_inv = list(reversed(Y_inv))
 
         if move_map:
             X = list(map(lambda x: move_map[x], X))
@@ -766,10 +775,12 @@ class Commutator(Move):
 # Performs moves SETUP COMMUTATOR SETUP'
 class Conjugate(Move):
     def __init__(self, name, puzzle_moves, move_map=None):
-        conjugate_re = re.compile("\\((.*),\\[(.*)\\]\\)")
+        conjugate_re = re.compile("\\([^,],(.*)\\)")
         comm = conjugate_re.match(name)
-        setup = comm.group(1).split('|')
-        commutator = Commutator(f"[{comm.group(2)}]", puzzle_moves, move_map)
+        split_idx = name.find(",")
+        setup = name[1:split_idx].split("|")
+        comm_name = name[split_idx + 1:-1]
+        commutator = Commutator(comm_name, puzzle_moves, move_map)
 
         self.name = name
         self.moves = setup + commutator.moves + list(map(invert, reversed(setup)))

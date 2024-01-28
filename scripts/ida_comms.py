@@ -14,7 +14,8 @@ import os
 def evaluate_score(current_state, final_state):
     # Reward having the final position match, and also reward having 2 of the same state adjacent to each other
     # This has to be fast since it's called so often
-    return np.count_nonzero(current_state != final_state)
+    return np.count_nonzero(current_state != final_state) + \
+        np.count_nonzero(current_state[:-1] == current_state[1:])
 
 class Node:
     def __init__(self, priority, state, path):

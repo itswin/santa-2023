@@ -62,20 +62,22 @@ idx2 = 172
 # (f1|f49,[r1 f0 -r1,f33]) (f41|f45,[r2 f7 -r2,f40]) 2 [130, 131]
 # (f1|f49,[r1 f0 -r1,f33]) (f41|f45,[r2 f7 -r2,f40]) 2 [130, 131]
 
-comm = Conjugate("(f1|f49,[r1 f0 -r1,f33])", moves)
+comm = Commutator("]-r0 r3,f12]", moves)
 affected = [i for i in range(len(comm.move)) if comm.move[i] != i]
-print(comm.move)
+# print(comm.move)
 print(affected)
 
-comm2 = Conjugate("(f41|f45,[r2 f7 -r2,f40])", moves)
+comm2 = Commutator("[-r0 r3,f12]", moves)
 affected2 = [i for i in range(len(comm2.move)) if comm2.move[i] != i]
-print(comm2.move)
+# print(comm2.move)
 print(affected2)
 
-composed = comm.invert().compose(comm2.invert())
-affected3 = [i for i in range(len(composed.move)) if composed.move[i] != i]
-print(composed.move)
+comm3 = Commutator("[-r0 r3,f12[", moves)
+affected3 = [i for i in range(len(comm3.move)) if comm3.move[i] != i]
+# print(comm3.move)
 print(affected3)
 
-solution_state = solution_state[moves["r0"]]
-print(solution_state)
+comm4 = Commutator("]-r0 r3,f12[", moves)
+affected4 = [i for i in range(len(comm4.move)) if comm4.move[i] != i]
+# print(comm4.move)
+print(affected4)
