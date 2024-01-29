@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
 parser.add_argument("--cube_move_names", action="store_true", default=False)
 parser.add_argument("--unique", action="store_true", default=False)
+parser.add_argument("--ignore_moves", type=str, default="")
 
 args = parser.parse_args()
 
@@ -40,8 +41,8 @@ out = f"""Name {puzzle["puzzle_type"]}_decomposed
 set_str = """Set PIECE{set_num} {num_pieces} 1
 """
 
-for set, pieces in sets.items():
-    out += set_str.format(set_num=set, num_pieces=len(pieces))
+for set_num, pieces in sets.items():
+    out += set_str.format(set_num=set_num, num_pieces=len(pieces))
 
 solved_str = """
 Solved
@@ -54,12 +55,12 @@ PIECE{set_num}
 {solved}"""
 
 solved_sets = ""
-for set, pieces in sets.items():
+for set_num, pieces in sets.items():
     if args.unique:
         solved = " ".join([str(i) for i in range(1, len(pieces) + 1)])
     else:
-        solved = " ".join([set_to_sol_piece_to_index[set][solution_state[piece]] for piece in pieces])
-    solved_sets += solved_set_str.format(set_num=set, solved=solved)
+        solved = " ".join([set_to_sol_piece_to_index[set_num][solution_state[piece]] for piece in pieces])
+    solved_sets += solved_set_str.format(set_num=set_num, solved=solved)
 
 out += solved_str.format(SOLVED_SETS=solved_sets)
 
@@ -75,9 +76,14 @@ set_move_str = """PIECE{set_num}
 n = int(puzzle_type.split("_")[-1])
 inverse_move_map = get_inverse_move_map(n)
 
+ignore_move_set = set(args.ignore_moves.split())
+
 for name, move in moves.items():
     if args.cube_move_names:
         name = inverse_move_map[name]
+
+    if name in ignore_move_set:
+        continue
 
     # Skip inverted moves
     if name.startswith("-"):
@@ -98,7 +104,7 @@ for name, move in moves.items():
 twsearch_puzzles = f"./data/tws_phases/{puzzle_type}/"
 Path(twsearch_puzzles).mkdir(parents=True, exist_ok=True)
 
-file_name = f"{puzzle_type}_{"unique_" if args.unique else ""}{"decomposed" if not args.cube_move_names else "cube"}.tws"
+file_name = f"{puzzle_type}_{"ignore_" if args.ignore_moves else ""}{"unique_" if args.unique else ""}{"decomposed" if not args.cube_move_names else "cube"}.tws"
 
 with open(f"{twsearch_puzzles}/{file_name}", "w") as fp:
     fp.write(out)

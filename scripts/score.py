@@ -7,9 +7,24 @@ import pandas as pd
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--sol_dir", type=str, default='data/solutions')
+parser.add_argument("--trim", action="store_true", default=False)
 args = parser.parse_args()
 
 solution_dir = args.sol_dir
+
+trim_puzzles = [
+    "cube_2/2/2",
+    "cube_3/3/3",
+    "cube_4/4/4",
+    "wreath_6/6",
+    "wreath_7/7",
+    "wreath_12/12",
+    "wreath_21/21",
+    "globe_1/8",
+    "globe_2/6",
+    "globe_3/4",
+    "globe_6/4",
+]
 
 score = 0
 
@@ -28,7 +43,8 @@ for sol_file_name in files:
         score += puzzle_score
         puzzle = puzzles.loc[int(puzzle_id)]
         puzzle_type = puzzle["puzzle_type"]
-        print(sol_file_name, puzzle_score, puzzle_type)
+        if not (args.trim and puzzle_type in trim_puzzles):
+            print(sol_file_name, puzzle_score, puzzle_type)
         puzzle_ids.append(puzzle_id)
         puzzle_sol_lens.append(math.log(puzzle_score))
         if puzzle_type not in puzzle_total:

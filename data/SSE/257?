@@ -1,0 +1,60 @@
+Super Cube Solver --- JavaScript Version 6.0 --- Copyright (c) 2011 - 2012 - 2013 - 2014 mementoslangues
+Elapsed Time (hours:minutes:seconds:milliseconds) = 01:10:58:923
+
+Cube Order: 7
+Scramble Algorithm (519 moves):
+U U L L D F' F' D' U' L L D' B B D' D' L' D' R F U U B U L L U U B B L L NL' NL' D' R' R' NR' NR' F' F' NF' NF' D' B B NB' NB' R' R' NR' NR' L L D' NF NF R' R' D' R' R' NR' NR' F' F' NF' NF' D' D' U U NU' NU' F D' D' ND' ND' R' R' NR' NR' L L NL' NL' U U L L NL' NL' D' D' ND' ND' F NF NF U U L L U B' R D' D' ND' ND' F' L L NL' NL' B B NB' NB' F L U' R' R' N3R' N3R' D' R' R' N3R' N3R' F' F' L L N3L' N3L' U' R' R' B B N3B' N3B' R' R' N3R' N3R' L L N3L' N3L' U R' R' N3R' N3R' D F' F' N3F' N3F' D' D' B B N3B' N3B' D' D' N3D' N3D' R' R' B' R' R' N3R' N3R' F D' D' N3D' N3D' L L B' U U B D' D' N3D' N3D' B B U B' L B U L' D' D' N3D' N3D' B B N3B' N3B' R' L L N3L' N3L' N3D' ND' D' N3D' ND' D' NL NL L L F' NL NL L L B N3U NU U N3U NU U N3L NL L N3L NL L N3D' ND' D' N3D' ND' D' F' F' N3R' NR' R' N3R' NR' R' NL NL L L B B N3D' ND' D' N3D' ND' D' NB' NB' U' L L NL' NL' U U NB' NB' N3B' N3B' NF' NF' U R' R' NR' NR' N3R' N3R' N3B' N3B' L L ND' ND' NU' NU' N3U' N3U' NB' NB' N3B' N3B' NU' NU' R' NU' NU' N3U' N3U' NB' NB' N3B' N3B' L' NF' NF' N3F' N3F' NR' U U NU' NU' F NL F' F' NF' NF' NR' D F' F' N3L' N3L' F' NR' NR' N3R' N3R' ND' ND' N3D' N3D' NR U' N3R' N3R' F' NL' F' N3R D N3L' N3L' F' F' N3R F' N3L U' N3R D B NB L NL D' D' F NF L NL U' NU' F R NR F' NF' F' N3R' N3R' D ND R NR B' NB' NL' N3L' D' NU' NU' N3U' N3U' B' NB' NL' NL' N3L' N3L' U NU R NR N3R B N3B' U' N3U' L' F N3F L F' F' N3F' N3F' L' N3L' D U' L N3L D ML MB F' B' N3B N3L' NB' N3R N3U N3U ML' NR N3R MU F' NR' N3U N3D' NL' MB' N3D NU MB N3D' L' NF' N3D N3U' NF' N3B R' N3U' U NB R R U NB R' NF NF NU' NU' R U' NF' L' U N3U L ND L' B ND B MU N3F' MU' MB' NU MB NU' N3F NU N3F' B' B' N3U' B L B' N3U U' B B D B' U B
+Parity Algorithm: N3F
+
+Orbit number: 3
+Permutation: (PB)(JD)(QXV)
+Algorithm (38 moves):
+L B2 U F' U B2 R' B2 U2 B2 U2 R U' F U' L' B2 R' D F2 D' R B2 R' D F2 D' R
+
+Orbit number: 6
+Permutation: (SDLAHGT)(RCQFXIMPNWVKU)
+Algorithm (62 moves):
+NL U' D' R NU R' D R NU' U NL' U' R' U2 L' R2 D NR2 D' R L D NR2 D' R U' ND NB R' NB' ND' L2 ND NB R NB' ND' L2 R D' NB' D F D' NB U2 F' ND F D U2 F' ND' R'
+
+Orbit number: 9
+Permutation: (UK)(AD)(RCNIQ)(PGTSHMF)
+Algorithm (60 moves):
+U B' U' N3F U B U' N3R D U R N3D' R' SU' R N3D R' D2 N3R' N3F' SU2 R' N3D R U2 R' N3D R D' R' N3D2 R D F' R' U' N3F' U R F R' U' N3F U R D2
+
+Orbit number: 12
+Permutation: (NPX)(DIJBC)
+Algorithm (56 moves):
+MF' L' MF' R2 MF L MF' R2 MF2 U' R' MU' MR2 R U R' U' MR2 MU U R F U' R F' U MR2 U' F R' U F' MR2
+
+Orbit number: 5
+Permutation: (UKL)(IAHFRBSCMPTOWGEVXNJ)
+Algorithm (52 moves):
+U2 NR' NF NR NF' U2 B NF NR' NF' NR B' L NF ND' NF' B D NF ND NF' D' NB' ND' B' ND NB L' R' NF NR' NF' R NF NR NF D NR' NU NR D' NR NU' NR' NF' NL ND NL' ND' NF'
+
+Orbit number: 8
+Permutation: (CDI)(WHEUV)(PKLQT)(SAOXGFJ)
+Algorithm (60 moves):
+NL' N3F' NL F' NL' N3F NL F U N3R' U' NR' U ND2 N3R U' N3R' ND2 N3R NR D2 N3F' D N3F D' ND2 NF D N3F' D' N3F NF' ND2 D2 R NR U2 R' NF' R N3U' R' NF N3U NR' N3U' R NR U2 NR' N3U R'
+
+Orbit number: 11
+Permutation: (MABPCSEFX)(VDIJGQTLK)
+Algorithm (58 moves):
+NU MF L' NB L MF' L' B MR NB' MR' B' L NU' ND' NR' R' MF ND MF' ND' R NR ND D' NF' MU' NF' U' NF' MU NF U NF2 D F MR' NB MR F2 MR' NB' MR F
+
+Orbit number: 4
+Permutation: (LIEVU)(WACOQHBJKFSRX)
+Algorithm (54 moves):
+N3F R' ND' NL' R N3F' R' N3F NL ND N3F' R D' N3F NU' N3F' D N3F NU F U' NR' N3D' NR N3D U F2 N3D' NR' N3D NR F N3F' N3R' D NR D' N3R D NR' R N3D NL NB' N3D' R' N3D R NB NL' R' N3D' D'
+
+Orbit number: 7
+Permutation: (PAJQIKORCLUMSVNHWGF)
+Algorithm (48 moves):
+R N3U' N3L N3U R' N3U' N3L' N3B' D' N3B N3U N3B' D N3B N3R N3D U2 N3F' U' N3D' N3L' U N3F U' N3L U' N3D L' N3D' N3R' N3D L N3D' N3B N3F' N3D' B' N3D N3F N3B' N3R' N3D' B N3D B' N3R B
+
+Orbit number: 10
+Permutation: (ADLEMNBWUITOQFGVH)
+Algorithm (54 moves):
+MF' U L N3D MR N3D' L' MR' U' MR N3D' MR' N3D MF N3D' N3R' MF' N3R N3U' B' MF N3R MF' N3R' B N3U MF N3D L' F MU' F' L N3F L' N3D F MU F' N3D' L N3F'
+
+Solution algorithm (543 moves):
+N3F L B2 U F' U B2 R' B2 U2 B2 U2 R U' F U' L' B2 R' D F2 D' R B2 R' D F2 D' R NL U' D' R NU R' D R NU' U NL' U' R' U2 L' R2 D NR2 D' R L D NR2 D' R U' ND NB R' NB' ND' L2 ND NB R NB' ND' L2 R D' NB' D F D' NB U2 F' ND F D U2 F' ND' R' U B' U' N3F U B U' N3R D U R N3D' R' SU' R N3D R' D2 N3R' N3F' SU2 R' N3D R U2 R' N3D R D' R' N3D2 R D F' R' U' N3F' U R F R' U' N3F U R D2 MF' L' MF' R2 MF L MF' R2 MF2 U' R' MU' MR2 R U R' U' MR2 MU U R F U' R F' U MR2 U' F R' U F' MR2 U2 NR' NF NR NF' U2 B NF NR' NF' NR B' L NF ND' NF' B D NF ND NF' D' NB' ND' B' ND NB L' R' NF NR' NF' R NF NR NF D NR' NU NR D' NR NU' NR' NF' NL ND NL' ND' NF' NL' N3F' NL F' NL' N3F NL F U N3R' U' NR' U ND2 N3R U' N3R' ND2 VR D2 N3F' D N3F D' ND2 NF D N3F' D' N3F NF' TD2 TR U2 R' NF' R N3U' R' NF N3U NR' N3U' TR U2 NR' N3U R' NU MF L' NB L MF' L' B MR NB' MR' B' L NU' ND' TR' MF ND MF' ND' TR ND D' NF' MU' NF' U' NF' MU NF U NF2 D F MR' NB MR F2 MR' NB' MR F N3F R' ND' NL' R N3F' R' N3F NL ND N3F' R D' N3F NU' N3F' D N3F NU F U' NR' N3D' NR N3D U F2 N3D' NR' N3D NR F N3F' N3R' D NR D' N3R D NR' R N3D NL NB' N3D' R' N3D R NB NL' R' N3D' D' R N3U' N3L N3U R' N3U' N3L' N3B' D' N3B N3U N3B' D N3B N3R N3D U2 N3F' U' N3D' N3L' U N3F U' N3L U' N3D L' N3D' N3R' N3D L N3D' N3B N3F' N3D' B' N3D N3F N3B' N3R' N3D' B N3D B' N3R B MF' U L N3D MR N3D' L' MR' U' MR N3D' MR' N3D MF N3D' N3R' MF' N3R N3U' B' MF N3R MF' N3R' B N3U MF N3D L' F MU' F' L N3F L' N3D F MU F' N3D' L N3F'
