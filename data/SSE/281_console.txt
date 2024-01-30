@@ -1,0 +1,413 @@
+undefined
+Window { window: Window, self: Window, document: document, name: '', location: Location, … }
+supercubesolver_solver.js: 276 Parity alg: R' NL N3L N5U N7L N8U' N9F'
+supercubesolver_solver.js: 456 Solving orbit: 9
+supercubesolver_core.js: 2023 Permutation: (UX)(TDBE)
+supercubesolver_solver.js: 471 Permutation: (UX)(TDBE)
+supercubesolver_solver.js: 472 Alg: R2 U2 B U' L U' R2 U2 R2 U' L' U B' R2 U2 R D2 R' F U2 F' R D2 R' F U2 F'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 18
+supercubesolver_core.js: 2023 Permutation: (IDHOMWUSVKLRFQCPEXG)
+supercubesolver_solver.js: 471 Permutation: (IDHOMWUSVKLRFQCPEXG)
+supercubesolver_solver.js: 472 Alg: F' NU B D' B' NU' B L' NF' L NF D F NF' L' NF L B' ND' L U' L' ND L U L ND' R ND L2 ND' R' ND2 F' NF R NF' R' F L2 B R NF R' NF' B' L2 B' D B ND' B' D' B
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 27
+supercubesolver_core.js: 2023 Permutation: (PO)(SBWIVMGXCFHU)(TDLJNQR)
+supercubesolver_solver.js: 471 Permutation: (PO)(SBWIVMGXCFHU)(TDLJNQR)
+supercubesolver_solver.js: 472 Alg: B' D2 B' N3D F' N3D' F B D2 F' N3D F N3D' B L' N3D L D' L' N3D' L D N3L U' L U N3L' U' L' U L' N3F L B L' N3F' L U' B' N3R2 N3D' B U B' U' N3D N3R2 U2 N3D' D' B' U N3U N3B U' B U N3B' D U B' N3U' B U N3D
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 36
+supercubesolver_core.js: 2023 Permutation: (MJRUPO)(LDEQNIHVASFGWK)
+supercubesolver_solver.js: 471 Permutation: (MJRUPO)(LDEQNIHVASFGWK)
+supercubesolver_solver.js: 472 Alg: L' N4U2 L F L' F' N4U2 N4L' F L F' N4L D U B' U' D' N4F2 D U N4U' B U' B' N4U B D' N4F2 B' R U' N4L U R' U' N4L' U B N4R2 D R' F D' N4B D F' N4U' R D' R' N4U N4B' R N4R' U2 N4R D' N4R' U2 N4R D N4R2
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 45
+supercubesolver_core.js: 2023 Permutation: (XF)(TAJC)(EGR)(PHQVW)(NDMUSBI)
+supercubesolver_solver.js: 471 Permutation: (XF)(TAJC)(EGR)(PHQVW)(NDMUSBI)
+supercubesolver_solver.js: 472 Alg: L' D' N5F2 D B' D' N5F2 L B N5U' B' L' D B L N5U U F U2 R' N5U' R U2 R' N5U R F' U' R N5F' R' B' R N5F B R' N5B2 R B' R' N5B2 B N5F R F' R' N5F' R F R' B D' U' F' N5D' F SU F' N5D F D2 B'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 54
+supercubesolver_core.js: 2023 Permutation: (LIM)(QDU)(KARSOJC)(EBPHVGWXNTF)
+supercubesolver_solver.js: 471 Permutation: (LIM)(QDU)(KARSOJC)(EBPHVGWXNTF)
+supercubesolver_solver.js: 472 Alg: F' SR' B F R' N6B2 R SF' R' N6B2 R B2 SR F' N6U F D' F' N6U' F2 N6U2 F' D F N6U2 N6D' D F' D N6R' U2 N6R D' F N6R' F' U2 F N6R D' N6D F N6D' F' U D F N6D F' D' U' F L2 N6D' D F N6D L' N6D' L F' D' L' N6D L' F'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 63
+supercubesolver_core.js: 2023 Permutation: (NA)(BDTPUCJKLRIG)(SEQWV)
+supercubesolver_solver.js: 471 Permutation: (NA)(BDTPUCJKLRIG)(SEQWV)
+supercubesolver_solver.js: 472 Alg: D' B L' R' B' D' N7L2 D B L R B' D' N7L2 D2 R F N7L' F' D N7L' D' R' D N7L D' F N7L F' U N7L' F L' R' F' N7L F R L F' U' B L B' N7R B N7F2 L' B L N7F2 L' B2 N7R'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 72
+supercubesolver_core.js: 2023 Permutation: (FE)(VDWONSPURQTCGBAHKILX)
+supercubesolver_solver.js: 471 Permutation: (FE)(VDWONSPURQTCGBAHKILX)
+supercubesolver_solver.js: 472 Alg: L' B' D' N8R D B L R2 D' B' N8R' B D R' U N8R U' R' U2 N8R' U' D' R' U N8R U' N8R' R U' B' N8D' B D B' N8D B N8L' B2 U L2 N8F L2 U' B2 F L2 U N8F' U' L F' N8L F L F'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 81
+supercubesolver_core.js: 2023 Permutation: (ODEA)(JBURQLMF)(PIWXVHS)
+supercubesolver_solver.js: 471 Permutation: (ODEA)(JBURQLMF)(PIWXVHS)
+supercubesolver_solver.js: 472 Alg: R U' R' N9U' R U R' N9U F' N9D2 F R' N9B' R D F D' R' N9B R D F2 N9D2 F D' F' R' N9F R F R2 SF' R N9F' R' SF R2 N9F' R' N9R' F' N9R B' N9R' F N9R R N9F2 R' B R N9F' D' B' N9L B R B' N9L' B R' D
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 90
+supercubesolver_core.js: 2023 Permutation: (LW)(JE)(OI)(XPNT)
+supercubesolver_solver.js: 471 Permutation: (LW)(JE)(OI)(XPNT)
+supercubesolver_solver.js: 472 Alg: MR' F' MR B' MU' B MU MR' F MR MU' B' MU B L D' F' D MF2 D' B R2 D R2 MF2 R2 D' R2 SF D L' F R' D F' R MU2 R' F D' R F' MU2
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 17
+supercubesolver_core.js: 2023 Permutation: (SI)(ADKQREMCGNPXJU)(VHF)(OBT)
+supercubesolver_solver.js: 471 Permutation: (SI)(ADKQREMCGNPXJU)(VHF)(OBT)
+supercubesolver_solver.js: 472 Alg: NL ND L ND NR ND' L' ND' NR' NF NR' NU' NL' B' NL NU NR NF' NL' NR' NU' B NU NR ND NL' U NL ND' NL' U' NL NB' NU L' NU' NL' NR' NU NR L U' NR' NU' NR U F' NL NB NL' F NL
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 26
+supercubesolver_core.js: 2023 Permutation: (PFX)(JCL)(UHSEW)(NBRGM)(IDTVA)
+supercubesolver_solver.js: 471 Permutation: (PFX)(JCL)(UHSEW)(NBRGM)(IDTVA)
+supercubesolver_solver.js: 472 Alg: R N3B' D2 N3F D2 NL D2 N3F' D2 NL' N3B R' N3F' N3R NU' N3R' NU U B2 NU' N3R NU N3R' B2 U' N3F D NB L' N3F N3R' L NB' L' NB N3R N3F' NB' L D' NU' N3R' NU' B NR U NU N3R NU' N3R' U' NR' B' N3R NU2
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 35
+supercubesolver_core.js: 2023 Permutation: (UF)(NDALXCEHOJTSWIGR)
+supercubesolver_solver.js: 471 Permutation: (UF)(NDALXCEHOJTSWIGR)
+supercubesolver_solver.js: 472 Alg: NU N4L' N4U' U NR U' NR' N4U N4L NR U NR' U' R' D' NU' N4F' NU N4F D R N4F' NU' N4F F' N4R U N4R' NL NF' N4R U' N4R' U NF NL' U' B' NU' NL' B U N4L' U' B' NL NU B U N4L U' F
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 44
+supercubesolver_core.js: 2023 Permutation: (MJS)(QDXEWFGNOBIKC)
+supercubesolver_solver.js: 471 Permutation: (MJS)(QDXEWFGNOBIKC)
+supercubesolver_solver.js: 472 Alg: L N5R B' NB' NU NR' B N5R' B' N5R NR NU' NB N5R' B NF N5R NF' L' NF N5R' NF' NU2 N5F' U' N5F NU2 NL N5F' U N5F N5B' N5L' U' NL U N5L U' NL2 U N5B
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 53
+supercubesolver_core.js: 2023 Permutation: (KIM)(QAFXTSELGVWRPJOCU)
+supercubesolver_solver.js: 471 Permutation: (KIM)(QAFXTSELGVWRPJOCU)
+supercubesolver_solver.js: 472 Alg: NB ND' N6R ND R2 ND' N6R' ND R2 N6U NB' D NB N6U' NB' D' NF' N6L' D' NL D N6L N6U' D' NL' D NL N6U NL' NF NB U NB' N6U' NB U' NB' B NF ND' B' N6U B N6U' ND NF' N6U U2 NF' N6R' NF N6R U2 B' N6R' NF' N6R NF
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 62
+supercubesolver_core.js: 2023 Permutation: (EB)(XJUKRPNFLS)(WMT)(QCV)(IDG)
+supercubesolver_solver.js: 471 Permutation: (EB)(XJUKRPNFLS)(WMT)(QCV)(IDG)
+supercubesolver_solver.js: 472 Alg: N7R' NU' L NU N7R NU' L' NU N7B' N7D2 B NU B' N7D2 N7L B NU' B' N7L' N7B NR N7L F ND F' N7L' L' N7U2 L F ND' F' L' N7U2 L NR' D NU N7R2 D F NL NF' F' D' N7R D F NF NL' F' D' N7R NU' D'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 71
+supercubesolver_core.js: 2023 Permutation: (TALQIFO)(JCHKENWUS)
+supercubesolver_solver.js: 471 Permutation: (TALQIFO)(JCHKENWUS)
+supercubesolver_solver.js: 472 Alg: N8F R D2 N8F NR' N8F' NR D2 R' NR' N8F NR N8F2 D2 N8B' N8U R NF R' N8U' N8B R NF' R' D2 NU N8F' B N8U' B' NU' B N8U B NU N8F NU' B2 N8B NU' F NU N8B' NU' F' NU
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 80
+supercubesolver_core.js: 2023 Permutation: (UBGJP)(TDNWFICEXQHRO)
+supercubesolver_solver.js: 471 Permutation: (UBGJP)(TDNWFICEXQHRO)
+supercubesolver_solver.js: 472 Alg: F' N9L' F ND F' N9U F ND F' N9U' N9L F ND2 N9F NU N9F' U F N9F NU' N9F' NU F' U' N9B D N9B' NU' N9B D' N9B' B D NL N9U NL' N9U' D' B' N9U NL N9U' NL' NF L' N9B L NF' L' N9B' L
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 89
+supercubesolver_core.js: 2023 Permutation: (VDONJWGI)(HBEXLRMSUPQK)
+supercubesolver_solver.js: 471 Permutation: (VDONJWGI)(HBEXLRMSUPQK)
+supercubesolver_solver.js: 472 Alg: NF' NU F MU F' NU2 U2 MR NU MR' U2 F NF2 NL' D' NL MU' NL' D NL NF' F' ND' L' ND MR' ND' L ND MR NL' ND F NL MF NL' F' ND' NL MF'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 16
+supercubesolver_core.js: 2023 Permutation: (QBO)(TDXCURFJIGSHWVPLE)
+supercubesolver_solver.js: 471 Permutation: (QBO)(TDXCURFJIGSHWVPLE)
+supercubesolver_solver.js: 472 Alg: N3D D N3F' D' NB' NR D N3F D' NR' NB N3D' B' N3R B NF' NR' B' N3R' B N3R NR NF N3R' NF' U' N3L U NL' U' N3L' NL N3U NL' U NL N3U' U N3B U' N3B' NF NL2 N3B U N3B' U' NL D' N3L D NL D' N3L' D
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 25
+supercubesolver_core.js: 2023 Permutation: (TE)(NBGO)(RDFMXJVPWKQ)
+supercubesolver_solver.js: 471 Permutation: (TE)(NBGO)(RDFMXJVPWKQ)
+supercubesolver_solver.js: 472 Alg: N3R' F' U R' N3R' N3U N3F' N3U' N3F R N3U N3R N3U' U' F U D N3L N3D N3L' D' N3F U' N3L U N3F' N3D' U' N3L' N3R2 N3B' N3R' B' N3R N3B N3F' N3R' B N3R N3F N3R'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 34
+supercubesolver_core.js: 2023 Permutation: (XFU)(RES)(IAPON)(WDBVTJH)
+supercubesolver_solver.js: 471 Permutation: (XFU)(RES)(IAPON)(WDBVTJH)
+supercubesolver_solver.js: 472 Alg: N3R F' N3L U N4L U' N3L' N3F2 U N4L' U' N3F2 F N3R' N4F' N3R' N4F N3U2 L N4F2 L' N3U2 L N4F N3R N4F L' N4R' U N4R N3U' R' N3U' N4R' N3U R N3U' U' N4R N3U2 D' N3R D N4R' D' N3R' D N4R
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 43
+supercubesolver_core.js: 2023 Permutation: (UCF)(QAHKJVMNOXGREBTWI)
+supercubesolver_solver.js: 471 Permutation: (UCF)(QAHKJVMNOXGREBTWI)
+supercubesolver_solver.js: 472 Alg: N3D N5L2 D' N3L' D N5L2 N5F D' N3L D N5F' N3D' L N5U' L' N3F' L N3F N5U N5R N3F' L' N3F N5R' N3U' N5B' R2 F' N3U' F R2 N5B N5U R2 F' N3U F R2 N5U' N3U N5R' B L N5R N3U N5R' N3U' L' B' N3U N5R N3U'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 52
+supercubesolver_core.js: 2023 Permutation: (CDAL)(OJWFUHKREVPTMQ)
+supercubesolver_solver.js: 471 Permutation: (CDAL)(OJWFUHKREVPTMQ)
+supercubesolver_solver.js: 472 Alg: N3U' N6D L' N3D L N3L N6D' L' N6D N3L' N6D' N6R N3D' L N3D N6R' N3D' N3U N3F2 U' N6B U N3F2 N3R' U' N6B' U N6B N3R N6B' L' N6B' R' N3U' R B N6B N6U' B' R' N3U R B N6U B' L F N6L N3F N6L' F' N6L N3F' N6L'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 61
+supercubesolver_core.js: 2023 Permutation: (RDLNWFEHMAOGXCTQJIP)
+supercubesolver_solver.js: 471 Permutation: (RDLNWFEHMAOGXCTQJIP)
+supercubesolver_solver.js: 472 Alg: U' N3U N3F' U N7R' U' N7R N3F N3U' N7R' U N7R N3B' N3F L' F' N3F' N7L N3F F N3R' F' N7L' F N3R L N7L N3F' N7L' R N7U R' N7U' N3B N3L N7U R N7U' R' N3L' N3B' N7D' N3B D' N3B' N7D N3B D N3D' N7L' N3D L N3D' N7L N3D L'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 70
+supercubesolver_core.js: 2023 Permutation: (BDMTORJQIVPWCXLHGFS)
+supercubesolver_solver.js: 471 Permutation: (BDMTORJQIVPWCXLHGFS)
+supercubesolver_solver.js: 472 Alg: R N8U' N3L N8U R' N8U' D' N8R D N3L2 D' N8R' N3L N8U N3L' D N3L B' N3R N8F' N3R' B N3R N8F N8D N3R' U N3R N8D' N3R' U' N8D F' N8D' N3B' N8D F N8D' N3B N3D' U' N3F' U R N8F2 N8L R' U' N3F U R N8L' N8F2 R' N3D
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 79
+supercubesolver_core.js: 2023 Permutation: (TM)(QCHU)(SBK)(RDNOEJIGPFAWX)
+supercubesolver_solver.js: 471 Permutation: (TM)(QCHU)(SBK)(RDNOEJIGPFAWX)
+supercubesolver_solver.js: 472 Alg: F' N3D L N9B L' U' N3D2 N3B' U L N9B' L' U' N3B U N3D F N9L' N3D R2 N9F' R2 N3D' R2 N9F R N9L N3U R N9L N9U' R' N3U' R N3U N9U N9L' N3F N9U' L N9U L' N3F' N3U' L N9U' L' N3L U N3L' N9U N3L U' N3L'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 88
+supercubesolver_core.js: 2023 Permutation: (MK)(TDWQROVFUIBC)(HJG)
+supercubesolver_solver.js: 471 Permutation: (MK)(TDWQROVFUIBC)(HJG)
+supercubesolver_solver.js: 472 Alg: R' N3B MR N3B MR' F MR N3B MR' F' N3B R N3L MU N3L' D' N3L MU' N3L' D N3D B2 N3L B2 N3R MF N3R' B2 N3L' B2 N3R MF' N3R' N3D' U N3R' MU N3R U' N3R' MU' N3R
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 15
+supercubesolver_core.js: 2023 Permutation: (ODEFUPNGBQKTALJXCVR)
+supercubesolver_solver.js: 471 Permutation: (ODEFUPNGBQKTALJXCVR)
+supercubesolver_solver.js: 472 Alg: N4R D' N4F' ND N4F ND' D N4R' F2 ND N4F' ND' F' NU N4F NU' F' U' NU N4F' NU' N4F U F' NU' F N4L2 F' NU F N4L2 L' NB L N4D NB L' N4B L NB' L' N4B' NB' NU L NR N4D' L2 N4D NR' N4D' L NU' L
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 24
+supercubesolver_core.js: 2023 Permutation: (NJ)(ODGRCHUFIK)(QAXWPSBMT)
+supercubesolver_solver.js: 471 Permutation: (NJ)(ODGRCHUFIK)(QAXWPSBMT)
+supercubesolver_solver.js: 472 Alg: N4D' N4B N3U' D' N3F' D N4B' N3F N4D N3F' D' N3F N4D' N4B N3U N4B' D N4D N4L N3F N4L' B N4L N3F' N4L' B' U2 N4F2 N4L' U N4L N3L N3D' N4L' U' N4L N3D N4F2 U N3L' U N3B2 N3U2 R N4F2 N3U' N4L' N3U R' N3U' N4L N3U' N3B2 R N4F2 R'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 33
+supercubesolver_core.js: 2023 Permutation: (GCF)(WDMTRNSAPOQLKJUEXVB)
+supercubesolver_solver.js: 471 Permutation: (GCF)(WDMTRNSAPOQLKJUEXVB)
+supercubesolver_solver.js: 472 Alg: D N4L' D' N4D N4F N4L N4F' N4L' D N4L D' N4L' N4D' N4L N4R N4B' N4U N4B L N4B' N4U' N4B N4R N4U L' N4U N4R2 N4U2 N4F' D' N4F N4U' N4F' D N4U B' N4U' N4F B N4D B' N4U N4D' N4B N4D B N4D' N4B'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 42
+supercubesolver_core.js: 2023 Permutation: (WC)(MAIPGENLQJSV)(ROX)
+supercubesolver_solver.js: 471 Permutation: (WC)(MAIPGENLQJSV)(ROX)
+supercubesolver_solver.js: 472 Alg: N5U N4L' D' N4L N5U' N4L' D N4L U' N5F U N4B' N4R' U' N5F2 U N4R U' N5F U N4B L' N5D2 L N4F N5D N4L' N5D' L' N5D N4L N5D L N4F' N4U N5F' R' N5F N5D' R N4B2 R' N5D N4R N5F' R N5F N4R' N4B2 N4U'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 51
+supercubesolver_core.js: 2023 Permutation: (HC)(LAUNWSBFIGRM)(XKVQO)
+supercubesolver_solver.js: 471 Permutation: (HC)(LAUNWSBFIGRM)(XKVQO)
+supercubesolver_solver.js: 472 Alg: B2 N4L' N6B' N4L B2 N4L' L' N6B N4L N6B' L N6B D N4B' D' N6L2 D N4B D' F' N6L N4F N6L' N4F' F R' N4F N6L N4F' R N6L N4L F N4L' N6F' N4L F' N4L' N6F N6D N4F' F' N4U N4R' F D N6R' D' F' N4R N4U' F D N6R D' N4F N6D'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 60
+supercubesolver_core.js: 2023 Permutation: (NBV)(RAMTXIWOEHCFSUJ)
+supercubesolver_solver.js: 471 Permutation: (NBV)(RAMTXIWOEHCFSUJ)
+supercubesolver_solver.js: 472 Alg: N7D2 U' N4R' U N4R N7D2 N7R N7B' N4R' U' N4R U N7B N4U' L' N4U N7R' N4U' L N4U R' N7F N4R' D B N4R N7F' N4R' N4U N7F N4U' B' D' N4U N7F' N4U' N4R R N4U' B' N7D' N7R' B N4U B' N4U' N7R N7D N4U B
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 69
+supercubesolver_core.js: 2023 Permutation: (EAFOMNXH)(GDWBLRKJCPUQ)
+supercubesolver_solver.js: 471 Permutation: (EAFOMNXH)(GDWBLRKJCPUQ)
+supercubesolver_solver.js: 472 Alg: F' L N8U' N8B L' N8U N4U N4L' N8U' L N8B' N8U L' N8B N4L N4U' N8B' N8R N4F N8L' F' N8L N4F' N4U2 N8L' F N8L N8R' F' N4U2 F' N8B N4B L N4B' N8L' N4B L' F' N4D F N8L F' N4D' N8L' N4B' N8L N8B' R' N4B' N8R N4B R N4B' N8R' N4B
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 78
+supercubesolver_core.js: 2023 Permutation: (SDMLPFCUWKORBTVAH)
+supercubesolver_solver.js: 471 Permutation: (SDMLPFCUWKORBTVAH)
+supercubesolver_solver.js: 472 Alg: L N9F' L' N9F N4D N4L' N9F' L N9F L' N4L N4D' N4F2 R N4F' N9R' N4F R' N4F' N9R N4F B N9R' B' D' N4R2 N4D D B N9R B' D' N4D' N4R2 D N4F2 L N4U L' N9D N4R' N9D L N9D' N4R N9D N4U' L' N9D2
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 87
+supercubesolver_core.js: 2023 Permutation: (FBN)(QACPXKILUVOGMSERJTW)
+supercubesolver_solver.js: 471 Permutation: (FBN)(QACPXKILUVOGMSERJTW)
+supercubesolver_solver.js: 472 Alg: N4L' B F N4R MF' N4R' B' N4D' N4R MF N4R' N4D F' N4L L2 N4B' R MF' R' F' MR N4B MR' F R MF R' L2 D' N4F' MU2 N4F D N4F MU2 N4F' MF' R' N4D2 MF' N4D' MF N4D' R MF
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 14
+supercubesolver_core.js: 2023 Permutation: (IC)(RDLSUKNGBVQO)(HJF)(TAMEX)
+supercubesolver_solver.js: 471 Permutation: (IC)(RDLSUKNGBVQO)(HJF)(TAMEX)
+supercubesolver_solver.js: 472 Alg: N5B2 L N5L U N5L' NU' N5L U' N5L' L' N5B' L NU L' N5B' U2 N5R' NU N5R U2 N5R' NU' R' NB' N5D NB U NB' N5D' U' N5B U NB U' N5B' B' NB N5D' NB' N5D B R N5D' NB N5D NB' N5R ND NL' L' B N5U' B' L' NL ND L B N5U B' L' ND' L2 ND'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 23
+supercubesolver_core.js: 2023 Permutation: (BDJNHEOLMXFCQKURSWTIP)
+supercubesolver_solver.js: 471 Permutation: (BDJNHEOLMXFCQKURSWTIP)
+supercubesolver_solver.js: 472 Alg: N5U' F' N3U F' N5U F N3U' F' N3B N5U' F2 N5U N3B' N3U N5D B' N3R' B N5D' N5U' B' N5U N3R N3F2 N5U' B N5U N3F2 N3U' N5D N3L N5D' N3L' B2 D' N3L N5D N3L' N5D' D N3F R N3D' N3F' B2 N5L' B2 N3F N3D R' N3F' B2 N5L
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 32
+supercubesolver_core.js: 2023 Permutation: (QEV)(PDUTHWIJBNGXCFLKM)
+supercubesolver_solver.js: 471 Permutation: (QEV)(PDUTHWIJBNGXCFLKM)
+supercubesolver_solver.js: 472 Alg: B N4D' N4R B N5L B' N4R' N4D B N5L' B2 R N5B' N4R' N5B R' N5B' N4R N5B N4R' U B' N4R N5U' N4R' N4B N5U N4B' B U' N4B N5U' N4B' N4R N5U N4L2 N5B' N4D F' N4D' N5B N5D' N4D F N4D' N4L2 F' N5D F
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 41
+supercubesolver_core.js: 2023 Permutation: (TEM)(WDKRQGCXLVPOJFBAI)
+supercubesolver_solver.js: 471 Permutation: (TEM)(WDKRQGCXLVPOJFBAI)
+supercubesolver_solver.js: 472 Alg: N5B2 N5R B U' N5L' N5U' N5L N5U U B' N5R' N5B' F N5L' N5B' N5L N5B' F' N5U N5B N5U' R N5R U' N5R' N5U' N5D' N5R U N5R' N5D R' N5D' R N5U R' B N5L N5F' N5L' F' B' N5L' N5F N5L F N5D
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 50
+supercubesolver_core.js: 2023 Permutation: (NIX)(QDWMOFAGKBLSTUPHJ)
+supercubesolver_solver.js: 471 Permutation: (NIX)(QDWMOFAGKBLSTUPHJ)
+supercubesolver_solver.js: 472 Alg: D N6R N5D' R' N5D' N6R' N5D R N5D' D' N6R N6B U' N6B' N5D2 N6B N5B U N6B' U' N5B' U N6R' R' N5B' R N6B R' N5B R N6B' N6L F' N6L' F N5U2 N5B' F' N6L F N6L' N5B U' R N6U R' N5U2 N5F' R N6U' R' N5F U
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 59
+supercubesolver_core.js: 2023 Permutation: (SC)(OAIEXWMHKNBLVQUR)
+supercubesolver_solver.js: 471 Permutation: (SC)(OAIEXWMHKNBLVQUR)
+supercubesolver_solver.js: 472 Alg: N5R N7B N5B N7R N5B' L' N5B N7R' N5B' N7B' N5R' N7B L N5D N5F L' N5F' N7B N7L' N5F L N5F' N7L N5D' L' N7B' L N7B' N5F D N5F' N7D' N5F D' N5F' N7D D U N5L U' F' N7R F U N5L' N5U' U' F' N7R' F N5U D'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 68
+supercubesolver_core.js: 2023 Permutation: (XALJRUHESIBKTOWPNCG)
+supercubesolver_solver.js: 471 Permutation: (XALJRUHESIBKTOWPNCG)
+supercubesolver_solver.js: 472 Alg: N8R N5U' L N8D' L N5U L' N8D L N8R' N5U' L N5U N8R' N5U' L N8R D N8R' N5U N8R D' N5B R' N5B' N8R' N5B R N5B' N8R U N5F' U N5B' N8U N5B U' N5F U' N5F' N5B' N8U' N5B R2 N5F N8L' R' N8B' R N5F' R' N8B R' N5F N8L
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 77
+supercubesolver_core.js: 2023 Permutation: (SMV)(KDFRWEXHIQTPCAJ)
+supercubesolver_solver.js: 471 Permutation: (SMV)(KDFRWEXHIQTPCAJ)
+supercubesolver_solver.js: 472 Alg: N9U2 F N9R' N9D' F' N5R' F N9D N9R F' N5R N9U2 N9L' F' N5L F N9L N9B' F' N5L' F N5L N9B N5L' R N9B N5R N9B' R' N9B N5R' N9B' N9R' N5F R' N5F' N9R N5F R N5F' D' N9R D N5D N5L D' N9R' D N9R N5L' N5D' N9R'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 86
+supercubesolver_core.js: 2023 Permutation: (XGR)(JDNHLTVSFQIOWMPCE)
+supercubesolver_solver.js: 471 Permutation: (XGR)(JDNHLTVSFQIOWMPCE)
+supercubesolver_solver.js: 472 Alg: N5B MR N5B' L N5B B N5L2 B' MR' B N5L2 B' N5B' L' R' D2 N5L MU N5L' D2 N5L' MU' N5L N5R' N5U F N5R MF' N5R' F' N5U' N5R MF R U' B MR' B' N5L' N5R' B MR B' N5L N5R U
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 13
+supercubesolver_core.js: 2023 Permutation: (RDVNUTECXHJKOIMGS)
+supercubesolver_solver.js: 471 Permutation: (RDVNUTECXHJKOIMGS)
+supercubesolver_solver.js: 472 Alg: D N6L D' NR2 D N6L' D' NR2 N6B U' N6B' NU N6B U NU' B' NU N6B' B N6D B' NU' B N6D' N6R' D F N6R F' D' NB' NL2 D F N6R' F' D' NL2 NB N6R N6B' U' NF' U N6B U' NF U
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 22
+supercubesolver_core.js: 2023 Permutation: (EARNCKVXOJIBTGMPU)
+supercubesolver_solver.js: 471 Permutation: (EARNCKVXOJIBTGMPU)
+supercubesolver_solver.js: 472 Alg: D' U' N6L U N3B U' N6L' N6D' F N6D N3B' N6D' F' N3B U N3B' N6D D N3R' N6B R N6B' N3R N6B R' B L N6B' N3D N6B N3D' L' B' N3D N6B' N3D' U' N3F' U N6B U' L N3F N6L N3F' L' N3F N6L' U N6B'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 31
+supercubesolver_core.js: 2023 Permutation: (XBPTMLUCO)(RAHGQJIVE)
+supercubesolver_solver.js: 471 Permutation: (XBPTMLUCO)(RAHGQJIVE)
+supercubesolver_solver.js: 472 Alg: N4R L' N6D' L N6D N4R' N4D' N6D' L' N6D L N4D2 R' N6D' R N4D' R' N6D R N4L' N4B L N6D' L' N4B' N4U' N4B' L N6D L' N4B N4U N4L N6U' U' N6R' U N4R' U' N4U N6R U N6R' N4U' N6R N4R N6U F' N4L' F N6R' F' N4L F N6R
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 40
+supercubesolver_core.js: 2023 Permutation: (RGQ)(EDWMLVBKXHTCJ)
+supercubesolver_solver.js: 471 Permutation: (RGQ)(EDWMLVBKXHTCJ)
+supercubesolver_solver.js: 472 Alg: N6B' U' N6R R N6B' N6U' R' N5D' R N6U N6B R' N6R' U N6R N5D N6R' N6B N5B' N6D B N6D' N5B N6D B' R N5D' R' N6D' R N5D R' N6B N6L' N5D N6L N5R D' N6R D N5R' D' N6R' N6L' N5D' N6L D N6B'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 49
+supercubesolver_core.js: 2023 Permutation: (VSU)(QAJMXKLOEGCBNFR)
+supercubesolver_solver.js: 471 Permutation: (VSU)(QAJMXKLOEGCBNFR)
+supercubesolver_solver.js: 472 Alg: D2 N6L' N6D' N6F' N6D2 N6F N6D' N6L D2 N6F R N6U' N6L N6R N6U R' N6U' N6R' N6U2 N6L' N6U' N6F' F' N6U N6B2 N6U' N6B2 L' N6U R' N6U' N6B2 N6U N6B2 R N6U' L F
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 58
+supercubesolver_core.js: 2023 Permutation: (KI)(QHWUSE)(NDFAPMLCG)
+supercubesolver_solver.js: 471 Permutation: (KI)(QHWUSE)(NDFAPMLCG)
+supercubesolver_solver.js: 472 Alg: N7F' N6R' N7F L' N7F' N6R N7F L F' N6U' N7F N6U F N6U' N7F' N7D' F N6U F' N7D N7L F N6U' F' N6U N7L' N6L B N6L' N7B2 N6L B' N6L' N7F U' N7B' N6R2 N6D' N7B U N7B' N6D N7F' U' N6R2 U N7B'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 67
+supercubesolver_core.js: 2023 Permutation: (SP)(IDGRMJFXQCEBWN)(UKT)(HAO)
+supercubesolver_solver.js: 471 Permutation: (SP)(IDGRMJFXQCEBWN)(UKT)(HAO)
+supercubesolver_solver.js: 472 Alg: N8L' N8F' D R N6B' R' D' N8F N8L' D N8F' R N6B R' N8F D' N8L2 B L N8U' L' B' N6U2 B L N8U L' B' N6U' B' D' N8F' N8R2 D B N6L B' D' N8R2 N8F D B N6L' N6U' N6B N6R' B' N8U' B N6R N6D B' N8U B N6D' N6B'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 76
+supercubesolver_core.js: 2023 Permutation: (MCE)(FDJXLRPGSWIVOBQ)
+supercubesolver_solver.js: 471 Permutation: (MCE)(FDJXLRPGSWIVOBQ)
+supercubesolver_solver.js: 472 Alg: U N9D N9L' B' N6L B N9L N9D' N9L2 B' N6L' B N9L2 U' N9F N6R' B' N6R N9F' N6R' N9L' B N6R B' N9L B R2 D' N6L N9U' N6L' N9U D R2 N9U' N6L L N6D' L' N9U N9L' L N6D L' N6L' N6D' N9L N6D
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 85
+supercubesolver_core.js: 2023 Permutation: (WLU)(VIT)(GDS)(BAEFJRQNO)
+supercubesolver_solver.js: 471 Permutation: (WLU)(VIT)(GDS)(BAEFJRQNO)
+supercubesolver_solver.js: 472 Alg: N6U' MR N6F D' MF' D N6F' D' MF N6R D MR' D' N6R' D N6U MR' F N6R F' MR F N6R' F' MR MU' R' MF N6U MF' N6U2 R MU R' N6U R N6F MR' F MR N6F' MR' F'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 12
+supercubesolver_core.js: 2023 Permutation: (WGN)(BAECFUQJMOLHVSIXR)
+supercubesolver_solver.js: 471 Permutation: (WGN)(BAECFUQJMOLHVSIXR)
+supercubesolver_solver.js: 472 Alg: N7R F2 NF ND L NF' F2 N7R' F2 NF L' ND' NF' F NU N7F NU' F NU N7F' N7U NL' N7U' R' N7U NL N7U' R NU' N7L' U N7L NL ND N7L' U' N7L U ND' NL' R NB R' N7U' N7B2 R NB' R' N7B2 N7U U'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 21
+supercubesolver_core.js: 2023 Permutation: (UHF)(RDV)(TAGNQXPBKJI)
+supercubesolver_solver.js: 471 Permutation: (UHF)(RDV)(TAGNQXPBKJI)
+supercubesolver_solver.js: 472 Alg: L' N3B' L' N7L' F N7L N3B N7L' F' N3B' L N3B N7L L D' N7B N3U' N7B' N3U D R N3U' N7B N3U N7B' R' L' N7B L N3B' L' N7B' L U N3L' F N7R2 N7D F' N3L F N7D' N7R2 F' U' N3B
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 30
+supercubesolver_core.js: 2023 Permutation: (RHV)(TDUOFIXQEMANLKBSJ)
+supercubesolver_solver.js: 471 Permutation: (RHV)(TDUOFIXQEMANLKBSJ)
+supercubesolver_solver.js: 472 Alg: U' N7U L' N7U' N4L2 N7U L N7U' U N7R' U' N4L2 U N7R N4F R' N4F' R N7B N7U' R' N4F R N4F' N7U N7B' N7F' N7D' N4R' N7D D R N7D' N4R N7D N4R' R' D' N4R N7F' N7L' N4B' L' N4B L N7L N7F L' N4B' L N7F N7R N4B L N4B' N7R' N4B L'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 39
+supercubesolver_core.js: 2023 Permutation: (CAK)(IDFMUPGEQNVJWSR)
+supercubesolver_solver.js: 471 Permutation: (CAK)(IDFMUPGEQNVJWSR)
+supercubesolver_solver.js: 472 Alg: N7L N7D' N5L' N7B' N5L F N5L' N7B N5L N7D N5B N7D' F' N7D N5B' N7L' D N5R N7B' L' N5R' B N5R N7B N5R' B' N7B' L N7B D' U2 B' N7U N5B N7L B N7L' N5B' N5L' N7L B' N7L' N7U' B N5L N5R' N7D N5R U2 N5R' N7D' N5R
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 48
+supercubesolver_core.js: 2023 Permutation: (OJ)(WDGFVSPTMU)(CBQ)(KAH)
+supercubesolver_solver.js: 471 Permutation: (OJ)(WDGFVSPTMU)(CBQ)(KAH)
+supercubesolver_solver.js: 472 Alg: D' N6R' D N7L D' N6R N7R D N6B D' N7R' D N6B' N7L' D' N6F' D N6F B' N7D N6F' N7D' B N7D N7B D' N6F D N7B' N7D' L' N7U N7B' L N6U2 L' N7B N7U N6L' U N6L N7U2 N6L' U' N6L L N6U2
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 57
+supercubesolver_core.js: 2023 Permutation: (VL)(MDSANCQWREKUBJIHOX)
+supercubesolver_solver.js: 471 Permutation: (VL)(MDSANCQWREKUBJIHOX)
+supercubesolver_solver.js: 472 Alg: N7F2 N7L' N7F' R N7F N7L N7R' N7F' R' N7F' N7R U N7F' N7L' N7U' L2 N7U N7L N7U' L2 N7F N7U U' N7B' N7R' N7B R N7B' N7R N7B R' F R N7U' R' F' N7D' N7B' F R N7U R' F' N7B N7D
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 66
+supercubesolver_core.js: 2023 Permutation: (WQ)(NAOIKJCEVMFBRT)
+supercubesolver_solver.js: 471 Permutation: (WQ)(NAOIKJCEVMFBRT)
+supercubesolver_solver.js: 472 Alg: F' N7U F N8U' F' N7U' F N8U D2 N8R' N7U D' N7R' D N8R D' N7R D' N8R' N7U' N7D' N8R N7D R F' N7D' N8R' N7D N8R F R' U' N8D2 N8R U B N7L B' U' N8R' N8D' U B N7L' B' N8D'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 75
+supercubesolver_core.js: 2023 Permutation: (ADUTPGJXQCHKVBLFONS)
+supercubesolver_solver.js: 471 Permutation: (ADUTPGJXQCHKVBLFONS)
+supercubesolver_solver.js: 472 Alg: N9U' N7L U' L' N7L' N9U N7L N9U' L U N9U N7L' U N9D2 B' N7D' B N9D' N9R' B' N7D' B N9R N9D' B' N7D2 B U' N7R N7U' F N9U' F' N9U N7U N7R' N9U' F N9U F' L N9F' N7D N7B' N9F L' N9F' L N7B N7D' L' N9F
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 84
+supercubesolver_core.js: 2023 Permutation: (XJG)(PDQEIAO)(WCFHLRSTMUN)
+supercubesolver_solver.js: 471 Permutation: (XJG)(PDQEIAO)(WCFHLRSTMUN)
+supercubesolver_solver.js: 472 Alg: N7F' MU L' N7B' N7U2 L MU' L' N7U2 N7B MR' MF L N7F L' N7F' MF' MR N7F N7B' MR' N7B L N7B' MR N7B F N7U U L N7U MR' N7U' L' N7U' MR U' F' D N7B N7R' MU' N7R N7B' D' N7B N7R' MU N7R N7B'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 11
+supercubesolver_core.js: 2023 Permutation: (BDU)(RAWISFLTVCEPO)
+supercubesolver_solver.js: 471 Permutation: (BDU)(RAWISFLTVCEPO)
+supercubesolver_solver.js: 472 Alg: L' N8F L NU NR' L' N8F' L N8F NR NU' N8F' R D N8B' ND N8L' D' NF' D N8L N8B D' N8B' NF ND' N8B R' U NF' N8D F' N8D' NF N8D' R ND R' N8D2 R ND' R' F N8D' U'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 20
+supercubesolver_core.js: 2023 Permutation: (WIX)(FDOAUCPHTBVLMJSNKGR)
+supercubesolver_solver.js: 471 Permutation: (WIX)(FDOAUCPHTBVLMJSNKGR)
+supercubesolver_solver.js: 472 Alg: N3U' N8F N3R N8F' F' N8U' N8R' F N8F N3R' N8F' F' N8R N8U F N3U N8D F' N8D N8R F N3D F' N8R' N3B' N8D' F N8D N3B N3D' N8D2 R N8D' R' N3U' R N8D R' N8R N8U' N3U F N3U' F' N8U N8R' F N3U F2 N8L F N3L' F' N8L' N8D F N3L2 F' N8D' F N3L'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 29
+supercubesolver_core.js: 2023 Permutation: (OAL)(NISTMPU)(CDKFBQEXWJV)
+supercubesolver_solver.js: 471 Permutation: (OAL)(NISTMPU)(CDKFBQEXWJV)
+supercubesolver_solver.js: 472 Alg: B' N8F2 N8U2 R N4U R' N8U2 N8F2 R N4U' R' B N4F N8D N4F' L' D' N4F N8D' N4F' N8D D L N8D' B N4R N8B' N4R' B' N4R N8B U' N4R' N8D' N4R U N4R' N8D N4B' N8L B N8L' B' N4B N4R B N8L B' N4R' N4B' N8L' F' N8L N4B N8L' F
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 38
+supercubesolver_core.js: 2023 Permutation: (KCH)(LDOWSBTIRNUJXQG)
+supercubesolver_solver.js: 471 Permutation: (KCH)(LDOWSBTIRNUJXQG)
+supercubesolver_solver.js: 472 Alg: D' N5F N5B' N8D' F' N8D N5B N8D' F N5F' D N5F N8D N5F' D N5F D' N8F' N5F' N8U N5F D N5F' N8U' D' N8F N8U' R N8U N5L N8U' R' N8U N5U' N8L L U' N8L' N5U N8L U L' N8U L N5U' L' N8U' N5U N8L' N5L'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 47
+supercubesolver_core.js: 2023 Permutation: (RM)(XDWBVSHI)(QCTNJOGKF)
+supercubesolver_solver.js: 471 Permutation: (RM)(XDWBVSHI)(QCTNJOGKF)
+supercubesolver_solver.js: 472 Alg: N8B' N6D' N8B D' N8B' N6D D N6B D' N8B D N6B' N8L2 U' N6B' N8L' N6U N8L U N8L' N6U' N8L' U' N6B U N8U R N6B R' N8U2 R N6B' N6U R' N8U R N6U' R' F' N8R2 F' U' N6L' N6D' U F N8R2 F' U' N6D N6L U F2
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 56
+supercubesolver_core.js: 2023 Permutation: (WDPKRTBAMEGUFSXICJN)
+supercubesolver_solver.js: 471 Permutation: (WDPKRTBAMEGUFSXICJN)
+supercubesolver_solver.js: 472 Alg: L2 N7U N8U N8F' N7U' L N7U L' N8F N8U' L N7U' L N8F N7R N7U' F N8D' F' N8D N7U N7R' N8D' F N8D F' N8F' N8B B' N7D2 B N8U' B' N7D N7L B N8U' B' N7L' N7D B N8U2 N8B' N8U' B' N8U B' N8D N7F' N8D' B N8U' B N8U N8D N7F N8D'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 65
+supercubesolver_core.js: 2023 Permutation: (VN)(ADUROFLTGIBHEJMQWX)
+supercubesolver_solver.js: 471 Permutation: (VN)(ADUROFLTGIBHEJMQWX)
+supercubesolver_solver.js: 472 Alg: D' N8B' N8R' N8B R B' N8D N8B' N8D' B N8R N8B R' D N8F N8L N8U N8F' N8U' N8L' F2 N8L' N8F N8L F2 N8F' L' N8R' N8F' U' N8F N8R N8D' N8R' N8U N8F' U N8F N8U' N8R N8D L
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 74
+supercubesolver_core.js: 2023 Permutation: (BDPFCEU)(MIXHGQWKNVL)
+supercubesolver_solver.js: 471 Permutation: (BDPFCEU)(MIXHGQWKNVL)
+supercubesolver_solver.js: 472 Alg: R' N8B' R N9B2 R' N8B N8U' R N9B R' N8U R N9B U' N8B' N9U N9F' N8B U N8B' U' N9F N9U' U N8B N9D B N9D' L N8U' N8F L' N9D L N8F' N8U L' B' N9D' N9L' N9F U' N9F' U N8L' N8D' U' N9F U N9F' N8D N8L N9L
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 83
+supercubesolver_core.js: 2023 Permutation: (LDOAGCXFSNUPRVTIEMJ)
+supercubesolver_solver.js: 471 Permutation: (LDOAGCXFSNUPRVTIEMJ)
+supercubesolver_solver.js: 472 Alg: U' N8F' MU' N8F U' N8F MU N8F' U2 MR' N8D' MR N8D L2 N8D' D' MR' N8D MR D L2 MU' N8B MU' B' MR N8B' MR' B N8F' L N8U' MR N8U L2 N8U MR' N8U' L N8F MU2
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 10
+supercubesolver_core.js: 2023 Permutation: (PAQRI)(HDNCMOELTKGUJVX)
+supercubesolver_solver.js: 471 Permutation: (PAQRI)(HDNCMOELTKGUJVX)
+supercubesolver_solver.js: 472 Alg: N9L U B' NL N9B NL' N9B' B U' N9B NL N9B' NL' N9L' U NB U' N9B' U F N9U NB' N9U' F' N9U U' NB N9U' NB' N9B N9D' D' N9F D NR D' N9F' D N9D R' N9D' NR' N9D D N9F NU NF' N9F' D' N9F D NF NU' D' N9F' R
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 19
+supercubesolver_core.js: 2023 Permutation: (URV)(MDHSTPIEKAOWG)
+supercubesolver_solver.js: 471 Permutation: (URV)(MDHSTPIEKAOWG)
+supercubesolver_solver.js: 472 Alg: U' N3L' D N9R D' N3L N3B D N9R' D' N3B' U N3R' L' N9F' L N9F N3R N3F2 N9F' L' N9F L N3F2 N3L' N9D' N3L U' N3L' N9D D N9B' D' N3L D N9B U N3R N9D N3R' D' N3R N9D' N3R'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 28
+supercubesolver_core.js: 2023 Permutation: (FIH)(MANCLBUVGPKTSOE)
+supercubesolver_solver.js: 471 Permutation: (FIH)(MANCLBUVGPKTSOE)
+supercubesolver_solver.js: 472 Alg: N4R' F N9U N4R' N9B N4R F' N4R' N9B' N4R' F N9U' F' N4D R' N9D R N9D' N4D' N4R' N9D R' N9D' R2 B N4D B' N9B N9D' B N4D' B' N4D N9D N9B' N4D' R' N4F N9F U N4F U' N9F' N9R2 U N4F' U' N9R2 N4F'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 37
+supercubesolver_core.js: 2023 Permutation: (GLO)(WIM)(EDTBNHKPJAXVQRS)
+supercubesolver_solver.js: 471 Permutation: (GLO)(WIM)(EDTBNHKPJAXVQRS)
+supercubesolver_solver.js: 472 Alg: N5D' L2 N9U R' N5D' R N9U' N9B R' N5D R N9B' L2 N5D N5F D N5L N9F2 N9D' N5L' D' N5L D N9D N9F2 D' N5L' N5F' N5B N9D N5B' D N5B N9D' N5B' D N9U N9R B' N9U' D2 N5B D2 N9U B N9R' N9U' D2 N5B' N5U F N9D F' N5U' F N9D' F'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 46
+supercubesolver_core.js: 2023 Permutation: (LDMXJSIEWBVNTKRFG)
+supercubesolver_solver.js: 471 Permutation: (LDMXJSIEWBVNTKRFG)
+supercubesolver_solver.js: 472 Alg: R N6F' U' N6F U N9B' N9U' U' N6F' U N6F N9U N9B R' N6R' N9L' N6B' B N6L B' N9L B N6L' N9L' N6B N9L B' N9U B N9B R' N9U' N6R N9U N6R' R N9B' B' N6R N9U' N6F' R' N9U N9F R N6F R' N6F' N9F' N9U' N6F R
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 55
+supercubesolver_core.js: 2023 Permutation: (GBJ)(FDIHNQVWPEXLRSAKMUT)
+supercubesolver_solver.js: 471 Permutation: (GBJ)(FDIHNQVWPEXLRSAKMUT)
+supercubesolver_solver.js: 472 Alg: N9B' N7R' N7L U N9B' U' N7L' N7R U N7L N9B N7L' U' N9B N9F D' N7U N7B' D N9F' D' N9F N7B N7U' N9F' D N9F' L' N9F N7R' N9F' N7R L B' N7R' N9F N7R B N7L' U' N7L' N9U L N9U' N7L2 N9U L' N7L' U N7L N7D' B N9U' B' N7D N7B' B N9U B' N9U' N7B
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 64
+supercubesolver_core.js: 2023 Permutation: (NKX)(FDGPWLRQUSMTBAO)
+supercubesolver_solver.js: 471 Permutation: (NKX)(FDGPWLRQUSMTBAO)
+supercubesolver_solver.js: 472 Alg: N9D' N8L' N9D L' D' N9D' N8L N9D N8L' D U N8L N9R N9U' N8L' U' N8L U N9U N9R' U' L N9F D N9F' N8L' N9F N8L D' B2 N8L' N9F' N8L N8B' D' N9R' D N8B N8R' N8B D' N9R D N8B' N8R B2
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 73
+supercubesolver_core.js: 2023 Permutation: (WCV)(FDQMHRKBNSPELAUOGITJX)
+supercubesolver_solver.js: 471 Permutation: (WCV)(FDQMHRKBNSPELAUOGITJX)
+supercubesolver_solver.js: 472 Alg: N9L N9U' B N9U' N9B' N9U N9B B' N9U L N9U' N9L' U N9U N9B N9L' N9B' N9L U' L' N9B N9U F N9U' N9B' N9U F' N9U' N9F' R' N9B' R N9B N9F N9R N9B' R' N9B R N9D2 N9B U' N9R N9B2 N9R' N9B N9D2 N9B U N9B' N9R'
+supercubesolver_solver.js: 473
+supercubesolver_solver.js: 456 Solving orbit: 82
+supercubesolver_core.js: 2023 Permutation: (GAO)(RDMPQLSJTXVUCNWHEIB)
+supercubesolver_solver.js: 471 Permutation: (GAO)(RDMPQLSJTXVUCNWHEIB)
+supercubesolver_solver.js: 472 Alg: N9L B2 U N9R' MU' N9R MU U' B2 N9L' F' N9L D N9L D' MU' MF D N9L' D' MF' N9L' L N9F MR N9F' L N9F' MR' N9F L2 MU F N9R' MR2 F' N9U' F MR' N9U' MR' N9U F' N9U F N9R
+supercubesolver_solver.js: 473 

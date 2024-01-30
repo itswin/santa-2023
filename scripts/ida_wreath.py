@@ -35,8 +35,8 @@ def evaluate_score(current_state, final_state):
         if current_state[i] != piece:
             piece = current_state[i]
             num_segments += 1
-            score += 3 / segment_length
-            segment_length = 1
+            # score += 3 / segment_length
+            # segment_length = 1
         else:
             segment_length += 1
 
@@ -250,12 +250,12 @@ def main():
             initial_state = initial_state[moves[move]]
         print(f"Progress length: {len(progress)}. Diff: {evaluate_difference(initial_state, solution_state)}")
 
-    # fake_initial_state = initial_state.copy()
-    # fake_initial_state[fake_initial_state == "C"] = "A"
-    # fake_solution_state = solution_state.copy()
-    # fake_solution_state[fake_solution_state == "C"] = "A"
-    # print(f"Fake initial state: {fake_initial_state}")
-    # print(f"Fake solution state: {fake_solution_state}")
+    fake_initial_state = initial_state.copy()
+    fake_initial_state[fake_initial_state == "C"] = "A"
+    fake_solution_state = solution_state.copy()
+    fake_solution_state[fake_solution_state == "C"] = "A"
+    print(f"Fake initial state: {fake_initial_state}")
+    print(f"Fake solution state: {fake_solution_state}")
 
     print(f"Starting testing with parameters: {params}")
     solution_path, iteration_counter, valid = idastar(moves, initial_state, solution_state, params, progress, args.clear_when_new_best)
