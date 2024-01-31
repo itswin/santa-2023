@@ -8,7 +8,7 @@ from util import *
 
 # seq 210 234 | xargs -P 4 -I {} python3 scripts/solve_reskin.py {}
 
-def pseudo(id):
+def pseudo(id, partial_sol):
     puzzle = pd.read_csv("data/puzzles.csv").set_index("id").loc[id]
     print(puzzle)
 
@@ -45,10 +45,21 @@ def pseudo(id):
 
     print("INITIAL", state)
 
-    if n % 2 == 0:
-        center_orienting_seq = []
+    if partial_sol:
+        with open(partial_sol, "r") as fp:
+            sol = fp.read()
+            delimiter = "." if "." in sol else " "
+            center_orienting_seq = sol.split(delimiter)
+
+        print(f"Applying partial solution of length {len(center_orienting_seq)}")
+
+        for move_name in center_orienting_seq:
+            state = state[moves[move_name]]
     else:
-        state, center_orienting_seq = orient_centers(state, moves, n)
+        if n % 2 == 0:
+            center_orienting_seq = []
+        else:
+            state, center_orienting_seq = orient_centers(state, moves, n)
 
     print("ORIENTED", state)
     print("ORIENT_CENTERS", center_orienting_seq)
@@ -85,10 +96,20 @@ def pseudo(id):
             indices.append(base_idx + idx)
 
     state = state[indices]
+    orig_n = n
     n = 3
 
     state = "".join(STICKER_MAP[c] for c in state)
     faces = state_to_faces(state, n)
+
+    # If even, fix the centers
+    if orig_n % 2 == 0:
+        faces["U"][4] = "U"
+        faces["F"][4] = "F"
+        faces["R"][4] = "R"
+        faces["B"][4] = "B"
+        faces["L"][4] = "L"
+        faces["D"][4] = "D"
 
     print("INITIAL FACES")
     print_faces(faces, n)
@@ -97,10 +118,11 @@ def pseudo(id):
     cubestring = make_cubestring(faces)
     print(cubestring)
 
-    SOLVER_PATH = "/Users/Win33/Documents/Programming/rubiks-cube-NxNxN-solver/rubiks-cube-solver.py"
+    cwd = "/Users/Win33/Documents/Programming/rubiks-cube-NxNxN-solver/"
+    SOLVER_PATH = "./rubiks-cube-solver.py"
     cmd = [SOLVER_PATH, "--state", cubestring]
 
-    out = subprocess.check_output(cmd)
+    out = subprocess.check_output(cmd, cwd=cwd)
 
     out = out.decode("utf-8").strip()
     out = out.split("\n")
@@ -137,6 +159,7 @@ def pseudo(id):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("id", type=int)
+parser.add_argument("-ps", "--partial_sol", type=str, default=None)
 args = parser.parse_args()
 
-pseudo(args.id)
+pseudo(args.id, args.partial_sol)
