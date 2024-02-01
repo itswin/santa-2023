@@ -3,7 +3,7 @@ https://www.kaggle.com/competitions/santa-2023/overview
 
 Final score: 134963
 
-Place: 21st
+Place: 21st out of 1067 teams
 
 # Resources Used
 Most resources used were tweaked in some way or combined with the code in this repo to get the given solutions.
